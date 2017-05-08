@@ -1,7 +1,7 @@
 import requests
 import json
 import requests.auth
-from flask import Flask, url_for, render_template, abort, request
+from flask import Flask, url_for, render_template, abort, request, redirect
 from secret import client_s
 app = Flask(__name__, template_folder="./public", static_folder="./src")
 
@@ -9,16 +9,19 @@ CLIENT_ID = "QlVnptrGQ1egA1SeKkq7x2P9T6L44jRUKusVBVldR6py6jNvjj"
 REDIRECT_URI = "http://localhost:5000/inshape_callback"
 CLIENT_SECRET = client_s
 
-with open('data.txt') as f:
-    data = f.read()
-access = data[1:-1]
+
+def test_access():
+    with open('data.txt') as f:
+        data = f.read()
+    access = data[1:-1]
+    return access
 
 
 @app.route('/')
 @app.route('/index')
 def inshape_connect():
     text = '<a href="%s">GO!!!</a>'
-    return text % get_manufacturers(access)
+    return text % make_authorization_url()
 
 
 def make_authorization_url():
@@ -56,7 +59,7 @@ def inshape_callback():
     access_token = get_token(code)
     with open('data.txt', 'w') as outfile:
         json.dump(access_token, outfile)
-    return str(get_manufacturers(access))
+    return redirect(url_for('nav_page'))
 
 
 def get_token(code):
@@ -71,9 +74,24 @@ def get_token(code):
     a_token = token_json['access_token']
     return a_token
 
-@app.route('/manufacturers')
-def get_manufacturers(access_token):
+
+@app.route('/home')
+def nav_page():
+    logged = 'Logged In!'
+    man_text = '\n<a href="%s">Manufacturers</a>'
+    return (logged + man_text) % get_manufacturers()
+
+
+@app.route('/manufacturers', methods=['POST', 'GET'])
+def get_manufacturers():
+    access_token = test_access()
     headers = {"Authorization": "bearer " + access_token}
     response = requests.get("https://api.shapeways.com/manufacturers/v1", headers=headers)
-    models_json = json.loads(response.text)
-    return str(models_json)
+    manufacturers_json = json.loads(response.text)
+    man_list = str(manufacturers_json)
+    return render_template('manufacturers.html', manufacturers=man_list)
+
+
+@app.route('/react')
+def react_test():
+    render_template('index.html')
