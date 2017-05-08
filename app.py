@@ -14,13 +14,39 @@ def test_access():
     with open('data.txt') as f:
         data = f.read()
     access = data[1:-1]
+    headers = {"Authorization": "bearer " + access}
+    response = requests.get("https://api.shapeways.com/api/v1", headers=headers)
+    response_json = json.loads(response.text)
+    result = response_json['result']
+    return result
+
+
+def get_access():
+    with open('data.txt') as f:
+        data = f.read()
+    access = data[1:-1]
     return access
 
 
 @app.route('/')
 @app.route('/index')
+def welcome():
+    access = test_access()
+    if access == "success":
+        return redirect(url_for('home'))
+    else:
+        return redirect(url_for('inshape_connect'))
+
+
+@app.route('/home')
+def home():
+    test_access()
+    return render_template('home.html')
+
+
+@app.route('/inshape')
 def inshape_connect():
-    text = '<a href="%s">GO!!!</a>'
+    text = '<a href="%s">Authorize!</a>'
     return text % make_authorization_url()
 
 
@@ -59,7 +85,7 @@ def inshape_callback():
     access_token = get_token(code)
     with open('data.txt', 'w') as outfile:
         json.dump(access_token, outfile)
-    return redirect(url_for('nav_page'))
+    return redirect(url_for('home'))
 
 
 def get_token(code):
@@ -75,16 +101,9 @@ def get_token(code):
     return a_token
 
 
-@app.route('/home')
-def nav_page():
-    logged = 'Logged In!'
-    man_text = '\n<a href="%s">Manufacturers</a>'
-    return (logged + man_text) % get_manufacturers()
-
-
 @app.route('/manufacturers', methods=['POST', 'GET'])
 def get_manufacturers():
-    access_token = test_access()
+    access_token = get_access()
     headers = {"Authorization": "bearer " + access_token}
     response = requests.get("https://api.shapeways.com/manufacturers/v1", headers=headers)
     manufacturers_json = json.loads(response.text)
