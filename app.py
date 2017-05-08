@@ -18,7 +18,7 @@ access = data[1:-1]
 @app.route('/index')
 def inshape_connect():
     text = '<a href="%s">GO!!!</a>'
-    return text % make_authorization_url()
+    return text % get_manufacturers(access)
 
 
 def make_authorization_url():
@@ -71,7 +71,7 @@ def get_token(code):
     a_token = token_json['access_token']
     return a_token
 
-
+@app.route('/manufacturers')
 def get_manufacturers(access_token):
     headers = {"Authorization": "bearer " + access_token}
     response = requests.get("https://api.shapeways.com/manufacturers/v1", headers=headers)

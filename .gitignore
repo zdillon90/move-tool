@@ -17,3 +17,6 @@ yarn-debug.log*
 yarn-error.log*
 secret.py
 data.txt
+static/
+templates/
+.idea/
