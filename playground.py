@@ -1,15 +1,13 @@
 import json
 import requests
-from flask import Flask, redirect, url_for, session, request
-from flask_oauthlib.client import OAuth, OAuthException
-from secret import client_s
+from flask import Flask
 
 app = Flask(__name__, template_folder="./public", static_folder="./src")
 
 
 @app.route('/')
 def test_access():
-    with open('data.txt') as f:
+    with open('data.json') as f:
         data = f.read()
     access = data[1:-1]
     headers = {"Authorization": "bearer " + access}

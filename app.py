@@ -11,9 +11,9 @@ CLIENT_SECRET = client_s
 
 
 def test_access():
-    with open('data.txt') as f:
-        data = f.read()
-    access = data[1:-1]
+    with open('data.json') as data_file:
+        data = json.load(data_file)
+    access = data['access_token']
     headers = {"Authorization": "bearer " + access}
     response = requests.get("https://api.shapeways.com/api/v1", headers=headers)
     response_json = json.loads(response.text)
@@ -21,11 +21,10 @@ def test_access():
     return result
 
 
-def get_access():
-    with open('data.txt') as f:
-        data = f.read()
-    access = data[1:-1]
-    return access
+def read_data():
+    with open('data.json') as data_file:
+        data = json.load(data_file)
+    return data
 
 
 @app.route('/')
@@ -33,6 +32,9 @@ def get_access():
 def welcome():
     access = test_access()
     if access == "success":
+        return redirect(url_for('home'))
+    elif access == "Invalid Token Error":
+        refresh()
         return redirect(url_for('home'))
     else:
         return redirect(url_for('inshape_connect'))
@@ -83,7 +85,7 @@ def inshape_callback():
         abort(403)
     code = request.args.get('code')
     access_token = get_token(code)
-    with open('data.txt', 'w') as outfile:
+    with open('data.json', 'w') as outfile:
         json.dump(access_token, outfile)
     return redirect(url_for('home'))
 
@@ -97,13 +99,27 @@ def get_token(code):
                              auth=client_auth,
                              data=post_data)
     token_json = responce.json()
-    a_token = token_json['access_token']
-    return a_token
+    return token_json
+
+
+def refresh():
+    data = read_data()
+    refresh_token = data["refresh_token"]
+    client_auth = requests.auth.HTTPBasicAuth(CLIENT_ID, CLIENT_SECRET)
+    post_data = {"grant_type": "refresh_token",
+                 "refresh_token": "{r}".format(r=refresh_token)}
+    responce = requests.post('https://api.shapeways.com/oauth2/token',
+                             auth=client_auth,
+                             data=post_data)
+    data_json = responce.json()
+    with open('data.json', 'w') as outfile:
+        json.dump(data_json, outfile)
 
 
 @app.route('/manufacturers', methods=['POST', 'GET'])
 def get_manufacturers():
-    access_token = get_access()
+    data = read_data()
+    access_token = data['access_token']
     headers = {"Authorization": "bearer " + access_token}
     response = requests.get("https://api.shapeways.com/manufacturers/v1", headers=headers)
     manufacturers_json = json.loads(response.text)

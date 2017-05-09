@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+data.json
+refresh.txt
 
 # testing
 /coverage
@@ -16,7 +18,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 secret.py
-data.txt
 static/
 templates/
 .idea/
