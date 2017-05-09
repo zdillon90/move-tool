@@ -10,17 +10,6 @@ REDIRECT_URI = "http://localhost:5000/inshape_callback"
 CLIENT_SECRET = client_s
 
 
-def test_access():
-    with open('data.json') as data_file:
-        data = json.load(data_file)
-    access = data['access_token']
-    headers = {"Authorization": "bearer " + access}
-    response = requests.get("https://api.shapeways.com/api/v1", headers=headers)
-    response_json = json.loads(response.text)
-    result = response_json['result']
-    return result
-
-
 def read_data():
     with open('data.json') as data_file:
         data = json.load(data_file)
@@ -42,8 +31,22 @@ def welcome():
 
 @app.route('/home')
 def home():
-    test_access()
+    # test_access()
     return render_template('home.html')
+
+
+def test_access():
+    with open('data.json') as data_file:
+        data = json.load(data_file)
+    access = data['access_token']
+    headers = {"Authorization": "bearer " + access}
+    response = requests.get("https://api.shapeways.com/materials/v1", headers=headers)
+    if str(response) == "<Response [401]>":
+        redirect(url_for('inshape_connect'))
+    else:
+        response_json = json.loads(response.text)
+        result = response_json['result']
+        return result
 
 
 @app.route('/inshape')
@@ -123,8 +126,14 @@ def get_manufacturers():
     headers = {"Authorization": "bearer " + access_token}
     response = requests.get("https://api.shapeways.com/manufacturers/v1", headers=headers)
     manufacturers_json = json.loads(response.text)
-    man_list = str(manufacturers_json)
-    return render_template('manufacturers.html', manufacturers=man_list)
+    with open('test.json', 'w') as test_file:
+        json.dump(manufacturers_json, test_file)
+    if manufacturers_json['result'] == 'failure':
+        refresh()
+        redirect(url_for('get_manufacturers'))
+    else:
+        man_list = str(manufacturers_json)
+        return render_template('manufacturers.html', manufacturers=man_list)
 
 
 @app.route('/react')
