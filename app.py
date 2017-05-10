@@ -1,9 +1,11 @@
 import requests
 import json
 import requests.auth
-from flask import Flask, url_for, render_template, abort, request, redirect
+from flask import Flask, url_for, render_template, abort, request, redirect, jsonify
+from flask_cors import CORS
 from secret import client_s
 app = Flask(__name__, template_folder="./public", static_folder="./src")
+CORS(app)
 
 CLIENT_ID = "QlVnptrGQ1egA1SeKkq7x2P9T6L44jRUKusVBVldR6py6jNvjj"
 REDIRECT_URI = "http://localhost:5000/inshape_callback"
@@ -38,6 +40,8 @@ def home():
 def test_access():
     with open('data.json') as data_file:
         data = json.load(data_file)
+    if data['access_token'] not in data:
+        redirect(url_for('inshape_connect'))
     access = data['access_token']
     headers = {"Authorization": "bearer " + access}
     response = requests.get("https://api.shapeways.com/materials/v1", headers=headers)
@@ -110,7 +114,8 @@ def refresh():
     refresh_token = data["refresh_token"]
     client_auth = requests.auth.HTTPBasicAuth(CLIENT_ID, CLIENT_SECRET)
     post_data = {"grant_type": "refresh_token",
-                 "refresh_token": "{r}".format(r=refresh_token)}
+                 "refresh_token": "{r}".format(r=refresh_token),
+                 "client_id": CLIENT_ID}
     responce = requests.post('https://api.shapeways.com/oauth2/token',
                              auth=client_auth,
                              data=post_data)
@@ -132,8 +137,9 @@ def get_manufacturers():
         refresh()
         redirect(url_for('get_manufacturers'))
     else:
-        man_list = str(manufacturers_json)
-        return render_template('manufacturers.html', manufacturers=man_list)
+        return jsonify(manufacturers_json)
+        # man_list = str(manufacturers_json)
+        # return render_template('manufacturers.html', manufacturers=man_list)
 
 
 @app.route('/react')
