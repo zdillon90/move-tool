@@ -4,7 +4,7 @@
 /node_modules
 data.json
 refresh.txt
-test.json
+refresh.json
 
 # testing
 /coverage

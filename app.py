@@ -40,17 +40,18 @@ def home():
 def test_access():
     with open('data.json') as data_file:
         data = json.load(data_file)
-    if data['access_token'] not in data:
-        redirect(url_for('inshape_connect'))
-    access = data['access_token']
-    headers = {"Authorization": "bearer " + access}
-    response = requests.get("https://api.shapeways.com/materials/v1", headers=headers)
-    if str(response) == "<Response [401]>":
+    if 'access' not in data:
         redirect(url_for('inshape_connect'))
     else:
-        response_json = json.loads(response.text)
-        result = response_json['result']
-        return result
+        access = data['access_token']
+        headers = {"Authorization": "bearer " + access}
+        response = requests.get("https://api.shapeways.com/materials/v1", headers=headers)
+        if str(response) == "<Response [401]>":
+            redirect(url_for('inshape_connect'))
+        else:
+            response_json = json.loads(response.text)
+            result = response_json['result']
+            return result
 
 
 @app.route('/inshape')
@@ -110,16 +111,19 @@ def get_token(code):
 
 
 def refresh():
-    data = read_data()
+    with open('refresh.json', 'r') as input_file:
+        data = json.load(input_file)
     refresh_token = data["refresh_token"]
     client_auth = requests.auth.HTTPBasicAuth(CLIENT_ID, CLIENT_SECRET)
     post_data = {"grant_type": "refresh_token",
                  "refresh_token": "{r}".format(r=refresh_token),
                  "client_id": CLIENT_ID}
-    responce = requests.post('https://api.shapeways.com/oauth2/token',
+    response = requests.post('https://api.shapeways.com/oauth2/token',
                              auth=client_auth,
                              data=post_data)
-    data_json = responce.json()
+    data_json = response.json()
+    with open('refresh.json', 'w') as test_file:
+        json.dump(data_json['refresh_token'], test_file)
     with open('data.json', 'w') as outfile:
         json.dump(data_json, outfile)
 
@@ -127,19 +131,20 @@ def refresh():
 @app.route('/manufacturers', methods=['POST', 'GET'])
 def get_manufacturers():
     data = read_data()
-    access_token = data['access_token']
-    headers = {"Authorization": "bearer " + access_token}
-    response = requests.get("https://api.shapeways.com/manufacturers/v1", headers=headers)
-    manufacturers_json = json.loads(response.text)
-    with open('test.json', 'w') as test_file:
-        json.dump(manufacturers_json, test_file)
-    if manufacturers_json['result'] == 'failure':
-        refresh()
-        redirect(url_for('get_manufacturers'))
+    if 'error' in data:
+        redirect(redirect(url_for('inshape_connect')))
     else:
+        access_token = data['access_token']
+        headers = {"Authorization": "bearer " + access_token}
+        response = requests.get("https://api.shapeways.com/manufacturers/v1", headers=headers)
+        manufacturers_json = json.loads(response.text)
+        # if 'error' in manufacturers_json:
+        #     # refresh()
+        #     redirect(url_for('connect_inshape'))
+        # else:
         return jsonify(manufacturers_json)
-        # man_list = str(manufacturers_json)
-        # return render_template('manufacturers.html', manufacturers=man_list)
+            # man_list = str(manufacturers_json)
+            # return render_template('manufacturers.html', manufacturers=man_list)
 
 
 @app.route('/react')
