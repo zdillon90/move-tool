@@ -5,23 +5,21 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  NavLink
+  Container,
+  Row,
+  Col,
+  Jumbotron,
  } from 'reactstrap';
 
 class Manufacturers extends Component {
   constructor(props){
     super(props);
     this.toggle = this.toggle.bind(this);
+    this.onManufacturerClick = this.onManufacturerClick.bind(this);
     this.state = {
-      dropdownOpen: false
+      dropdownOpen: false,
+      items: [],
     };
-    this.state = {items: []}
   }
   componentWillMount() {
     fetch('/manufacturers')
@@ -33,36 +31,43 @@ class Manufacturers extends Component {
       dropdownOpen: !this.state.dropdownOpen
     });
   }
+  onManufacturerClick(mSelected) {
+    this.setState({ mSelected });
+  }
   render() {
     let items = this.state.items
     return (
       <div>
-        <Navbar color="inverse" inverse toggleable>
-          <NavbarToggler right onClick={this.toggle} />
-          <NavbarBrand href="/">Tray Move</NavbarBrand>
-          <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className="ml-auto" navbar>
-              <NavItem>
-                <NavLink href="/components/">Authorize</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink href="https://inshape.shapeways.com">Inshape</NavLink>
-              </NavItem>
-            </Nav>
-          </Collapse>
-        </Navbar>
-        <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-          <DropdownToggle caret>
-            Manufacturer
-          </DropdownToggle>
-          <DropdownMenu>
-            <DropdownItem header>Choose One</DropdownItem>
-            {items.map(item =>
-              <DropdownItem key={item.id}>{item.name}</DropdownItem>)}
-          </DropdownMenu>
-        </ButtonDropdown>
+        <Jumbotron>
+          <Container>
+            <Row>
+              <Col>
+                <h1>Welcome to The Future!</h1>
+                <h4>Choose a Manufacturer:</h4>
+                <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+                  <DropdownToggle caret>
+                    Manufacturer
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem header>Choose One</DropdownItem>
+                    {items.map(item =>
+                      <DropdownItem
+                        key={item.id}
+                        value={item.id}
+                        onClick={() => this.onManufacturerClick.bind(this, item.id)}>
+                          {item.name}
+                      </DropdownItem>
+                      , this)
+                    }
+                  </DropdownMenu>
+                </ButtonDropdown>
+                <p>Selected: {this.state.onManufacturerClick}</p>
+              </Col>
+            </Row>
+          </Container>
+        </Jumbotron>
       </div>
-    )
+    );
   }
 }
 

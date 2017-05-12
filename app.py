@@ -132,21 +132,24 @@ def refresh():
 def get_manufacturers():
     data = read_data()
     if 'error' in data:
-        redirect(redirect(url_for('inshape_connect')))
+        redirect(url_for('inshape_connect'))
     else:
         access_token = data['access_token']
         headers = {"Authorization": "bearer " + access_token}
         response = requests.get("https://api.shapeways.com/manufacturers/v1", headers=headers)
         manufacturers_json = json.loads(response.text)
-        # if 'error' in manufacturers_json:
-        #     # refresh()
-        #     redirect(url_for('connect_inshape'))
-        # else:
         return jsonify(manufacturers_json)
-            # man_list = str(manufacturers_json)
-            # return render_template('manufacturers.html', manufacturers=man_list)
 
 
-@app.route('/react')
-def react_test():
-    render_template('index.html')
+@app.route('/manufacturer/<int:manufacturer_id>')
+def sub_status(manufacturer_id):
+    data = read_data()
+    if 'error' in data:
+        redirect(url_for('inshape_connect'))
+    else:
+        access_token = data['access_token']
+        headers = {"Authorization": "bearer " + access_token}
+        manufacturer = "https://api.shapeways.com/manufacturers/{m}/v1".format(m=manufacturer_id)
+        response = requests.get(manufacturer, headers=headers)
+        statuses = json.loads(response.text)
+        return jsonify(statuses)
