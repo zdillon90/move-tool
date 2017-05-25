@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 
-class Substatus extends Component {
+class SubTable extends Component {
   constructor() {
     super();
     this.state = {

@@ -19,6 +19,8 @@ class Manufacturers extends Component {
     this.state = {
       dropdownOpen: false,
       items: [],
+      manufacturer_id: null,
+      manufacturer_name: "Manufacturer"
     };
   }
   componentWillMount() {
@@ -31,8 +33,11 @@ class Manufacturers extends Component {
       dropdownOpen: !this.state.dropdownOpen
     });
   }
-  onManufacturerClick(mSelected) {
-    this.setState({ mSelected });
+  onManufacturerClick(event) {
+    this.setState({
+      manufacturer_id: event.target.value,
+      manufacturer_name: event.target.name
+    });
   }
   render() {
     let items = this.state.items
@@ -46,7 +51,7 @@ class Manufacturers extends Component {
                 <h4>Choose a Manufacturer:</h4>
                 <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
                   <DropdownToggle caret>
-                    Manufacturer
+                    {this.state.manufacturer_name}
                   </DropdownToggle>
                   <DropdownMenu>
                     <DropdownItem header>Choose One</DropdownItem>
@@ -54,14 +59,15 @@ class Manufacturers extends Component {
                       <DropdownItem
                         key={item.id}
                         value={item.id}
-                        onClick={() => this.onManufacturerClick.bind(this, item.id)}>
+                        name={item.name}
+                        onClick={this.onManufacturerClick}>
                           {item.name}
                       </DropdownItem>
                       , this)
                     }
                   </DropdownMenu>
                 </ButtonDropdown>
-                <p>Selected: {this.state.onManufacturerClick}</p>
+                <p>Selected: {this.state.manufacturer_id}</p>
               </Col>
             </Row>
           </Container>
