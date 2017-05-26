@@ -15,32 +15,32 @@ class Manufacturers extends Component {
   constructor(props){
     super(props);
     this.toggle = this.toggle.bind(this);
-    this.onManufacturerClick = this.onManufacturerClick.bind(this);
+    // this.onManufacturerClick = this.onManufacturerClick.bind(this);
     this.state = {
       dropdownOpen: false,
-      items: [],
-      manufacturer_id: null,
-      manufacturer_name: "Manufacturer"
+      items: []
+      // manufacturer_id: null,
+      // manufacturer_name: "Manufacturer"
     };
-  }
-  componentWillMount() {
-    fetch('/manufacturers')
-      .then( responce => responce.json() )
-      .then( ({manufacturers: items}) => this.setState({items}))
   }
   toggle() {
     this.setState({
       dropdownOpen: !this.state.dropdownOpen
     });
   }
-  onManufacturerClick(event) {
-    this.setState({
-      manufacturer_id: event.target.value,
-      manufacturer_name: event.target.name
-    });
+
+  clicked () {
+    this.props.clickfunction(this.props.event)
   }
+
+  // onManufacturerClick(event) {
+  //   this.setState({
+  //     manufacturer_id: event.target.value,
+  //     manufacturer_name: event.target.name
+  //   });
+  // }
   render() {
-    let items = this.state.items
+    let items = this.props.list
     return (
       <div>
         <Jumbotron>
@@ -51,7 +51,7 @@ class Manufacturers extends Component {
                 <h4>Choose a Manufacturer:</h4>
                 <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
                   <DropdownToggle caret>
-                    {this.state.manufacturer_name}
+                    {this.props.manufacturer}
                   </DropdownToggle>
                   <DropdownMenu>
                     <DropdownItem header>Choose One</DropdownItem>
@@ -60,7 +60,7 @@ class Manufacturers extends Component {
                         key={item.id}
                         value={item.id}
                         name={item.name}
-                        onClick={this.onManufacturerClick}>
+                        onClick={this.clicked}>
                           {item.name}
                       </DropdownItem>
                       , this)

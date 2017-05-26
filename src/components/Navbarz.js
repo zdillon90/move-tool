@@ -39,6 +39,9 @@ class Navbarz extends Component {
               <NavItem>
                 <NavLink href="https://inshape.shapeways.com">Inshape</NavLink>
               </NavItem>
+              <NavItem>
+                <NavLink disabled >Manufacturer: {this.props.manufacturer}</NavLink>
+              </NavItem>
             </Nav>
           </Collapse>
         </Navbar>
