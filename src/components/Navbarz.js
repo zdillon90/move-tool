@@ -10,8 +10,8 @@ import {
 } from 'reactstrap';
 
 class Navbarz extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.toggle = this.toggle.bind(this);
     this.state = {
       isOpen: false
@@ -26,11 +26,12 @@ class Navbarz extends Component {
     window.location.assign()
   }
   render() {
+    const manufacturer = this.props.manufacturer
     return (
       <div>
         <Navbar color="inverse" inverse toggleable>
           <NavbarToggler right onClick={this.toggle} />
-          <NavbarBrand href="/">Tray Move</NavbarBrand>
+          <NavbarBrand href="/">Move Tool</NavbarBrand>
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem>
@@ -40,7 +41,7 @@ class Navbarz extends Component {
                 <NavLink href="https://inshape.shapeways.com">Inshape</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink disabled >Manufacturer: {this.props.manufacturer}</NavLink>
+                <NavLink disabled >Manufacturer: {manufacturer}</NavLink>
               </NavItem>
             </Nav>
           </Collapse>

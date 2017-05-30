@@ -15,7 +15,7 @@ class Manufacturers extends Component {
   constructor(props){
     super(props);
     this.toggle = this.toggle.bind(this);
-    // this.onManufacturerClick = this.onManufacturerClick.bind(this);
+    this.handleChange = this.handleChange.bind(this);
     this.state = {
       dropdownOpen: false,
       items: []
@@ -29,18 +29,12 @@ class Manufacturers extends Component {
     });
   }
 
-  clicked () {
-    this.props.clickfunction(this.props.event)
+  handleChange (event) {
+    this.props.onManufacturerChange(event.target.name);
   }
 
-  // onManufacturerClick(event) {
-  //   this.setState({
-  //     manufacturer_id: event.target.value,
-  //     manufacturer_name: event.target.name
-  //   });
-  // }
   render() {
-    let items = this.props.list
+    let items = this.props.list;
     return (
       <div>
         <Jumbotron>
@@ -51,7 +45,7 @@ class Manufacturers extends Component {
                 <h4>Choose a Manufacturer:</h4>
                 <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
                   <DropdownToggle caret>
-                    {this.props.manufacturer}
+                    Manufacturers
                   </DropdownToggle>
                   <DropdownMenu>
                     <DropdownItem header>Choose One</DropdownItem>
@@ -60,14 +54,13 @@ class Manufacturers extends Component {
                         key={item.id}
                         value={item.id}
                         name={item.name}
-                        onClick={this.clicked}>
+                        onClick={this.handleChange}>
                           {item.name}
                       </DropdownItem>
                       , this)
                     }
                   </DropdownMenu>
                 </ButtonDropdown>
-                <p>Selected: {this.state.manufacturer_id}</p>
               </Col>
             </Row>
           </Container>

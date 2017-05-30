@@ -5,37 +5,35 @@ import Navbarz from './components/Navbarz'
 class App extends Component {
   constructor(props){
     super(props);
-    this.onManufacturerClick = this.onManufacturerClick.bind(this);
+    this.handleManufacturerChange = this.handleManufacturerChange.bind(this);
     this.state = {
       items: [],
-      manufacturer: [],
+      manufacturer: '',
       manufacturer_id: null,
-      manufacturer_name: "Manufacturer"
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
     fetch('/manufacturers')
       .then( responce => responce.json() )
       .then( ({manufacturers: items}) => this.setState({items}));
   }
 
-  onManufacturerClick(event) {
+  handleManufacturerChange(manufacturer_name) {
     this.setState({
-      manufacturer_id: event.target.value,
-      manufacturer_name: event.target.name
+      manufacturer: manufacturer_name
     });
   }
 
   render() {
-    var manList = this.state.items;
+    const manList = this.state.items;
+    const manufacturer = this.state.manufacturer;
     return (
       <div>
-        <Navbarz manufacturer={this.state.manufacturer} />
+        <Navbarz manufacturer={manufacturer} />
         <Manufacturers
           list={manList}
-          manufacturer={this.state.manufacturer_name}
-          clickfunction={this.onManufacturerClick}
+          onManufacturerChange={this.handleManufacturerChange}
         />
       </div>
     );
