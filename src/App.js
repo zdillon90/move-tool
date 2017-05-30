@@ -6,22 +6,32 @@ class App extends Component {
   constructor(props){
     super(props);
     this.handleManufacturerChange = this.handleManufacturerChange.bind(this);
+
     this.state = {
       items: [],
       manufacturer: '',
       manufacturer_id: null,
+      processes: []
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     fetch('/manufacturers')
       .then( responce => responce.json() )
       .then( ({manufacturers: items}) => this.setState({items}));
   }
 
-  handleManufacturerChange(manufacturer_name) {
+  fetchStatuses(man_id) {
+    var id = man_id;
+    fetch('/manufacturer/${id}')
+      .then( responce => responce.json() )
+      .then( ({productionProcesses: processes}) => this.setState({processes}));
+  }
+
+  handleManufacturerChange(man_name, man_id) {
     this.setState({
-      manufacturer: manufacturer_name
+      manufacturer: man_name,
+      manufacturer_id: man_id
     });
   }
 

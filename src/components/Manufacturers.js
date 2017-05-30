@@ -19,8 +19,6 @@ class Manufacturers extends Component {
     this.state = {
       dropdownOpen: false,
       items: []
-      // manufacturer_id: null,
-      // manufacturer_name: "Manufacturer"
     };
   }
   toggle() {
@@ -30,7 +28,10 @@ class Manufacturers extends Component {
   }
 
   handleChange (event) {
-    this.props.onManufacturerChange(event.target.name);
+    this.props.onManufacturerChange(
+      event.target.name,
+      event.target.value
+    );
   }
 
   render() {
