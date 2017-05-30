@@ -1,18 +1,40 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Manufacturers from './components/Manufacturers'
+import Navbarz from './components/Navbarz'
 
 class App extends Component {
+  constructor(props){
+    super(props);
+    this.handleManufacturerChange = this.handleManufacturerChange.bind(this);
+    this.state = {
+      items: [],
+      manufacturer: '',
+      manufacturer_id: null,
+    };
+  }
+
+  componentWillMount() {
+    fetch('/manufacturers')
+      .then( responce => responce.json() )
+      .then( ({manufacturers: items}) => this.setState({items}));
+  }
+
+  handleManufacturerChange(manufacturer_name) {
+    this.setState({
+      manufacturer: manufacturer_name
+    });
+  }
+
   render() {
+    const manList = this.state.items;
+    const manufacturer = this.state.manufacturer;
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div>
+        <Navbarz manufacturer={manufacturer} />
+        <Manufacturers
+          list={manList}
+          onManufacturerChange={this.handleManufacturerChange}
+        />
       </div>
     );
   }

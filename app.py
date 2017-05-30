@@ -1,31 +1,21 @@
 import requests
 import json
 import requests.auth
-from flask import Flask, url_for, render_template, abort, request, redirect
+from flask import Flask, url_for, render_template, abort, request, redirect, jsonify
+from flask_cors import CORS
 from secret import client_s
 app = Flask(__name__, template_folder="./public", static_folder="./src")
+CORS(app)
 
 CLIENT_ID = "QlVnptrGQ1egA1SeKkq7x2P9T6L44jRUKusVBVldR6py6jNvjj"
 REDIRECT_URI = "http://localhost:5000/inshape_callback"
 CLIENT_SECRET = client_s
 
 
-def test_access():
-    with open('data.txt') as f:
-        data = f.read()
-    access = data[1:-1]
-    headers = {"Authorization": "bearer " + access}
-    response = requests.get("https://api.shapeways.com/api/v1", headers=headers)
-    response_json = json.loads(response.text)
-    result = response_json['result']
-    return result
-
-
-def get_access():
-    with open('data.txt') as f:
-        data = f.read()
-    access = data[1:-1]
-    return access
+def read_data():
+    with open('data.json') as data_file:
+        data = json.load(data_file)
+    return data
 
 
 @app.route('/')
@@ -34,14 +24,34 @@ def welcome():
     access = test_access()
     if access == "success":
         return redirect(url_for('home'))
+    elif access == "Invalid Token Error":
+        refresh()
+        return redirect(url_for('home'))
     else:
         return redirect(url_for('inshape_connect'))
 
 
 @app.route('/home')
 def home():
-    test_access()
+    # test_access()
     return render_template('home.html')
+
+
+def test_access():
+    with open('data.json') as data_file:
+        data = json.load(data_file)
+    if 'access' not in data:
+        redirect(url_for('inshape_connect'))
+    else:
+        access = data['access_token']
+        headers = {"Authorization": "bearer " + access}
+        response = requests.get("https://api.shapeways.com/materials/v1", headers=headers)
+        if str(response) == "<Response [401]>":
+            redirect(url_for('inshape_connect'))
+        else:
+            response_json = json.loads(response.text)
+            result = response_json['result']
+            return result
 
 
 @app.route('/inshape')
@@ -83,7 +93,7 @@ def inshape_callback():
         abort(403)
     code = request.args.get('code')
     access_token = get_token(code)
-    with open('data.txt', 'w') as outfile:
+    with open('data.json', 'w') as outfile:
         json.dump(access_token, outfile)
     return redirect(url_for('home'))
 
@@ -97,20 +107,49 @@ def get_token(code):
                              auth=client_auth,
                              data=post_data)
     token_json = responce.json()
-    a_token = token_json['access_token']
-    return a_token
+    return token_json
+
+
+def refresh():
+    with open('refresh.json', 'r') as input_file:
+        data = json.load(input_file)
+    refresh_token = data["refresh_token"]
+    client_auth = requests.auth.HTTPBasicAuth(CLIENT_ID, CLIENT_SECRET)
+    post_data = {"grant_type": "refresh_token",
+                 "refresh_token": "{r}".format(r=refresh_token),
+                 "client_id": CLIENT_ID}
+    response = requests.post('https://api.shapeways.com/oauth2/token',
+                             auth=client_auth,
+                             data=post_data)
+    data_json = response.json()
+    with open('refresh.json', 'w') as test_file:
+        json.dump(data_json['refresh_token'], test_file)
+    with open('data.json', 'w') as outfile:
+        json.dump(data_json, outfile)
 
 
 @app.route('/manufacturers', methods=['POST', 'GET'])
 def get_manufacturers():
-    access_token = get_access()
-    headers = {"Authorization": "bearer " + access_token}
-    response = requests.get("https://api.shapeways.com/manufacturers/v1", headers=headers)
-    manufacturers_json = json.loads(response.text)
-    man_list = str(manufacturers_json)
-    return render_template('manufacturers.html', manufacturers=man_list)
+    data = read_data()
+    if 'error' in data:
+        redirect(url_for('inshape_connect'))
+    else:
+        access_token = data['access_token']
+        headers = {"Authorization": "bearer " + access_token}
+        response = requests.get("https://api.shapeways.com/manufacturers/v1", headers=headers)
+        manufacturers_json = json.loads(response.text)
+        return jsonify(manufacturers_json)
 
 
-@app.route('/react')
-def react_test():
-    render_template('index.html')
+@app.route('/manufacturer/<int:manufacturer_id>')
+def sub_status(manufacturer_id):
+    data = read_data()
+    if 'error' in data:
+        redirect(url_for('inshape_connect'))
+    else:
+        access_token = data['access_token']
+        headers = {"Authorization": "bearer " + access_token}
+        manufacturer = "https://api.shapeways.com/manufacturers/{m}/v1".format(m=manufacturer_id)
+        response = requests.get(manufacturer, headers=headers)
+        statuses = json.loads(response.text)
+        return jsonify(statuses)
