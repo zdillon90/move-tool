@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import Manufacturers from './components/Manufacturers'
+import ManufacturersDrop from './components/ManufacturersDrop'
 import Navbarz from './components/Navbarz'
 
 class App extends Component {
   constructor(props){
     super(props);
     this.handleManufacturerChange = this.handleManufacturerChange.bind(this);
-
+    this.fetchStatuses = this.fetchStatuses.bind(this);
     this.state = {
       items: [],
       manufacturer: '',
