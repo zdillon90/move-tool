@@ -10,11 +10,13 @@ import {
 class ProcessDrop extends Component {
   constructor(props) {
     super(props);
+    this.toggle = this.toggle.bind(this);
     this.state = {
       dropdownOpen: false
     }
   }
 
+  // TODO When process is selected, update state
   toggle() {
     this.setState({
       dropdownOpen: !this.state.dropdownOpen
@@ -22,26 +24,29 @@ class ProcessDrop extends Component {
   }
 
   render() {
-    <div>
-      <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-        <DropdownToggle caret>
-          Manufacturers
-        </DropdownToggle>
-        <DropdownMenu>
-          <DropdownItem header>Choose One</DropdownItem>
-          {items.map(item =>
-            <DropdownItem
-              key={item.id}
-              value={item.id}
-              name={item.name}
-              onClick={this.handleChange}>
-                {item.name}
-            </DropdownItem>
-            , this)
-          }
-        </DropdownMenu>
-      </ButtonDropdown>
-    </div>
+    let items = this.props.processlist
+    return (
+      <div>
+        <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+          <DropdownToggle caret>
+            Process
+          </DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem header>Choose One</DropdownItem>
+            {items.map(item =>
+              <DropdownItem
+                key={item.production_process_id}
+                value={item.id}
+                name={item.name}
+                onClick={this.handleChange}>
+                  {item.name}
+              </DropdownItem>
+              , this)
+            }
+          </DropdownMenu>
+        </ButtonDropdown>
+      </div>
+    );
   }
 }
 

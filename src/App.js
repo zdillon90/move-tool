@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Manufacturers from './components/Manufacturers'
-import ManufacturersDrop from './components/ManufacturersDrop'
 import Navbarz from './components/Navbarz'
 
 class App extends Component {
@@ -9,42 +8,49 @@ class App extends Component {
     this.handleManufacturerChange = this.handleManufacturerChange.bind(this);
     this.fetchStatuses = this.fetchStatuses.bind(this);
     this.state = {
-      items: [],
+      allManufacturers: [],
       manufacturer: '',
-      manufacturer_id: null,
-      processes: []
+      manufacturer_id: 0,
+      processes: [],
+      process: ''
     };
   }
 
   componentDidMount() {
     fetch('/manufacturers')
       .then( responce => responce.json() )
-      .then( ({manufacturers: items}) => this.setState({items}));
+      .then( ({manufacturers: allManufacturers}) => this.setState({allManufacturers}));
   }
 
-  fetchStatuses(man_id) {
-    var id = man_id;
-    fetch('/manufacturer/${id}')
+  fetchStatuses() {
+    var id = this.state.manufacturer_id;
+    var manufacturerUrl  = '/manufacturer/' + id;
+    fetch(manufacturerUrl)
       .then( responce => responce.json() )
       .then( ({productionProcesses: processes}) => this.setState({processes}));
   }
 
   handleManufacturerChange(man_name, man_id) {
-    this.setState({
-      manufacturer: man_name,
-      manufacturer_id: man_id
-    });
+    this.setState(
+      {
+        manufacturer: man_name,
+        manufacturer_id: man_id
+      },
+      this.fetchStatuses
+    );
   }
 
   render() {
-    const manList = this.state.items;
+    const manList = this.state.allManufacturers;
     const manufacturer = this.state.manufacturer;
+    const processes = this.state.processes
     return (
       <div>
         <Navbarz manufacturer={manufacturer} />
         <Manufacturers
           list={manList}
           onManufacturerChange={this.handleManufacturerChange}
+          processes={processes}
         />
       </div>
     );

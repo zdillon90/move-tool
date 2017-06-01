@@ -29,6 +29,7 @@ class ManufacturersDrop extends Component {
     );
   }
 
+  // TODO update the dropdown main label to refect the manufacturer state
   render() {
     let items = this.props.list;
     return (
