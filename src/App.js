@@ -6,7 +6,9 @@ class App extends Component {
   constructor(props){
     super(props);
     this.handleManufacturerChange = this.handleManufacturerChange.bind(this);
+    this.handleProcessChange = this.handleProcessChange.bind(this);
     this.fetchStatuses = this.fetchStatuses.bind(this);
+    this.defaultCheck = this.defaultCheck.bind(this);
     this.state = {
       allManufacturers: [],
       manufacturer: '',
@@ -37,13 +39,28 @@ class App extends Component {
         manufacturer_id: man_id
       },
       this.fetchStatuses
+      // this.defaultCheck
     );
+  }
+
+  defaultCheck() {
+    const currentProcesses = this.state.processes
+    console.log(currentProcesses.length);
+    if (currentProcesses.length === 1) {
+      this.setState({process: 'default'});
+    }
+  }
+
+  // Add If statement if there is only on process flow that it switches to that
+  // without the process dropdown
+  handleProcessChange(pros_name) {
+    this.setState({process: pros_name});
   }
 
   render() {
     const manList = this.state.allManufacturers;
     const manufacturer = this.state.manufacturer;
-    const processes = this.state.processes
+    const processes = this.state.processes;
     return (
       <div>
         <Navbarz manufacturer={manufacturer} />
@@ -51,6 +68,7 @@ class App extends Component {
           list={manList}
           onManufacturerChange={this.handleManufacturerChange}
           processes={processes}
+          onProcessChange={this.handleProcessChange}
         />
       </div>
     );

@@ -11,6 +11,7 @@ class ProcessDrop extends Component {
   constructor(props) {
     super(props);
     this.toggle = this.toggle.bind(this);
+    this.handleChange = this.handleChange.bind(this);
     this.state = {
       dropdownOpen: false
     }
@@ -21,6 +22,12 @@ class ProcessDrop extends Component {
     this.setState({
       dropdownOpen: !this.state.dropdownOpen
     });
+  }
+
+  handleChange(event) {
+    this.props.onProcessChange(
+      event.target.name
+    );
   }
 
   render() {

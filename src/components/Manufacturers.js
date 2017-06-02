@@ -14,7 +14,6 @@ class Manufacturers extends Component {
   render() {
     const manList = this.props.list;
     const processes = this.props.processes;
-    let processesLength = processes.length;
     return (
       <div>
         <Jumbotron>
@@ -32,9 +31,10 @@ class Manufacturers extends Component {
                     list={manList}
                     onManufacturerChange={this.props.onManufacturerChange}
                   />
-                  {processesLength> 1 &&
+                  {processes.length > 1 &&
                     <ProcessDrop
                       processlist={processes}
+                      onProcessChange={this.props.onProcessChange}
                     />
                   }
                 </ButtonGroup>
