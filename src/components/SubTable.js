@@ -2,14 +2,15 @@ import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 
 class SubTable extends Component {
-  constructor() {
-    super();
-    this.state = {
-      items: []
-      manufacturer: null
-    }
+  constructor(props) {
+    super(props);
   }
-  componentWillMount() {
-    fetch('/manufacturer/<int>')
+
+  render() {
+    return (
+      <div />
+    );
   }
 }
+
+export default SubTable;

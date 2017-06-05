@@ -128,28 +128,42 @@ def refresh():
         json.dump(data_json, outfile)
 
 
-@app.route('/manufacturers', methods=['POST', 'GET'])
-def get_manufacturers():
+def json_reply(url):
     data = read_data()
     if 'error' in data:
         redirect(url_for('inshape_connect'))
     else:
         access_token = data['access_token']
-        headers = {"Authorization": "bearer " + access_token}
-        response = requests.get("https://api.shapeways.com/manufacturers/v1", headers=headers)
-        manufacturers_json = json.loads(response.text)
-        return jsonify(manufacturers_json)
+        headers = {'Authorization': "bearer " + access_token}
+        response = requests.get(url, headers=headers)
+        json_data = json.loads(response.text)
+        return jsonify(json_data)
+
+
+# TODO Combine some of these repeating functions into one
+@app.route('/manufacturers', methods=['POST', 'GET'])
+def get_manufacturers():
+    mans_url = "https://api.shapeways.com/manufacturers/v1"
+    json_response = json_reply(mans_url)
+    return json_response
 
 
 @app.route('/manufacturer/<int:manufacturer_id>')
 def sub_status(manufacturer_id):
-    data = read_data()
-    if 'error' in data:
-        redirect(url_for('inshape_connect'))
-    else:
-        access_token = data['access_token']
-        headers = {"Authorization": "bearer " + access_token}
-        manufacturer = "https://api.shapeways.com/manufacturers/{m}/v1".format(m=manufacturer_id)
-        response = requests.get(manufacturer, headers=headers)
-        statuses = json.loads(response.text)
-        return jsonify(statuses)
+    man_url = "https://api.shapeways.com/manufacturers/{m}/v1".format(m=manufacturer_id)
+    json_response = json_reply(man_url)
+    return json_response
+
+
+@app.route('/production_trays/<int:manufacturer_id>')
+def production_trays(manufacturer_id):
+    pro_trays_url = "https://api.shapeways.com/production_trays?manufacturer=13/v1".format(m=manufacturer_id)
+    json_responce = json_reply(pro_trays_url)
+    return json_responce
+
+
+@app.route('/production_orders')
+def production_orders():
+    url = "https://api.shapeways.com/production_orders"
+    json_response = json_reply(url)
+    return json_response
