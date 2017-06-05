@@ -29,7 +29,8 @@ class App extends Component {
     var manufacturerUrl  = '/manufacturer/' + id;
     fetch(manufacturerUrl)
       .then( responce => responce.json() )
-      .then( ({productionProcesses: processes}) => this.setState({processes}));
+      .then( ({productionProcesses: processes} ) =>
+        this.setState({processes}, this.defaultCheck));
   }
 
   handleManufacturerChange(man_name, man_id) {
@@ -39,13 +40,11 @@ class App extends Component {
         manufacturer_id: man_id
       },
       this.fetchStatuses
-      // this.defaultCheck
     );
   }
 
   defaultCheck() {
     const currentProcesses = this.state.processes
-    console.log(currentProcesses.length);
     if (currentProcesses.length === 1) {
       this.setState({process: 'default'});
     }
