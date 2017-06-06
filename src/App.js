@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Manufacturers from './components/Manufacturers'
 import Navbarz from './components/Navbarz'
-// import SubTable from './components/SubTable'
+import SubTable from './components/SubTable'
 
 class App extends Component {
   constructor(props){
@@ -13,9 +13,11 @@ class App extends Component {
     this.state = {
       allManufacturers: [],
       manufacturer: '',
-      manufacturer_id: 0,
+      manufacturerId: null,
       processes: [],
-      process: ''
+      process: null,
+      processName: '',
+      subProcessList: []
     };
   }
 
@@ -26,7 +28,7 @@ class App extends Component {
   }
 
   fetchStatuses() {
-    var id = this.state.manufacturer_id;
+    var id = this.state.manufacturerId;
     var manufacturerUrl  = '/manufacturer/' + id;
     fetch(manufacturerUrl)
       .then( responce => responce.json() )
@@ -38,7 +40,7 @@ class App extends Component {
     this.setState(
       {
         manufacturer: man_name,
-        manufacturer_id: man_id
+        manufacturerId: man_id
       },
       this.fetchStatuses
     );
@@ -47,31 +49,33 @@ class App extends Component {
   defaultCheck() {
     const currentProcesses = this.state.processes
     if (currentProcesses.length === 1) {
-      this.setState({process: 'default'});
+      this.setState({processName: 'default'}
+      );
     }
   }
 
-  handleProcessChange(pros_name) {
-    this.setState({process: pros_name});
+  handleProcessChange(process) {
+    this.setState({process: process}
+    );
   }
 
   render() {
-    let manList = this.state.allManufacturers;
-    let manufacturer = this.state.manufacturer;
-    let processes = this.state.processes;
-    let currentProcess = this.state.process;
+    const manList = this.state.allManufacturers;
+    const manufacturer = this.state.manufacturer;
+    const processes = this.state.processes;
+    const currentProcess = this.state.process;
     return (
       <div>
         <Navbarz manufacturer={manufacturer} />
-        {currentProcess === '' ? (
+        {currentProcess ? (
+          <SubTable list={currentProcess} />
+        ) : (
           <Manufacturers
             list={manList}
             onManufacturerChange={this.handleManufacturerChange}
             processes={processes}
             onProcessChange={this.handleProcessChange}
           />
-        ) : (
-          <h1>SupTable placeholder</h1>
         )}
       </div>
     );

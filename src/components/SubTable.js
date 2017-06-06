@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Row, Col } from 'reactstrap';
+// import { Container, Row, Col } from 'reactstrap';
 
 class SubTable extends Component {
   constructor(props) {
@@ -7,8 +7,12 @@ class SubTable extends Component {
   }
 
   render() {
+    let list = this.props.list
     return (
-      <div />
+      <div>
+        <h2>SubTable</h2>
+        <h3>SubProcess: {list.display_name}</h3>
+      </div>
     );
   }
 }

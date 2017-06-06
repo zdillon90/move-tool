@@ -140,7 +140,6 @@ def json_reply(url):
         return jsonify(json_data)
 
 
-# TODO Combine some of these repeating functions into one
 @app.route('/manufacturers', methods=['POST', 'GET'])
 def get_manufacturers():
     mans_url = "https://api.shapeways.com/manufacturers/v1"
@@ -157,13 +156,13 @@ def sub_status(manufacturer_id):
 
 @app.route('/production_trays/<int:manufacturer_id>')
 def production_trays(manufacturer_id):
-    pro_trays_url = "https://api.shapeways.com/production_trays?manufacturer=13/v1".format(m=manufacturer_id)
-    json_responce = json_reply(pro_trays_url)
-    return json_responce
+    pro_trays_url = "https://api.shapeways.com/production_trays/v1?manufacturer=13".format(m=manufacturer_id)
+    json_response = json_reply(pro_trays_url)
+    return json_response
 
 
 @app.route('/production_orders')
 def production_orders():
-    url = "https://api.shapeways.com/production_orders"
+    url = "https://api.shapeways.com/production_orders/v1?manufacturer=22"
     json_response = json_reply(url)
     return json_response

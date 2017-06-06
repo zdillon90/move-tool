@@ -25,9 +25,13 @@ class ProcessDrop extends Component {
   }
 
   handleChange(event) {
-    this.props.onProcessChange(
-      event.target.name
-    );
+    this.props.processlist.forEach(function(list) {
+      if (list.display_name === event.target.name) {
+        this.props.onProcessChange(
+          list
+        );
+      }
+    }, this);
   }
 
   render() {
@@ -43,7 +47,6 @@ class ProcessDrop extends Component {
             {items.map(item =>
               <DropdownItem
                 key={item.production_process_id}
-                value={item.id}
                 name={item.name}
                 onClick={this.handleChange}>
                   {item.name}
