@@ -25,13 +25,8 @@ class ProcessDrop extends Component {
   }
 
   handleChange(event) {
-    this.props.processlist.forEach(function(list) {
-      if (list.display_name === event.target.name) {
-        this.props.onProcessChange(
-          list
-        );
-      }
-    }, this);
+    console.log(event.target);
+    this.props.onProcessChange(event.target)
   }
 
   render() {

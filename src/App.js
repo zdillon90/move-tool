@@ -54,9 +54,15 @@ class App extends Component {
     }
   }
 
-  handleProcessChange(process) {
-    this.setState({process: process}
-    );
+  handleProcessChange(target) {
+    console.log(target.name);
+    this.state.processes.forEach(function(list) {
+      if (list.display_name === target.name) {
+        this.setState({
+          process: list
+        });
+      }
+    }, this);
   }
 
   render() {

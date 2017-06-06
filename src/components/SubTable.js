@@ -10,7 +10,6 @@ class SubTable extends Component {
     let list = this.props.list
     return (
       <div>
-        <h2>SubTable</h2>
         <h3>SubProcess: {list.display_name}</h3>
       </div>
     );
