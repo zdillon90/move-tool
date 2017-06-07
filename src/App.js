@@ -10,14 +10,15 @@ class App extends Component {
     this.handleProcessChange = this.handleProcessChange.bind(this);
     this.fetchStatuses = this.fetchStatuses.bind(this);
     this.defaultCheck = this.defaultCheck.bind(this);
+    this.setProcessName = this.setProcessName.bind(this);
     this.state = {
       allManufacturers: [],
       manufacturer: '',
       manufacturerId: null,
       processes: [],
       process: null,
-      processName: '',
-      subProcessList: []
+      // processName: '',
+      // subProcessList: []
     };
   }
 
@@ -46,18 +47,9 @@ class App extends Component {
     );
   }
 
-  defaultCheck() {
-    const currentProcesses = this.state.processes
-    if (currentProcesses.length === 1) {
-      this.setState({processName: 'default'}
-      );
-    }
-  }
-
-  handleProcessChange(target) {
-    console.log(target.name);
+  setProcessName(target) {
     this.state.processes.forEach(function(list) {
-      if (list.display_name === target.name) {
+      if (list.name === target.name) {
         this.setState({
           process: list
         });
@@ -65,11 +57,24 @@ class App extends Component {
     }, this);
   }
 
+  defaultCheck() {
+    let currentProcesses = this.state.processes
+    const defaultName = {name: "default"}
+    if (currentProcesses.length === 1) {
+      // this.setState({processName: 'default'});
+      this.setProcessName(defaultName);
+    }
+  }
+
+  handleProcessChange(target) {
+    this.setProcessName(target);
+  }
+
   render() {
-    const manList = this.state.allManufacturers;
-    const manufacturer = this.state.manufacturer;
-    const processes = this.state.processes;
-    const currentProcess = this.state.process;
+    let manList = this.state.allManufacturers;
+    let manufacturer = this.state.manufacturer;
+    let processes = this.state.processes;
+    let currentProcess = this.state.process;
     return (
       <div>
         <Navbarz manufacturer={manufacturer} />
