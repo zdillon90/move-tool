@@ -17,7 +17,8 @@ class App extends Component {
       manufacturer: '',
       manufacturerId: null,
       processes: [],
-      process: null
+      process: null,
+      productionOrders: null
     };
   }
 
@@ -32,7 +33,7 @@ class App extends Component {
     const manufacturerUrl  = '/manufacturer/' + id;
     fetch(manufacturerUrl)
       .then( responce => responce.json() )
-      .then( ({productionProcesses: processes} ) =>
+      .then( ({productionProcesses: processes}) =>
         this.setState({processes}, this.defaultCheck));
   }
 
@@ -57,6 +58,7 @@ class App extends Component {
   }
 
   fetchProductionOrders() {
+    let id = this.state.manufacturerId;
     let process = this.state.process;
     let processSteps = process.processSteps;
     let subStatusIds = []
@@ -64,7 +66,11 @@ class App extends Component {
       subStatusIds.push(list.id);
     });
     let IdsString = subStatusIds.toString();
-    console.log(IdsString);
+    const poURL = '/production_orders/manufacturer=' + id + '/sub_statuses=' + IdsString;
+    fetch(poURL)
+      .then ( responce => responce.json() )
+      .then ( ({productionOrders: productionOrders}) =>
+        this.setState({productionOrders}));
   }
 
 

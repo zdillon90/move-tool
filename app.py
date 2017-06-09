@@ -4,8 +4,16 @@ import requests.auth
 from flask import Flask, url_for, render_template, abort, request, redirect, jsonify
 from flask_cors import CORS
 from secret import client_s
+import logging
+from logging.handlers import RotatingFileHandler
+
 app = Flask(__name__, template_folder="./public", static_folder="./src")
 CORS(app)
+
+
+handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)
+handler.setLevel(logging.INFO)
+app.logger.addHandler(handler)
 
 CLIENT_ID = "QlVnptrGQ1egA1SeKkq7x2P9T6L44jRUKusVBVldR6py6jNvjj"
 REDIRECT_URI = "http://localhost:5000/inshape_callback"
@@ -161,9 +169,9 @@ def production_trays(manufacturer_id):
     return json_response
 
 
-@app.route('/production_orders?manufacturer=<int:manufacturer_id>&subStatuses<subStatuses_list>')
-def production_orders(manufacturer_id, subStatus_list):
-    url = "https://api.shapeways.com/production_orders/v1?manufacturer={m}&subStatus={s}".format(
-        m=manufacturer_id, s=subStatus_list)
-    json_response = json_reply(url)
+@app.route('/production_orders/manufacturer=<int:manufacturer_id>/sub_statuses=<sub_status_list>')
+def production_orders(manufacturer_id, sub_status_list):
+    po_url = "https://api.shapeways.com/production_orders/v1?manufacturer=" + str(
+        manufacturer_id) + "&subStatus=" + str(sub_status_list)
+    json_response = json_reply(po_url)
     return json_response
