@@ -9,6 +9,7 @@ class App extends Component {
     this.handleManufacturerChange = this.handleManufacturerChange.bind(this);
     this.handleProcessChange = this.handleProcessChange.bind(this);
     this.fetchStatuses = this.fetchStatuses.bind(this);
+    this.fetchProductionOrders = this.fetchProductionOrders.bind(this);
     this.defaultCheck = this.defaultCheck.bind(this);
     this.setProcessName = this.setProcessName.bind(this);
     this.state = {
@@ -16,9 +17,7 @@ class App extends Component {
       manufacturer: '',
       manufacturerId: null,
       processes: [],
-      process: null,
-      // processName: '',
-      // subProcessList: []
+      process: null
     };
   }
 
@@ -29,8 +28,8 @@ class App extends Component {
   }
 
   fetchStatuses() {
-    var id = this.state.manufacturerId;
-    var manufacturerUrl  = '/manufacturer/' + id;
+    let id = this.state.manufacturerId;
+    const manufacturerUrl  = '/manufacturer/' + id;
     fetch(manufacturerUrl)
       .then( responce => responce.json() )
       .then( ({productionProcesses: processes} ) =>
@@ -52,16 +51,27 @@ class App extends Component {
       if (list.name === target.name) {
         this.setState({
           process: list
-        });
+        }, this.fetchProductionOrders);
       }
     }, this);
   }
+
+  fetchProductionOrders() {
+    let process = this.state.process;
+    let processSteps = process.processSteps;
+    let subStatusIds = []
+    processSteps.forEach(function(list) {
+      subStatusIds.push(list.id);
+    });
+    let IdsString = subStatusIds.toString();
+    console.log(IdsString);
+  }
+
 
   defaultCheck() {
     let currentProcesses = this.state.processes
     const defaultName = {name: "default"}
     if (currentProcesses.length === 1) {
-      // this.setState({processName: 'default'});
       this.setProcessName(defaultName);
     }
   }
@@ -77,7 +87,10 @@ class App extends Component {
     let currentProcess = this.state.process;
     return (
       <div>
-        <Navbarz manufacturer={manufacturer} />
+        <Navbarz
+          manufacturer={manufacturer}
+          process={currentProcess}
+        />
         {currentProcess ? (
           <SubTable list={currentProcess} />
         ) : (

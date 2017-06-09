@@ -11,9 +11,18 @@ import {
  } from 'reactstrap';
 
 class Manufacturers extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      defaultProceess: false
+    }
+  }
+
+
+
   render() {
-    const manList = this.props.list;
-    const processes = this.props.processes;
+    let manList = this.props.list;
+    let processes = this.props.processes;
     return (
       <div>
         <Jumbotron>

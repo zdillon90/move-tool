@@ -23,10 +23,11 @@ class Navbarz extends Component {
     });
   }
   handleCLick() {
-    window.location.assign()
+    window.location.assign();
   }
   render() {
-    const manufacturer = this.props.manufacturer
+    let manufacturer = this.props.manufacturer;
+    let process = this.props.process;
     return (
       <div>
         <Navbar color="inverse" inverse toggleable>
@@ -41,7 +42,13 @@ class Navbarz extends Component {
                 <NavLink href="https://inshape.shapeways.com">Inshape</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink disabled >Manufacturer: {manufacturer}</NavLink>
+                {process ? (
+                  <NavLink disabled >
+                    Manufacturer: {manufacturer} - {process.display_name}
+                  </NavLink>
+                ) : (
+                  <NavLink></NavLink>
+                )}
               </NavItem>
             </Nav>
           </Collapse>
@@ -51,4 +58,4 @@ class Navbarz extends Component {
   }
 }
 
-export default Navbarz
+export default Navbarz;

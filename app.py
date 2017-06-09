@@ -161,8 +161,9 @@ def production_trays(manufacturer_id):
     return json_response
 
 
-@app.route('/production_orders')
-def production_orders():
-    url = "https://api.shapeways.com/production_orders/v1?manufacturer=22"
+@app.route('/production_orders?manufacturer=<int:manufacturer_id>&subStatuses<subStatuses_list>')
+def production_orders(manufacturer_id, subStatus_list):
+    url = "https://api.shapeways.com/production_orders/v1?manufacturer={m}&subStatus={s}".format(
+        m=manufacturer_id, s=subStatus_list)
     json_response = json_reply(url)
     return json_response
