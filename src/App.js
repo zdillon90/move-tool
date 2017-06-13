@@ -18,7 +18,7 @@ class App extends Component {
       manufacturerId: null,
       processes: [],
       process: null,
-      productionOrders: null
+      pos: null
     };
   }
 
@@ -69,8 +69,8 @@ class App extends Component {
     const poURL = '/production_orders/manufacturer=' + id + '/sub_statuses=' + IdsString;
     fetch(poURL)
       .then ( responce => responce.json() )
-      .then ( ({productionOrders: productionOrders}) =>
-        this.setState({productionOrders}));
+      .then ( ({productionOrders: pos}) =>
+        this.setState({pos}));
   }
 
 
@@ -91,6 +91,7 @@ class App extends Component {
     let manufacturer = this.state.manufacturer;
     let processes = this.state.processes;
     let currentProcess = this.state.process;
+    let pos = this.state.pos
     return (
       <div>
         <Navbarz
@@ -98,7 +99,10 @@ class App extends Component {
           process={currentProcess}
         />
         {currentProcess ? (
-          <SubTable list={currentProcess} />
+          <SubTable
+            list={currentProcess}
+            pos={pos}
+          />
         ) : (
           <Manufacturers
             list={manList}

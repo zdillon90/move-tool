@@ -4,11 +4,14 @@ import SubTableBody from './SubTableBody';
 
 class SubTable extends Component {
   render() {
-    let list = this.props.list
+    let list = this.props.list;
+    let pos = this.props.pos;
     return (
       <div>
-        <SubHeader list={list} />
-        <SubTableBody sublist={list}/>
+        <SubTableBody
+          sublist={list}
+          pos={pos}
+          />
       </div>
     );
   }
