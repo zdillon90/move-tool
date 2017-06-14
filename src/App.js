@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Manufacturers from './components/Manufacturers'
 import Navbarz from './components/Navbarz'
-import SubTable from './components/SubTable'
+import SubTableBody from './components/SubTableBody'
 
 class App extends Component {
   constructor(props){
@@ -86,12 +86,29 @@ class App extends Component {
     this.setProcessName(target);
   }
 
+  // TODO Add in proper Loading screen
+  loadingPos() {
+    let currentProcess = this.state.process;
+    let pos = this.state.pos
+    if (pos) {
+      return(
+        <SubTableBody
+          list={currentProcess}
+          pos={pos}
+        />
+      );
+    } else {
+      return (
+        <h1>Loading...</h1>
+      );
+    }
+  }
+
   render() {
     let manList = this.state.allManufacturers;
     let manufacturer = this.state.manufacturer;
     let processes = this.state.processes;
     let currentProcess = this.state.process;
-    let pos = this.state.pos
     return (
       <div>
         <Navbarz
@@ -99,10 +116,7 @@ class App extends Component {
           process={currentProcess}
         />
         {currentProcess ? (
-          <SubTable
-            list={currentProcess}
-            pos={pos}
-          />
+          this.loadingPos()
         ) : (
           <Manufacturers
             list={manList}
