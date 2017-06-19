@@ -3,14 +3,10 @@ import {Board} from 'react-trello'
 
 class SubTableBody extends Component {
 
-  // TODO Add a letter at the end of a card key for each dupe
+  // ID's are not being set correctly
   makeCards(productionOrders) {
     let cards = [];
     let trayList = [];
-    let card = {}
-    let id = 'id';
-    let title = 'title';
-    let metadata = 'metadata';
     productionOrders.forEach(function(po) {
       let trayId = po.productionTrayId.toString();
       if (trayList.indexOf(trayId) === -1) {
@@ -18,19 +14,22 @@ class SubTableBody extends Component {
       }
     });
     trayList.forEach(function(tray) {
+      let card = {};
       let poListPerTray = [];
       card.id = tray;
-      card.metadata = poListPerTray;
-      cards.push(card)
       productionOrders.forEach(function(po) {
         if (po.productionTrayId.toString() === card.id) {
           poListPerTray.push(po);
-          card.title = po.productionTrayName;
+          if (po.productionTrayId === 0) {
+            card.title = "No_Tray_Name"
+          } else {
+            card.title = po.productionTrayName;
+          }
         }
       })
+      card.metadata = poListPerTray;
+      cards.push(card);
     });
-    console.log(cards);
-    console.log(trayList);
     return cards;
   }
 
@@ -56,7 +55,7 @@ class SubTableBody extends Component {
           lanePos.push(po);
         }
       });
-      let TrayCards = makeCards(lanePos);
+      let TrayCards = new makeCards(lanePos);
       lane[title] = columnName;
       lane[id] = columnId.toString();
       lane[cards] = TrayCards;
