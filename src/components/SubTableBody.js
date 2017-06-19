@@ -1,9 +1,12 @@
-import React, {Component} from 'react'
-import {Board} from 'react-trello'
+import React, {Component} from 'react';
+import {Board} from 'react-trello';
 
 class SubTableBody extends Component {
 
-  // ID's are not being set correctly
+  // TODO Add PO count to each card illistrating how much each card has out of
+  // the entire tray
+
+  // TODO Add a timmer for each card and how long it has been in that ststus
   makeCards(productionOrders) {
     let cards = [];
     let trayList = [];
@@ -62,15 +65,43 @@ class SubTableBody extends Component {
       colums.push(lane);
     });
     data[lanes] = colums;
-    console.log(data);
     return data;
   }
 
   render() {
     let processes = this.makeLanes();
+    const handleDragStart = (cardId, laneId) => {
+      console.log('drag started')
+      console.log(`cardId: ${cardId}`)
+      console.log(`laneId: ${laneId}`)
+    }
+
+    const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
+      console.log('drag ended')
+      console.log(`cardId: ${cardId}`)
+      console.log(`sourceLaneId: ${sourceLaneId}`)
+      console.log(`targetLaneId: ${targetLaneId}`)
+    }
+
+    const shouldReceiveNewData = (nextData) => {
+      console.log('data has changed')
+      console.log(nextData)
+    }
+    // TODO Create Modal with contained POs
+    const onCardClick = (cardId, metadata) => {
+      console.log(`Card with id:${cardId} clicked. Has metadata: ${metadata}`);
+    }
+
     return (
       <div>
-        <Board draggable data={processes}/>
+        <Board
+          data={processes}
+          draggable={true}
+          onDataChange={shouldReceiveNewData}
+          handleDragStart={handleDragStart}
+          handleDragEnd={handleDragEnd}
+          onCardClick={onCardClick}
+        />
       </div>
     );
   }

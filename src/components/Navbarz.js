@@ -9,6 +9,7 @@ import {
   NavLink
 } from 'reactstrap';
 
+// TODO Add a refreash button
 class Navbarz extends Component {
   constructor(props) {
     super(props);
