@@ -17,7 +17,6 @@ class ProcessDrop extends Component {
     }
   }
 
-  // TODO When process is selected, update state
   toggle() {
     this.setState({
       dropdownOpen: !this.state.dropdownOpen

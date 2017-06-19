@@ -2,19 +2,35 @@ import React, {Component} from 'react'
 import {Board} from 'react-trello'
 
 class SubTableBody extends Component {
-  // constructor(props) {
-  //   super(props);
-  //   this.makeCards = this.makeCards.bind(this);
-  // }
 
-  makeCards(productionOrders, column) {
+  // TODO Add a letter at the end of a card key for each dupe
+  makeCards(productionOrders) {
     let cards = [];
-    let id = 'productionTrayId';
-    let title = 'productionTrayName';
-    // productionOrders.forEach(function(po) {
-    //
-    // });
-
+    let trayList = [];
+    let card = {}
+    let id = 'id';
+    let title = 'title';
+    let metadata = 'metadata';
+    productionOrders.forEach(function(po) {
+      let trayId = po.productionTrayId.toString();
+      if (trayList.indexOf(trayId) === -1) {
+        trayList.push(trayId);
+      }
+    });
+    trayList.forEach(function(tray) {
+      let poListPerTray = [];
+      card.id = tray;
+      card.metadata = poListPerTray;
+      cards.push(card)
+      productionOrders.forEach(function(po) {
+        if (po.productionTrayId.toString() === card.id) {
+          poListPerTray.push(po);
+          card.title = po.productionTrayName;
+        }
+      })
+    });
+    console.log(cards);
+    console.log(trayList);
     return cards;
   }
 
@@ -26,33 +42,28 @@ class SubTableBody extends Component {
     let list = this.props.list;
     let subProcesses = list.processSteps;
     let pos = this.props.pos;
-    let poSubId = pos.subStatusId;
-    console.log(list);
-    console.log(subProcesses);
-    console.log(pos);
-    console.log(poSubId);
     subProcesses.forEach(function(column) {
       let lane = {};
+      let lanePos = [];
       let title = 'title';
       let id = 'id';
       let cards = 'cards';
       let columnName = column.name;
       let columnId = column.id;
-      // console.log(columnId);
-      // Make new list of pos for each subProcesse and then pass
-      // let poListPerSub = []
-      // pos.forEach(function(po) {
-      //   if (po.productionTrayId) {
-      //
-      //   }
-      // });
-      let TrayCards = makeCards(pos, columnId);
+      pos.forEach(function(po) {
+        let statusId = po.subStatusId;
+        if (statusId === columnId) {
+          lanePos.push(po);
+        }
+      });
+      let TrayCards = makeCards(lanePos);
       lane[title] = columnName;
       lane[id] = columnId.toString();
-      // lane[cards] = TrayCards;
+      lane[cards] = TrayCards;
       colums.push(lane);
     });
     data[lanes] = colums;
+    console.log(data);
     return data;
   }
 
