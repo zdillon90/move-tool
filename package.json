@@ -9,6 +9,7 @@
     "react-addons-transition-group": "^15.5.2",
     "react-bootstrap": "^0.31.0",
     "react-dom": "^15.5.4",
+    "react-refetch": "^1.0.0",
     "react-transition-group": "^1.1.3",
     "react-trello": "^1.17.0",
     "reactstrap": "^4.5.0"

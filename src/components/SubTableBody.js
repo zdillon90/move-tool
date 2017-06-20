@@ -1,7 +1,22 @@
 import React, {Component} from 'react';
 import {Board} from 'react-trello';
+import CardModal from './CardModal'
 
 class SubTableBody extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      modal: false,
+      metadata: {}
+    };
+    this.toggle = this.toggle.bind(this);
+  }
+
+  toggle() {
+    this.setState({
+      modal: !this.state.modal
+    });
+  }
 
   // TODO Add PO count to each card illistrating how much each card has out of
   // the entire tray
@@ -16,13 +31,14 @@ class SubTableBody extends Component {
         trayList.push(trayId);
       }
     });
+    // Try just having the metadata be the object
     trayList.forEach(function(tray) {
       let card = {};
-      let poListPerTray = [];
+      let poList = [];
       card.id = tray;
       productionOrders.forEach(function(po) {
         if (po.productionTrayId.toString() === card.id) {
-          poListPerTray.push(po);
+          poList.push(po.productionOrderName);
           if (po.productionTrayId === 0) {
             card.title = "No_Tray_Name"
           } else {
@@ -30,7 +46,7 @@ class SubTableBody extends Component {
           }
         }
       })
-      card.metadata = poListPerTray;
+      card.metadata = poList;
       cards.push(card);
     });
     return cards;
@@ -47,9 +63,6 @@ class SubTableBody extends Component {
     subProcesses.forEach(function(column) {
       let lane = {};
       let lanePos = [];
-      let title = 'title';
-      let id = 'id';
-      let cards = 'cards';
       let columnName = column.name;
       let columnId = column.id;
       pos.forEach(function(po) {
@@ -59,9 +72,9 @@ class SubTableBody extends Component {
         }
       });
       let TrayCards = new makeCards(lanePos);
-      lane[title] = columnName;
-      lane[id] = columnId.toString();
-      lane[cards] = TrayCards;
+      lane.title = columnName;
+      lane.id = columnId.toString();
+      lane.cards = TrayCards;
       colums.push(lane);
     });
     data[lanes] = colums;
@@ -89,7 +102,10 @@ class SubTableBody extends Component {
     }
     // TODO Create Modal with contained POs
     const onCardClick = (cardId, metadata) => {
-      console.log(`Card with id:${cardId} clicked. Has metadata: ${metadata}`);
+      this.toggle();
+      this.setState({
+        metadata: metadata
+      });
     }
 
     return (
@@ -101,6 +117,11 @@ class SubTableBody extends Component {
           handleDragStart={handleDragStart}
           handleDragEnd={handleDragEnd}
           onCardClick={onCardClick}
+        />
+        <CardModal
+          isOpen={this.state.modal}
+          toggle={this.toggle}
+          metadata={this.state.metadata}
         />
       </div>
     );
