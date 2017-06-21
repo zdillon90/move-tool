@@ -1,13 +1,24 @@
-import React, {Component} from 'react';
-import {Board} from 'react-trello';
+import React, { Component } from 'react';
+import { Board } from 'react-trello';
+// import { connect, PromiseState } from 'react-refetch'
 import CardModal from './CardModal'
+
+// TODO Add PO count to each card illistrating how much each card has out of
+// the entire tray
+
+// TODO Add a timmer for each card and how long it has been in that ststus
+
+// TODO Add a tag for each tray size
 
 class SubTableBody extends Component {
   constructor(props) {
     super(props);
     this.state = {
       modal: false,
-      metadata: {}
+      metadata: {},
+      cardId: "",
+      sourceLaneId: "",
+      targetLaneId: ""
     };
     this.toggle = this.toggle.bind(this);
   }
@@ -18,10 +29,6 @@ class SubTableBody extends Component {
     });
   }
 
-  // TODO Add PO count to each card illistrating how much each card has out of
-  // the entire tray
-
-  // TODO Add a timmer for each card and how long it has been in that ststus
   makeCards(productionOrders) {
     let cards = [];
     let trayList = [];
@@ -81,8 +88,29 @@ class SubTableBody extends Component {
     return data;
   }
 
+  formatPoPatch() {
+    let totalPoList = this.props.pos;
+    let sourceLane = this.state.sourceLaneId;
+    let card = this.state.cardId;
+    let targetLane = this.state.targetLaneId;
+    let poPatchList = [];
+    totalPoList.forEach(function(po) {
+      let poSubStatusId = po.subStatusId.toString();
+      let poProductionTrayId = po.productionTrayId.toString();
+      if (poSubStatusId === sourceLane && poProductionTrayId === card) {
+        console.log(po.productionOrderName);
+        let patchPo = {};
+        patchPo.productionOrderId = po.productionOrderId;
+        patchPo.productionProcessStep = targetLane;
+        poPatchList.push(patchPo);
+      }
+    })
+    return poPatchList;
+  }
+
   render() {
     let processes = this.makeLanes();
+
     const handleDragStart = (cardId, laneId) => {
       console.log('drag started')
       console.log(`cardId: ${cardId}`)
@@ -94,13 +122,20 @@ class SubTableBody extends Component {
       console.log(`cardId: ${cardId}`)
       console.log(`sourceLaneId: ${sourceLaneId}`)
       console.log(`targetLaneId: ${targetLaneId}`)
+      this.setState({
+        cardId: cardId,
+        sourceLaneId: sourceLaneId,
+        targetLaneId: targetLaneId
+      })
+      let formatPoPatch = this.formatPoPatch();
+      console.log(formatPoPatch);
     }
 
     const shouldReceiveNewData = (nextData) => {
       console.log('data has changed')
       console.log(nextData)
     }
-    // TODO Create Modal with contained POs
+
     const onCardClick = (cardId, metadata) => {
       this.toggle();
       this.setState({
@@ -129,3 +164,14 @@ class SubTableBody extends Component {
 }
 
 export default SubTableBody;
+// export default connect(props => {
+//   return {
+//     updateStatus: status => ({
+//       updateStatusResponse: {
+//         url: `https://api.shapeways.com/production_orders/v1`,
+//         method: 'PATCH',
+//         body: status
+//       }
+//     })
+//   }
+// })(SubTableBody);
