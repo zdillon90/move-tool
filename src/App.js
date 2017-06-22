@@ -86,6 +86,17 @@ class App extends Component {
     this.setProcessName(target);
   }
 
+  patchPos(poPatchList) {
+    fetch('/update_production_orders', {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(poPatchList)
+    })
+  }
+
   // TODO Add in proper Loading screen
   loadingPos() {
     let currentProcess = this.state.process;
@@ -95,6 +106,7 @@ class App extends Component {
         <SubTableBody
           list={currentProcess}
           pos={pos}
+          patchPos={this.patchPos}
         />
       );
     } else {

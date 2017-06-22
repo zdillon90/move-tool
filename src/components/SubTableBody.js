@@ -18,7 +18,8 @@ class SubTableBody extends Component {
       metadata: {},
       cardId: "",
       sourceLaneId: "",
-      targetLaneId: ""
+      targetLaneId: "",
+      formatedPoPatchList: []
     };
     this.toggle = this.toggle.bind(this);
   }
@@ -98,7 +99,6 @@ class SubTableBody extends Component {
       let poSubStatusId = po.subStatusId.toString();
       let poProductionTrayId = po.productionTrayId.toString();
       if (poSubStatusId === sourceLane && poProductionTrayId === card) {
-        console.log(po.productionOrderName);
         let patchPo = {};
         patchPo.productionOrderId = po.productionOrderId;
         patchPo.productionProcessStep = targetLane;
@@ -127,8 +127,14 @@ class SubTableBody extends Component {
         sourceLaneId: sourceLaneId,
         targetLaneId: targetLaneId
       })
-      let formatPoPatch = this.formatPoPatch();
-      console.log(formatPoPatch);
+      let source = this.state.sourceLaneId;
+      let target = this.state.targetLaneId;
+      if (source !== target) {
+        let formatPoPatch = this.formatPoPatch();
+        this.setState({ formatedPoPatchList: formatPoPatch});
+        console.log(formatPoPatch);
+        this.props.patchPos(formatPoPatch);
+      }
     }
 
     const shouldReceiveNewData = (nextData) => {
@@ -165,12 +171,13 @@ class SubTableBody extends Component {
 
 export default SubTableBody;
 // export default connect(props => {
+//   let patchList = this.props.formatedPoPatchList
 //   return {
 //     updateStatus: status => ({
 //       updateStatusResponse: {
-//         url: `https://api.shapeways.com/production_orders/v1`,
-//         method: 'PATCH',
-//         body: status
+//         url: `foo`,
+//         method: 'POST',
+//         body: patchList
 //       }
 //     })
 //   }

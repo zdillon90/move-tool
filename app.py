@@ -177,15 +177,18 @@ def production_orders(manufacturer_id, sub_status_list):
     return json_response
 
 
-@app.route('/update_production_orders')
+@app.route('/update_production_orders', methods=['PATCH'])
 def patch_orders():
     upo_url = "https://api.shapeways.com/production_orders/v1"
+    content = request.get_json()
+    json_content = json.dumps(content)
+    print str(content)
     data = read_data()
     if 'error' in data:
         redirect(url_for('inshape_connect'))
     else:
         access_token = data['access_token']
         headers = {'Authorization': "bearer " + access_token}
-        response = requests.patch(upo_url, headers=headers, json=po_list)
+        response = requests.patch(upo_url, headers=headers, data=json_content)
         json_data = json.loads(response.text)
         return jsonify(json_data)
