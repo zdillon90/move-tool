@@ -12,13 +12,15 @@ class App extends Component {
     this.fetchProductionOrders = this.fetchProductionOrders.bind(this);
     this.defaultCheck = this.defaultCheck.bind(this);
     this.setProcessName = this.setProcessName.bind(this);
+    this.patchPos = this.patchPos.bind(this);
     this.state = {
       allManufacturers: [],
       manufacturer: '',
       manufacturerId: null,
       processes: [],
       process: null,
-      pos: null
+      pos: null,
+      patchResult: ""
     };
   }
 
@@ -95,15 +97,20 @@ class App extends Component {
       },
       body: JSON.stringify(poPatchList)
     })
+    .then ( responce => responce.json() )
+    .then( ({result: patchResult}) =>
+      this.setState({patchResult}, this.defaultCheck));
   }
 
   // TODO Add in proper Loading screen
   loadingPos() {
     let currentProcess = this.state.process;
     let pos = this.state.pos
+    let result = this.state.patchResult
     if (pos) {
       return(
         <SubTableBody
+          result={result}
           list={currentProcess}
           pos={pos}
           patchPos={this.patchPos}

@@ -10,9 +10,7 @@ import CardModal from './CardModal'
 
 // TODO Add a tag for each tray size
 
-// TODO Refresh the data after each move
-
-// Add in an alert when the move was made
+// TODO Add in an alert when the move was made
 
 class SubTableBody extends Component {
   constructor(props) {
@@ -175,14 +173,13 @@ class SubTableBody extends Component {
 
 export default SubTableBody;
 // export default connect(props => {
-//   let patchList = this.props.formatedPoPatchList
+//   let list = this.props.list;
+//   let manufacturer = this.props.man
+//   let subProcesses = list.processSteps;
 //   return {
-//     updateStatus: status => ({
-//       updateStatusResponse: {
-//         url: `foo`,
-//         method: 'POST',
-//         body: patchList
-//       }
-//     })
+//     poFetch: {
+//       url: `/production_orders/manufacturer=${manufacturer}/sub_statuses=${subProcesses}`,
+//       refreshInterval: 60000
+//     },
 //   }
 // })(SubTableBody);
