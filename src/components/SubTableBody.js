@@ -101,7 +101,7 @@ class SubTableBody extends Component {
       if (poSubStatusId === sourceLane && poProductionTrayId === card) {
         let patchPo = {};
         patchPo.productionOrderId = po.productionOrderId;
-        patchPo.productionProcessStep = targetLane;
+        patchPo.productionProcessStepId = targetLane;
         poPatchList.push(patchPo);
       }
     })

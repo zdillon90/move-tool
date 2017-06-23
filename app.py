@@ -182,7 +182,6 @@ def patch_orders():
     upo_url = "https://api.shapeways.com/production_orders/v1"
     content = request.get_json()
     json_content = json.dumps(content)
-    print str(content)
     data = read_data()
     if 'error' in data:
         redirect(url_for('inshape_connect'))
