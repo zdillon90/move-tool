@@ -4,8 +4,16 @@ import requests.auth
 from flask import Flask, url_for, render_template, abort, request, redirect, jsonify
 from flask_cors import CORS
 from secret import client_s
+import logging
+from logging.handlers import RotatingFileHandler
+
 app = Flask(__name__, template_folder="./public", static_folder="./src")
 CORS(app)
+
+
+handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)
+handler.setLevel(logging.INFO)
+app.logger.addHandler(handler)
 
 CLIENT_ID = "QlVnptrGQ1egA1SeKkq7x2P9T6L44jRUKusVBVldR6py6jNvjj"
 REDIRECT_URI = "http://localhost:5000/inshape_callback"
@@ -128,28 +136,58 @@ def refresh():
         json.dump(data_json, outfile)
 
 
-@app.route('/manufacturers', methods=['POST', 'GET'])
-def get_manufacturers():
+def json_reply(url):
     data = read_data()
     if 'error' in data:
         redirect(url_for('inshape_connect'))
     else:
         access_token = data['access_token']
-        headers = {"Authorization": "bearer " + access_token}
-        response = requests.get("https://api.shapeways.com/manufacturers/v1", headers=headers)
-        manufacturers_json = json.loads(response.text)
-        return jsonify(manufacturers_json)
+        headers = {'Authorization': "bearer " + access_token}
+        response = requests.get(url, headers=headers)
+        json_data = json.loads(response.text)
+        return jsonify(json_data)
+
+
+@app.route('/manufacturers', methods=['POST', 'GET'])
+def get_manufacturers():
+    mans_url = "https://api.shapeways.com/manufacturers/v1"
+    json_response = json_reply(mans_url)
+    return json_response
 
 
 @app.route('/manufacturer/<int:manufacturer_id>')
 def sub_status(manufacturer_id):
+    man_url = "https://api.shapeways.com/manufacturers/{m}/v1".format(m=manufacturer_id)
+    json_response = json_reply(man_url)
+    return json_response
+
+
+@app.route('/production_trays/<int:manufacturer_id>')
+def production_trays(manufacturer_id):
+    pro_trays_url = "https://api.shapeways.com/production_trays/v1?manufacturer=13".format(m=manufacturer_id)
+    json_response = json_reply(pro_trays_url)
+    return json_response
+
+
+@app.route('/production_orders/manufacturer=<int:manufacturer_id>/sub_statuses=<sub_status_list>')
+def production_orders(manufacturer_id, sub_status_list):
+    po_url = "https://api.shapeways.com/production_orders/v1?manufacturer=" + str(
+        manufacturer_id) + "&subStatus=" + str(sub_status_list)
+    json_response = json_reply(po_url)
+    return json_response
+
+
+@app.route('/update_production_orders', methods=['PATCH'])
+def patch_orders():
+    upo_url = "https://api.shapeways.com/production_orders/v1"
+    content = request.get_json()
+    json_content = json.dumps(content)
     data = read_data()
     if 'error' in data:
         redirect(url_for('inshape_connect'))
     else:
         access_token = data['access_token']
-        headers = {"Authorization": "bearer " + access_token}
-        manufacturer = "https://api.shapeways.com/manufacturers/{m}/v1".format(m=manufacturer_id)
-        response = requests.get(manufacturer, headers=headers)
-        statuses = json.loads(response.text)
-        return jsonify(statuses)
+        headers = {'Authorization': "bearer " + access_token}
+        response = requests.patch(upo_url, headers=headers, data=json_content)
+        json_data = json.loads(response.text)
+        return jsonify(json_data)
