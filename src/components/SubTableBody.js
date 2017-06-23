@@ -10,6 +10,10 @@ import CardModal from './CardModal'
 
 // TODO Add a tag for each tray size
 
+// TODO Refresh the data after each move
+
+// Add in an alert when the move was made
+
 class SubTableBody extends Component {
   constructor(props) {
     super(props);
