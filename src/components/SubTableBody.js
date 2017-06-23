@@ -6,8 +6,6 @@ import CardModal from './CardModal'
 // TODO Add PO count to each card illistrating how much each card has out of
 // the entire tray
 
-// TODO Add a timmer for each card and how long it has been in that ststus
-
 // TODO Add a tag for each tray size
 
 // TODO Add in an alert when the move was made
@@ -30,6 +28,10 @@ class SubTableBody extends Component {
     this.setState({
       modal: !this.state.modal
     });
+  }
+
+  poNumberPerTray (productionOrders) {
+    
   }
 
   makeCards(productionOrders) {
