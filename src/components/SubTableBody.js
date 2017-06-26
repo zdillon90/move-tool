@@ -31,7 +31,7 @@ class SubTableBody extends Component {
   }
 
   poNumberPerTray (productionOrders) {
-    
+
   }
 
   makeCards(productionOrders) {
@@ -116,16 +116,16 @@ class SubTableBody extends Component {
     let processes = this.makeLanes();
 
     const handleDragStart = (cardId, laneId) => {
-      console.log('drag started')
-      console.log(`cardId: ${cardId}`)
-      console.log(`laneId: ${laneId}`)
+      // console.log('drag started')
+      // console.log(`cardId: ${cardId}`)
+      // console.log(`laneId: ${laneId}`)
     }
 
     const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
-      console.log('drag ended')
-      console.log(`cardId: ${cardId}`)
-      console.log(`sourceLaneId: ${sourceLaneId}`)
-      console.log(`targetLaneId: ${targetLaneId}`)
+      // console.log('drag ended')
+      // console.log(`cardId: ${cardId}`)
+      // console.log(`sourceLaneId: ${sourceLaneId}`)
+      // console.log(`targetLaneId: ${targetLaneId}`)
       this.setState({
         cardId: cardId,
         sourceLaneId: sourceLaneId,
@@ -136,14 +136,14 @@ class SubTableBody extends Component {
       if (source !== target) {
         let formatPoPatch = this.formatPoPatch();
         this.setState({ formatedPoPatchList: formatPoPatch});
-        console.log(formatPoPatch);
+        // console.log(formatPoPatch);
         this.props.patchPos(formatPoPatch);
       }
     }
 
     const shouldReceiveNewData = (nextData) => {
-      console.log('data has changed')
-      console.log(nextData)
+      // console.log('data has changed')
+      // console.log(nextData)
     }
 
     const onCardClick = (cardId, metadata) => {

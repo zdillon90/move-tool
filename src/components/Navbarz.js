@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import MoveAlert from './MoveAlert';
 import {
   Collapse,
   Navbar,
@@ -29,6 +30,7 @@ class Navbarz extends Component {
   render() {
     let manufacturer = this.props.manufacturer;
     let process = this.props.process;
+    let result = this.props.result;
     return (
       <div>
         <Navbar color="inverse" inverse toggleable>
@@ -54,6 +56,7 @@ class Navbarz extends Component {
             </Nav>
           </Collapse>
         </Navbar>
+        <MoveAlert result={result} />
       </div>
     );
   }

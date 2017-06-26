@@ -1,27 +1,27 @@
-import React from 'react';
-import { Alert } from 'reactstrap';
+import React, { Component } from 'react';
+import { Progress } from 'reactstrap';
 
-class MoveAlert extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      visible: false
-    };
-    this.onDismiss = this.onDismiss.bind(this);
-  }
-
-  onDismiss() {
-    this.setState({ visible: false });
+class MoveAlert extends Component {
+  handleFeedback() {
+    let result = this.props.result;
+    console.log(result);
+    if (result === "success") {
+      return(
+        <div>
+          <Progress color="success" value="100">Move Successful! You're Awesome!</Progress>
+        </div>
+      )
+    } else {
+      return(
+        <div />
+      )
+    }
   }
 
   render() {
     return (
-      <Alert color="info" isOpen={this.state.visible} toggle={this.onDismiss}>
-        I am an alert and I can be dismissed!
-      </Alert>
+      this.handleFeedback()
     );
   }
 }
-
 export default MoveAlert;

@@ -20,7 +20,7 @@ class App extends Component {
       processes: [],
       process: null,
       pos: null,
-      patchResult: ""
+      patchResult: ''
     };
   }
 
@@ -105,12 +105,10 @@ class App extends Component {
   // TODO Add in proper Loading screen
   loadingPos() {
     let currentProcess = this.state.process;
-    let pos = this.state.pos
-    let result = this.state.patchResult
+    let pos = this.state.pos;
     if (pos) {
       return(
         <SubTableBody
-          result={result}
           list={currentProcess}
           pos={pos}
           patchPos={this.patchPos}
@@ -128,11 +126,13 @@ class App extends Component {
     let manufacturer = this.state.manufacturer;
     let processes = this.state.processes;
     let currentProcess = this.state.process;
+    let result = this.state.patchResult;
     return (
       <div>
         <Navbarz
           manufacturer={manufacturer}
           process={currentProcess}
+          result={result}
         />
         {currentProcess ? (
           this.loadingPos()
