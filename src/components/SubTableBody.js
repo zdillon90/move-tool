@@ -8,8 +8,6 @@ import CardModal from './CardModal'
 
 // TODO Add a tag for each tray size
 
-// TODO Add in an alert when the move was made
-
 class SubTableBody extends Component {
   constructor(props) {
     super(props);
@@ -19,7 +17,8 @@ class SubTableBody extends Component {
       cardId: "",
       sourceLaneId: "",
       targetLaneId: "",
-      formatedPoPatchList: []
+      formatedPoPatchList: [],
+      trayTotals: null
     };
     this.toggle = this.toggle.bind(this);
   }
@@ -30,8 +29,30 @@ class SubTableBody extends Component {
     });
   }
 
-  poNumberPerTray (productionOrders) {
-
+  totalPoCountPerTray(productionOrders) {
+    let totalTrayListIds = [];
+    let totalTrayList = [];
+    let poCount = 0;
+    productionOrders.forEach(function(po) {
+      let trayId = po.productionTrayId.toString();
+      if (totalTrayListIds.indexOf(trayId) === -1) {
+        totalTrayListIds.push(trayId)
+      }
+    })
+    totalTrayListIds.forEach(function(tray) {
+      let trayObject = {};
+      poCount = 0;
+      trayObject.trayNumber = tray;
+      productionOrders.forEach(function(po) {
+        let trayId = po.productionTrayId.toString()
+        if (trayId === tray) {
+          poCount++;
+        }
+      })
+      trayObject.poCount = poCount;
+      totalTrayList.push(trayObject);
+    })
+    return totalTrayList;
   }
 
   makeCards(productionOrders) {
@@ -43,7 +64,6 @@ class SubTableBody extends Component {
         trayList.push(trayId);
       }
     });
-    // Try just having the metadata be the object
     trayList.forEach(function(tray) {
       let card = {};
       let poList = [];
@@ -72,6 +92,9 @@ class SubTableBody extends Component {
     let list = this.props.list;
     let subProcesses = list.processSteps;
     let pos = this.props.pos;
+    let totals = this.totalPoCountPerTray(pos)
+    // this.setState({trayTotals: totals})
+    console.log(totals);
     subProcesses.forEach(function(column) {
       let lane = {};
       let lanePos = [];
@@ -174,14 +197,3 @@ class SubTableBody extends Component {
 }
 
 export default SubTableBody;
-// export default connect(props => {
-//   let list = this.props.list;
-//   let manufacturer = this.props.man
-//   let subProcesses = list.processSteps;
-//   return {
-//     poFetch: {
-//       url: `/production_orders/manufacturer=${manufacturer}/sub_statuses=${subProcesses}`,
-//       refreshInterval: 60000
-//     },
-//   }
-// })(SubTableBody);
