@@ -98,8 +98,23 @@ class App extends Component {
       body: JSON.stringify(poPatchList)
     })
     .then ( responce => responce.json() )
-    .then( ({result: patchResult}) =>
-      this.setState({patchResult}, this.defaultCheck));
+    .then(function(jsonResponse) {
+      this.setState({patchResult: jsonResponse.result}, this.defaultCheck);
+
+      // If we have an error to display, reset after 3 seconds
+      if (jsonResponse.result !== "") {
+        this.setStateWithTimeout('patchResult', '', 3000);
+      }
+    }.bind(this))
+
+  }
+
+  setStateWithTimeout(key, value, time) {
+    return setTimeout(function() {
+        var newState = {};
+        newState[key] = value;
+        this.setState(newState);
+    }.bind(this), time);
   }
 
   // TODO Add in proper Loading screen

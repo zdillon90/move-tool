@@ -56,7 +56,7 @@ class Navbarz extends Component {
             </Nav>
           </Collapse>
         </Navbar>
-        <MoveAlert result={result} secondsRemaining="10" />
+        <MoveAlert result={result} />
       </div>
     );
   }

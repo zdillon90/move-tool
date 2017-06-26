@@ -2,19 +2,20 @@ import React, { Component } from 'react';
 import { Progress } from 'reactstrap';
 
 class MoveAlert extends Component {
-  timer() {
-    let counter = 0;
-    let i = setInterval(function(){
-        counter++;
-        if(counter === 10) {
-            clearInterval(i);
-        }
-    }, 200);
-  }
+  // timer() {
+  //   let counter = 0;
+  //   let i = setInterval(function(){
+  //
+  //     counter++;
+  //     if(counter === 10) {
+  //       clearInterval(i);
+  //     }
+  //   }, 200);
+  // }
 
   handleFeedback() {
     let result = this.props.result;
-    let timeOutput = this.timer()
+    // let timeOutput = this.timer()
     if (result === "success") {
       return(
         <div>
