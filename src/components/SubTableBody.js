@@ -3,11 +3,6 @@ import { Board } from 'react-trello';
 // import { connect, PromiseState } from 'react-refetch'
 import CardModal from './CardModal'
 
-// TODO Add PO count to each card illistrating how much each card has out of
-// the entire tray
-
-// TODO Add a tag for each tray size
-
 class SubTableBody extends Component {
   constructor(props) {
     super(props);
@@ -66,6 +61,8 @@ class SubTableBody extends Component {
     trayList.forEach(function(tray) {
       let card = {};
       let poList = [];
+      let trayTags = [];
+      let tag = {};
       card.id = tray;
       let trayPosInLane = 0;
       productionOrders.forEach(function(po) {
@@ -79,9 +76,27 @@ class SubTableBody extends Component {
           }
         }
       })
+      // Creation of tags for tray size
+      if (~card.title.indexOf('P1')) {
+        tag.title = "P1"
+        tag.bgcolor = '#76448A'
+      } else if (~card.title.indexOf('P3')) {
+        tag.title = "P3"
+        tag.bgcolor = '#239B56'
+      } else if (~card.title.indexOf('P7')) {
+        tag.title = "P7"
+        tag.bgcolor = '#E67E22'
+      } else if (~card.title.indexOf('RUSH') || ~card.title.indexOf('Rush')){
+        tag.title = "RUSH"
+        tag.bgcolor = '#C70039'
+      } else {
+        console.log("No Tray Size Found");
+      }
+      trayTags.push(tag);
+      card.tags = trayTags
       trayTotals.forEach(function(trayTotal) {
         if (trayTotal.trayNumber === card.id) {
-          card.label = (trayPosInLane + "/" + trayTotal.poCount).toString()
+          card.description = (trayPosInLane + "/" + trayTotal.poCount + " POs").toString()
         }
       });
       card.metadata = poList;
@@ -98,7 +113,6 @@ class SubTableBody extends Component {
     let subProcesses = list.processSteps;
     let pos = this.props.pos;
     let totals = this.totalPoCountPerTray(pos)
-    console.log(totals);
     subProcesses.forEach(function(column) {
       let lane = {};
       let lanePos = [];
