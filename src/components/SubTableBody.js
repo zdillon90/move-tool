@@ -17,9 +17,8 @@ class SubTableBody extends Component {
       cardId: "",
       sourceLaneId: "",
       targetLaneId: "",
-      formatedPoPatchList: [],
-      trayTotals: null
-    };
+      formatedPoPatchList: []
+      };
     this.toggle = this.toggle.bind(this);
   }
 
@@ -55,7 +54,7 @@ class SubTableBody extends Component {
     return totalTrayList;
   }
 
-  makeCards(productionOrders) {
+  makeCards(productionOrders, trayTotals) {
     let cards = [];
     let trayList = [];
     productionOrders.forEach(function(po) {
@@ -68,9 +67,11 @@ class SubTableBody extends Component {
       let card = {};
       let poList = [];
       card.id = tray;
+      let trayPosInLane = 0;
       productionOrders.forEach(function(po) {
         if (po.productionTrayId.toString() === card.id) {
           poList.push(po.productionOrderName);
+          trayPosInLane++;
           if (po.productionTrayId === 0) {
             card.title = "No_Tray_Name"
           } else {
@@ -78,6 +79,11 @@ class SubTableBody extends Component {
           }
         }
       })
+      trayTotals.forEach(function(trayTotal) {
+        if (trayTotal.trayNumber === card.id) {
+          card.label = (trayPosInLane + "/" + trayTotal.poCount).toString()
+        }
+      });
       card.metadata = poList;
       cards.push(card);
     });
@@ -87,13 +93,11 @@ class SubTableBody extends Component {
   makeLanes() {
     let makeCards = this.makeCards;
     let data = {};
-    let lanes = 'lanes';
     let colums = [];
     let list = this.props.list;
     let subProcesses = list.processSteps;
     let pos = this.props.pos;
     let totals = this.totalPoCountPerTray(pos)
-    // this.setState({trayTotals: totals})
     console.log(totals);
     subProcesses.forEach(function(column) {
       let lane = {};
@@ -106,13 +110,13 @@ class SubTableBody extends Component {
           lanePos.push(po);
         }
       });
-      let TrayCards = new makeCards(lanePos);
+      let TrayCards = new makeCards(lanePos, totals);
       lane.title = columnName;
       lane.id = columnId.toString();
       lane.cards = TrayCards;
       colums.push(lane);
     });
-    data[lanes] = colums;
+    data.lanes = colums;
     return data;
   }
 
