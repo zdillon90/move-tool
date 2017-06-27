@@ -77,15 +77,21 @@ class SubTableBody extends Component {
         }
       })
       // Creation of tags for tray size
-      if (~card.title.indexOf('P1')) {
-        tag.title = "P1"
-        tag.bgcolor = '#76448A'
-      } else if (~card.title.indexOf('P3')) {
-        tag.title = "P3"
-        tag.bgcolor = '#239B56'
-      } else if (~card.title.indexOf('P7')) {
-        tag.title = "P7"
-        tag.bgcolor = '#E67E22'
+      if (~card.title.indexOf('P1') ||
+        ~card.title.indexOf('s') ||
+        ~card.title.indexOf('S')) {
+          tag.title = "P1 - Small"
+          tag.bgcolor = '#76448A'
+      } else if (~card.title.indexOf('P3') ||
+        ~card.title.indexOf('m') ||
+        ~card.title.indexOf('M')) {
+          tag.title = "P3 - Medium"
+          tag.bgcolor = '#239B56'
+      } else if (~card.title.indexOf('P7') ||
+        ~card.title.indexOf('l') ||
+        ~card.title.indexOf('L')) {
+          tag.title = "P7 - Large"
+          tag.bgcolor = '#E67E22'
       } else if (~card.title.indexOf('RUSH') || ~card.title.indexOf('Rush')){
         tag.title = "RUSH"
         tag.bgcolor = '#C70039'
