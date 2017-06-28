@@ -1,7 +1,8 @@
 import requests
 import json
 import requests.auth
-from flask import Flask, url_for, render_template, abort, request, redirect, jsonify
+from flask import Flask, url_for, render_template, abort, request, redirect, \
+ jsonify, make_response
 from flask_cors import CORS
 from secret import client_s
 import logging
@@ -23,8 +24,9 @@ CLIENT_SECRET = client_s
 
 
 def read_data():
-    with open('data.json') as data_file:
-        data = json.load(data_file)
+    # with open('data.json') as data_file:
+    #     data = json.load(data_file)
+    data = request.cookies.get('access_token')
     return data
 
 
@@ -38,7 +40,7 @@ def welcome():
         refresh()
         return redirect(url_for('home'))
     else:
-        return redirect(url_for('inshape_connect'))
+        return redirect(url_for('make_authorization_url'))
 
 
 @app.route('/home')
@@ -51,24 +53,24 @@ def test_access():
     with open('data.json') as data_file:
         data = json.load(data_file)
     if 'access' not in data:
-        redirect(url_for('inshape_connect'))
+        redirect(url_for('make_authorization_url'))
     else:
         access = data['access_token']
         headers = {"Authorization": "bearer " + access}
         response = requests.get(
             "https://api.shapeways.com/materials/v1", headers=headers)
         if str(response) == "<Response [401]>":
-            redirect(url_for('inshape_connect'))
+            redirect(url_for('make_authorization_url'))
         else:
             response_json = json.loads(response.text)
             result = response_json['result']
             return result
 
 
-@app.route('/inshape')
-def inshape_connect():
-    text = '<a href="%s">Authorize!</a>'
-    return text % make_authorization_url()
+# @app.route('/inshape')
+# def inshape_connect():
+#     text = '<a href="%s">Authorize!</a>'
+#     return text % make_authorization_url()
 
 
 @app.route('/authorize')
@@ -85,7 +87,7 @@ def make_authorization_url():
     import urllib
     url = "http://api.shapeways.com/oauth2/authorize?" + \
         urllib.urlencode(params)
-    return url
+    return redirect(url)
 
 
 def save_created_state(state):
@@ -106,9 +108,12 @@ def inshape_callback():
         abort(403)
     code = request.args.get('code')
     access_token = get_token(code)
-    with open('data.json', 'w') as outfile:
-        json.dump(access_token, outfile)
-    return redirect(url_for('home'))
+    print access_token.access_token
+    # with open('data.json', 'w') as outfile:
+    #     json.dump(access_token, outfile)
+    resp = make_response(redirect("http://localhost:3000"))
+    resp.set_cookie("access_token", access_token)
+    return resp
 
 
 def get_token(code):
@@ -144,7 +149,7 @@ def refresh():
 def json_reply(url):
     data = read_data()
     if 'error' in data:
-        redirect(url_for('inshape_connect'))
+        redirect(url_for('make_authorization_url'))
     else:
         access_token = data['access_token']
         headers = {'Authorization': "bearer " + access_token}
@@ -191,7 +196,7 @@ def patch_orders():
     json_content = json.dumps(content)
     data = read_data()
     if 'error' in data:
-        redirect(url_for('inshape_connect'))
+        redirect(url_for('make_authorization_url'))
     else:
         access_token = data['access_token']
         headers = {'Authorization': "bearer " + access_token}

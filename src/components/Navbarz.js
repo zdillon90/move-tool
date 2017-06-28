@@ -24,9 +24,6 @@ class Navbarz extends Component {
       isOpen: !this.state.isOpen
     });
   }
-  handleCLick() {
-    window.location.assign();
-  }
   render() {
     let manufacturer = this.props.manufacturer;
     let process = this.props.process;
@@ -39,7 +36,7 @@ class Navbarz extends Component {
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink onClick={this.handleCLick}>Authorize</NavLink>
+                <NavLink href="http://localhost:5000/authorize">Authorize</NavLink>
               </NavItem>
               <NavItem>
                 <NavLink href="https://inshape.shapeways.com">Inshape</NavLink>
