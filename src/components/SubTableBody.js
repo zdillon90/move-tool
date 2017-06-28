@@ -100,7 +100,7 @@ class SubTableBody extends Component {
       card.tags = trayTags
       trayTotals.forEach(function(trayTotal) {
         if (trayTotal.trayNumber === card.id) {
-          card.description = (trayPosInLane + "/" + trayTotal.poCount + " POs").toString()
+          card.description = (trayPosInLane + "/" + trayTotal.poCount + " PO(s)").toString()
         }
       });
       card.metadata = poList;

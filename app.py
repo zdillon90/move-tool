@@ -7,6 +7,8 @@ from secret import client_s
 import logging
 from logging.handlers import RotatingFileHandler
 
+# FIXME Fix OAuth Loop structure
+
 app = Flask(__name__, template_folder="./public", static_folder="./src")
 CORS(app)
 
@@ -53,7 +55,8 @@ def test_access():
     else:
         access = data['access_token']
         headers = {"Authorization": "bearer " + access}
-        response = requests.get("https://api.shapeways.com/materials/v1", headers=headers)
+        response = requests.get(
+            "https://api.shapeways.com/materials/v1", headers=headers)
         if str(response) == "<Response [401]>":
             redirect(url_for('inshape_connect'))
         else:
@@ -68,6 +71,7 @@ def inshape_connect():
     return text % make_authorization_url()
 
 
+@app.route('/authorize')
 def make_authorization_url():
     from uuid import uuid4
     state = str(uuid4())
@@ -79,7 +83,8 @@ def make_authorization_url():
               "duration": "temporary",
               "scope": "identity"}
     import urllib
-    url = "http://api.shapeways.com/oauth2/authorize?" + urllib.urlencode(params)
+    url = "http://api.shapeways.com/oauth2/authorize?" + \
+        urllib.urlencode(params)
     return url
 
 
@@ -157,14 +162,16 @@ def get_manufacturers():
 
 @app.route('/manufacturer/<int:manufacturer_id>')
 def sub_status(manufacturer_id):
-    man_url = "https://api.shapeways.com/manufacturers/{m}/v1".format(m=manufacturer_id)
+    man_url = "https://api.shapeways.com/manufacturers/{m}/v1".format(
+        m=manufacturer_id)
     json_response = json_reply(man_url)
     return json_response
 
 
 @app.route('/production_trays/<int:manufacturer_id>')
 def production_trays(manufacturer_id):
-    pro_trays_url = "https://api.shapeways.com/production_trays/v1?manufacturer=13".format(m=manufacturer_id)
+    pro_trays_url = "https://api.shapeways.com/production_trays/v1?manufacturer=13".format(
+        m=manufacturer_id)
     json_response = json_reply(pro_trays_url)
     return json_response
 
