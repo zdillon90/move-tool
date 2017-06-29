@@ -26,7 +26,7 @@ class App extends Component {
 
   componentDidMount() {
     fetch('/manufacturers')
-      .then( responce => responce.json() )
+      .then( response => response.json() )
       .then( ({manufacturers: allManufacturers}) => this.setState({allManufacturers}));
   }
 
@@ -34,7 +34,7 @@ class App extends Component {
     let id = this.state.manufacturerId;
     const manufacturerUrl  = '/manufacturer/' + id;
     fetch(manufacturerUrl)
-      .then( responce => responce.json() )
+      .then( response => response.json() )
       .then( ({productionProcesses: processes}) =>
         this.setState({processes}, this.defaultCheck));
   }
@@ -70,7 +70,7 @@ class App extends Component {
     let IdsString = subStatusIds.toString();
     const poURL = '/production_orders/manufacturer=' + id + '/sub_statuses=' + IdsString;
     fetch(poURL)
-      .then ( responce => responce.json() )
+      .then ( response => response.json() )
       .then ( ({productionOrders: pos}) =>
         this.setState({pos}));
   }
@@ -97,7 +97,7 @@ class App extends Component {
       },
       body: JSON.stringify(poPatchList)
     })
-    .then ( responce => responce.json() )
+    .then ( response => response.json() )
     .then(function(jsonResponse) {
       this.setState({patchResult: jsonResponse.result}, this.defaultCheck);
 

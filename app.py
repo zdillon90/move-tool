@@ -2,7 +2,7 @@ import requests
 import json
 import requests.auth
 from flask import Flask, url_for, render_template, abort, request, redirect, \
- jsonify, make_response
+ jsonify
 from flask_cors import CORS
 from secret import client_s
 import logging
@@ -24,10 +24,13 @@ CLIENT_SECRET = client_s
 
 
 def read_data():
-    # with open('data.json') as data_file:
-    #     data = json.load(data_file)
-    data = request.cookies.get('access_token')
+    with open('data.json') as data_file:
+        data = json.load(data_file)
     return data
+    # data = request.cookies.get("token")
+    # string_data = str(data)
+    # print string_data
+    # return string_data
 
 
 @app.route('/')
@@ -107,12 +110,14 @@ def inshape_callback():
     if not is_valid_state(state):
         abort(403)
     code = request.args.get('code')
-    access_token = get_token(code)
-    print access_token.access_token
-    # with open('data.json', 'w') as outfile:
-    #     json.dump(access_token, outfile)
-    resp = make_response(redirect("http://localhost:3000"))
-    resp.set_cookie("access_token", access_token)
+    token_responce = get_token(code)
+    # access_token = token_responce['access_token']
+    # refresh_token = token_responce['refresh_token']
+    with open('data.json', 'w') as outfile:
+        json.dump(token_responce, outfile)
+    resp = redirect("http://localhost:3000")
+    # resp.set_cookie("token", value=str(access_token))
+    # resp.set_cookie("refresh", value=str(refresh_token))
     return resp
 
 
@@ -175,16 +180,18 @@ def sub_status(manufacturer_id):
 
 @app.route('/production_trays/<int:manufacturer_id>')
 def production_trays(manufacturer_id):
-    pro_trays_url = "https://api.shapeways.com/production_trays/v1?manufacturer=13".format(
-        m=manufacturer_id)
+    pro_trays_url = \
+        "https://api.shapeways.com/production_trays/v1?manufacturer=13".format(
+            m=manufacturer_id)
     json_response = json_reply(pro_trays_url)
     return json_response
 
 
-@app.route('/production_orders/manufacturer=<int:manufacturer_id>/sub_statuses=<sub_status_list>')
+@app.route('/production_orders/manufacturer\
+    =<int:manufacturer_id>/sub_statuses=<sub_status_list>')
 def production_orders(manufacturer_id, sub_status_list):
-    po_url = "https://api.shapeways.com/production_orders/v1?manufacturer=" + str(
-        manufacturer_id) + "&subStatus=" + str(sub_status_list)
+    po_url = "https://api.shapeways.com/production_orders/v1?manufacturer=" + \
+        str(manufacturer_id) + "&subStatus=" + str(sub_status_list)
     json_response = json_reply(po_url)
     return json_response
 
