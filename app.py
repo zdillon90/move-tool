@@ -27,10 +27,6 @@ def read_data():
     with open('data.json') as data_file:
         data = json.load(data_file)
     return data
-    # data = request.cookies.get("token")
-    # string_data = str(data)
-    # print string_data
-    # return string_data
 
 
 @app.route('/')
@@ -68,12 +64,6 @@ def test_access():
             response_json = json.loads(response.text)
             result = response_json['result']
             return result
-
-
-# @app.route('/inshape')
-# def inshape_connect():
-#     text = '<a href="%s">Authorize!</a>'
-#     return text % make_authorization_url()
 
 
 @app.route('/authorize')
@@ -187,8 +177,7 @@ def production_trays(manufacturer_id):
     return json_response
 
 
-@app.route('/production_orders/manufacturer\
-    =<int:manufacturer_id>/sub_statuses=<sub_status_list>')
+@app.route('/production_orders/manufacturer=<int:manufacturer_id>/sub_statuses=<sub_status_list>')
 def production_orders(manufacturer_id, sub_status_list):
     po_url = "https://api.shapeways.com/production_orders/v1?manufacturer=" + \
         str(manufacturer_id) + "&subStatus=" + str(sub_status_list)
