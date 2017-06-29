@@ -12,19 +12,21 @@ class App extends Component {
     this.fetchProductionOrders = this.fetchProductionOrders.bind(this);
     this.defaultCheck = this.defaultCheck.bind(this);
     this.setProcessName = this.setProcessName.bind(this);
+    this.patchPos = this.patchPos.bind(this);
     this.state = {
       allManufacturers: [],
       manufacturer: '',
       manufacturerId: null,
       processes: [],
       process: null,
-      pos: null
+      pos: null,
+      patchResult: ''
     };
   }
 
   componentDidMount() {
     fetch('/manufacturers')
-      .then( responce => responce.json() )
+      .then( response => response.json() )
       .then( ({manufacturers: allManufacturers}) => this.setState({allManufacturers}));
   }
 
@@ -32,7 +34,7 @@ class App extends Component {
     let id = this.state.manufacturerId;
     const manufacturerUrl  = '/manufacturer/' + id;
     fetch(manufacturerUrl)
-      .then( responce => responce.json() )
+      .then( response => response.json() )
       .then( ({productionProcesses: processes}) =>
         this.setState({processes}, this.defaultCheck));
   }
@@ -68,7 +70,7 @@ class App extends Component {
     let IdsString = subStatusIds.toString();
     const poURL = '/production_orders/manufacturer=' + id + '/sub_statuses=' + IdsString;
     fetch(poURL)
-      .then ( responce => responce.json() )
+      .then ( response => response.json() )
       .then ( ({productionOrders: pos}) =>
         this.setState({pos}));
   }
@@ -95,12 +97,30 @@ class App extends Component {
       },
       body: JSON.stringify(poPatchList)
     })
+    .then ( response => response.json() )
+    .then(function(jsonResponse) {
+      this.setState({patchResult: jsonResponse.result}, this.defaultCheck);
+
+      // If we have an error to display, reset after 3 seconds
+      if (jsonResponse.result !== "") {
+        this.setStateWithTimeout('patchResult', '', 3000);
+      }
+    }.bind(this))
+
+  }
+
+  setStateWithTimeout(key, value, time) {
+    return setTimeout(function() {
+        var newState = {};
+        newState[key] = value;
+        this.setState(newState);
+    }.bind(this), time);
   }
 
   // TODO Add in proper Loading screen
   loadingPos() {
     let currentProcess = this.state.process;
-    let pos = this.state.pos
+    let pos = this.state.pos;
     if (pos) {
       return(
         <SubTableBody
@@ -121,11 +141,13 @@ class App extends Component {
     let manufacturer = this.state.manufacturer;
     let processes = this.state.processes;
     let currentProcess = this.state.process;
+    let result = this.state.patchResult;
     return (
       <div>
         <Navbarz
           manufacturer={manufacturer}
           process={currentProcess}
+          result={result}
         />
         {currentProcess ? (
           this.loadingPos()

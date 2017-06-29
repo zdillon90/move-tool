@@ -1,11 +1,14 @@
 import requests
 import json
 import requests.auth
-from flask import Flask, url_for, render_template, abort, request, redirect, jsonify
+from flask import Flask, url_for, render_template, abort, request, redirect, \
+ jsonify
 from flask_cors import CORS
 from secret import client_s
 import logging
 from logging.handlers import RotatingFileHandler
+
+# FIXME Fix OAuth Loop structure
 
 app = Flask(__name__, template_folder="./public", static_folder="./src")
 CORS(app)
@@ -36,7 +39,7 @@ def welcome():
         refresh()
         return redirect(url_for('home'))
     else:
-        return redirect(url_for('inshape_connect'))
+        return redirect(url_for('make_authorization_url'))
 
 
 @app.route('/home')
@@ -49,25 +52,21 @@ def test_access():
     with open('data.json') as data_file:
         data = json.load(data_file)
     if 'access' not in data:
-        redirect(url_for('inshape_connect'))
+        redirect(url_for('make_authorization_url'))
     else:
         access = data['access_token']
         headers = {"Authorization": "bearer " + access}
-        response = requests.get("https://api.shapeways.com/materials/v1", headers=headers)
+        response = requests.get(
+            "https://api.shapeways.com/materials/v1", headers=headers)
         if str(response) == "<Response [401]>":
-            redirect(url_for('inshape_connect'))
+            redirect(url_for('make_authorization_url'))
         else:
             response_json = json.loads(response.text)
             result = response_json['result']
             return result
 
 
-@app.route('/inshape')
-def inshape_connect():
-    text = '<a href="%s">Authorize!</a>'
-    return text % make_authorization_url()
-
-
+@app.route('/authorize')
 def make_authorization_url():
     from uuid import uuid4
     state = str(uuid4())
@@ -79,8 +78,9 @@ def make_authorization_url():
               "duration": "temporary",
               "scope": "identity"}
     import urllib
-    url = "http://api.shapeways.com/oauth2/authorize?" + urllib.urlencode(params)
-    return url
+    url = "http://api.shapeways.com/oauth2/authorize?" + \
+        urllib.urlencode(params)
+    return redirect(url)
 
 
 def save_created_state(state):
@@ -100,10 +100,15 @@ def inshape_callback():
     if not is_valid_state(state):
         abort(403)
     code = request.args.get('code')
-    access_token = get_token(code)
+    token_responce = get_token(code)
+    # access_token = token_responce['access_token']
+    # refresh_token = token_responce['refresh_token']
     with open('data.json', 'w') as outfile:
-        json.dump(access_token, outfile)
-    return redirect(url_for('home'))
+        json.dump(token_responce, outfile)
+    resp = redirect("http://localhost:3000")
+    # resp.set_cookie("token", value=str(access_token))
+    # resp.set_cookie("refresh", value=str(refresh_token))
+    return resp
 
 
 def get_token(code):
@@ -139,7 +144,7 @@ def refresh():
 def json_reply(url):
     data = read_data()
     if 'error' in data:
-        redirect(url_for('inshape_connect'))
+        redirect(url_for('make_authorization_url'))
     else:
         access_token = data['access_token']
         headers = {'Authorization': "bearer " + access_token}
@@ -157,22 +162,25 @@ def get_manufacturers():
 
 @app.route('/manufacturer/<int:manufacturer_id>')
 def sub_status(manufacturer_id):
-    man_url = "https://api.shapeways.com/manufacturers/{m}/v1".format(m=manufacturer_id)
+    man_url = "https://api.shapeways.com/manufacturers/{m}/v1".format(
+        m=manufacturer_id)
     json_response = json_reply(man_url)
     return json_response
 
 
 @app.route('/production_trays/<int:manufacturer_id>')
 def production_trays(manufacturer_id):
-    pro_trays_url = "https://api.shapeways.com/production_trays/v1?manufacturer=13".format(m=manufacturer_id)
+    pro_trays_url = \
+        "https://api.shapeways.com/production_trays/v1?manufacturer=13".format(
+            m=manufacturer_id)
     json_response = json_reply(pro_trays_url)
     return json_response
 
 
 @app.route('/production_orders/manufacturer=<int:manufacturer_id>/sub_statuses=<sub_status_list>')
 def production_orders(manufacturer_id, sub_status_list):
-    po_url = "https://api.shapeways.com/production_orders/v1?manufacturer=" + str(
-        manufacturer_id) + "&subStatus=" + str(sub_status_list)
+    po_url = "https://api.shapeways.com/production_orders/v1?manufacturer=" + \
+        str(manufacturer_id) + "&subStatus=" + str(sub_status_list)
     json_response = json_reply(po_url)
     return json_response
 
@@ -184,7 +192,7 @@ def patch_orders():
     json_content = json.dumps(content)
     data = read_data()
     if 'error' in data:
-        redirect(url_for('inshape_connect'))
+        redirect(url_for('make_authorization_url'))
     else:
         access_token = data['access_token']
         headers = {'Authorization': "bearer " + access_token}

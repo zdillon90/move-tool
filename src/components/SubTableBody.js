@@ -3,13 +3,6 @@ import { Board } from 'react-trello';
 // import { connect, PromiseState } from 'react-refetch'
 import CardModal from './CardModal'
 
-// TODO Add PO count to each card illistrating how much each card has out of
-// the entire tray
-
-// TODO Add a timmer for each card and how long it has been in that ststus
-
-// TODO Add a tag for each tray size
-
 class SubTableBody extends Component {
   constructor(props) {
     super(props);
@@ -20,7 +13,7 @@ class SubTableBody extends Component {
       sourceLaneId: "",
       targetLaneId: "",
       formatedPoPatchList: []
-    };
+      };
     this.toggle = this.toggle.bind(this);
   }
 
@@ -30,7 +23,33 @@ class SubTableBody extends Component {
     });
   }
 
-  makeCards(productionOrders) {
+  totalPoCountPerTray(productionOrders) {
+    let totalTrayListIds = [];
+    let totalTrayList = [];
+    let poCount = 0;
+    productionOrders.forEach(function(po) {
+      let trayId = po.productionTrayId.toString();
+      if (totalTrayListIds.indexOf(trayId) === -1) {
+        totalTrayListIds.push(trayId)
+      }
+    })
+    totalTrayListIds.forEach(function(tray) {
+      let trayObject = {};
+      poCount = 0;
+      trayObject.trayNumber = tray;
+      productionOrders.forEach(function(po) {
+        let trayId = po.productionTrayId.toString()
+        if (trayId === tray) {
+          poCount++;
+        }
+      })
+      trayObject.poCount = poCount;
+      totalTrayList.push(trayObject);
+    })
+    return totalTrayList;
+  }
+
+  makeCards(productionOrders, trayTotals) {
     let cards = [];
     let trayList = [];
     productionOrders.forEach(function(po) {
@@ -39,14 +58,17 @@ class SubTableBody extends Component {
         trayList.push(trayId);
       }
     });
-    // Try just having the metadata be the object
     trayList.forEach(function(tray) {
       let card = {};
       let poList = [];
+      let trayTags = [];
+      let tag = {};
       card.id = tray;
+      let trayPosInLane = 0;
       productionOrders.forEach(function(po) {
         if (po.productionTrayId.toString() === card.id) {
           poList.push(po.productionOrderName);
+          trayPosInLane++;
           if (po.productionTrayId === 0) {
             card.title = "No_Tray_Name"
           } else {
@@ -54,6 +76,33 @@ class SubTableBody extends Component {
           }
         }
       })
+      // Creation of tags for tray size
+      if (~card.title.indexOf('P1')) {
+          tag.title = "P1 - Small"
+          tag.bgcolor = '#76448A'
+      } else if (~card.title.indexOf('P3')) {
+          tag.title = "P3 - Medium"
+          tag.bgcolor = '#239B56'
+      } else if (~card.title.indexOf('P7')) {
+          tag.title = "P7 - Large"
+          tag.bgcolor = '#E67E22'
+      } else if (~card.title.indexOf('RUSH') || ~card.title.indexOf('Rush')) {
+        tag.title = "RUSH"
+        tag.bgcolor = '#C70039'
+      } else if (~card.title.indexOf('XHD') || ~card.title.indexOf('xhd')) {
+        tag.title = "XHD"
+        tag.bgcolor = '#27AE60'
+      } else {
+        tag.title = "No Tray Class"
+        tag.bgcolor = '#808B96'
+      }
+      trayTags.push(tag);
+      card.tags = trayTags
+      trayTotals.forEach(function(trayTotal) {
+        if (trayTotal.trayNumber === card.id) {
+          card.description = (trayPosInLane + "/" + trayTotal.poCount + " PO(s)").toString()
+        }
+      });
       card.metadata = poList;
       cards.push(card);
     });
@@ -63,11 +112,11 @@ class SubTableBody extends Component {
   makeLanes() {
     let makeCards = this.makeCards;
     let data = {};
-    let lanes = 'lanes';
     let colums = [];
     let list = this.props.list;
     let subProcesses = list.processSteps;
     let pos = this.props.pos;
+    let totals = this.totalPoCountPerTray(pos)
     subProcesses.forEach(function(column) {
       let lane = {};
       let lanePos = [];
@@ -79,13 +128,13 @@ class SubTableBody extends Component {
           lanePos.push(po);
         }
       });
-      let TrayCards = new makeCards(lanePos);
+      let TrayCards = new makeCards(lanePos, totals);
       lane.title = columnName;
       lane.id = columnId.toString();
       lane.cards = TrayCards;
       colums.push(lane);
     });
-    data[lanes] = colums;
+    data.lanes = colums;
     return data;
   }
 
@@ -112,16 +161,16 @@ class SubTableBody extends Component {
     let processes = this.makeLanes();
 
     const handleDragStart = (cardId, laneId) => {
-      console.log('drag started')
-      console.log(`cardId: ${cardId}`)
-      console.log(`laneId: ${laneId}`)
+      // console.log('drag started')
+      // console.log(`cardId: ${cardId}`)
+      // console.log(`laneId: ${laneId}`)
     }
 
     const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
-      console.log('drag ended')
-      console.log(`cardId: ${cardId}`)
-      console.log(`sourceLaneId: ${sourceLaneId}`)
-      console.log(`targetLaneId: ${targetLaneId}`)
+      // console.log('drag ended')
+      // console.log(`cardId: ${cardId}`)
+      // console.log(`sourceLaneId: ${sourceLaneId}`)
+      // console.log(`targetLaneId: ${targetLaneId}`)
       this.setState({
         cardId: cardId,
         sourceLaneId: sourceLaneId,
@@ -132,14 +181,14 @@ class SubTableBody extends Component {
       if (source !== target) {
         let formatPoPatch = this.formatPoPatch();
         this.setState({ formatedPoPatchList: formatPoPatch});
-        console.log(formatPoPatch);
+        // console.log(formatPoPatch);
         this.props.patchPos(formatPoPatch);
       }
     }
 
     const shouldReceiveNewData = (nextData) => {
-      console.log('data has changed')
-      console.log(nextData)
+      // console.log('data has changed')
+      // console.log(nextData)
     }
 
     const onCardClick = (cardId, metadata) => {
@@ -170,15 +219,3 @@ class SubTableBody extends Component {
 }
 
 export default SubTableBody;
-// export default connect(props => {
-//   let patchList = this.props.formatedPoPatchList
-//   return {
-//     updateStatus: status => ({
-//       updateStatusResponse: {
-//         url: `foo`,
-//         method: 'POST',
-//         body: patchList
-//       }
-//     })
-//   }
-// })(SubTableBody);

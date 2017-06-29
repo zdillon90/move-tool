@@ -1,54 +1,150 @@
-# import json
-# import requests
-# from flask import Flask
-# from secret import client_s
-#
-# app = Flask(__name__, template_folder="./public", static_folder="./src")
-#
-# CLIENT_ID = "QlVnptrGQ1egA1SeKkq7x2P9T6L44jRUKusVBVldR6py6jNvjj"
-# CLIENT_SECRET = client_s
-#
-# @app.route('/')
-# def test_access():
-#     with open('data.json') as data_file:
-#         data = json.load(data_file)
-#     access = data['access_token']
-#     headers = {"Authorization": "bearer " + access}
-#     response = requests.get("https://api.shapeways.com/materials/v1", headers=headers)
-#     response_json = json.loads(response.text)
-#     result = response_json
-#     with open('refresh.json', 'w') as test_file:
-#         json.dump(response_json, test_file)
-#     return result
-#
-#
-# def refresh():
-#     with open('data.json') as data_file:
-#         data = json.load(data_file)
-#     refresh_token = data['refresh_token']
-#     expire = data['expires_in']
-#     client_auth = requests.auth.HTTPBasicAuth(CLIENT_ID, CLIENT_SECRET)
-#     post_data = {"grant_type": "refresh_token",
-#                  "refresh_token": "{r}".format(r=refresh_token),
-#                  "client_id": CLIENT_ID}
-#     responce = requests.post('https://api.shapeways.com/oauth2/token',
-#                              auth=client_auth,
-#                              data=post_data)
-#     data_json = responce.json()
-#     with open('data.json', 'w') as outfile:
-#         json.dump(data_json, outfile)
-#
-#
-# if __name__ == '__main__':
-#     app.run()
+import os
+import json
+import datetime
+
+from flask import Flask, url_for, redirect, \
+    render_template, session, request
+from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.login import LoginManager, login_required, login_user, \
+    logout_user, current_user, UserMixin
+from requests_oauthlib import OAuth2Session
+from requests.exceptions import HTTPError
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-def production_orders(manufacturer_id, sub_status_list):
-    po_url = "https://api.shapeways.com/production_orders/v1?manufacturer=" + str(manufacturer_id) + "&subStatus=" + str(sub_status_list)
-    return po_url
+class Auth:
+    CLIENT_ID = "QlVnptrGQ1egA1SeKkq7x2P9T6L44jRUKusVBVldR6py6jNvjj"
+    CLIENT_SECRET = "fnhnXjHFZTo3Fq8mXlnuOqgnKopd4hHOdRe0ZSnRFneIKe4TPD"
+    REDIRECT_URI = "http://localhost:5000/inshape_callback"
+    AUTH_URI = "http://api.shapeways.com/oauth2/authorize?"
+    TOKEN_URI = "https://api.shapeways.com/oauth2/token"
+    MAIN_PAGE = "http://localhost:3000"
 
-man = 13
-sub = [253, 600, 300]
 
-url = production_orders(man, sub)
-print url
+class Config:
+    APP_NAME = "Inshape Tray Move Tool"
+    SECRET_KEY = os.environ.get("SECRET_KEY") or "somethingsecret"
+
+
+class DevConfig(Config):
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, "test.db")
+
+
+class ProdConfig(Config):
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, "prod.db")
+
+
+config = {
+    "dev": DevConfig,
+    "prod": ProdConfig,
+    "default": DevConfig
+}
+
+""""APP creation and configuration"""
+app = Flask(__name__)
+app.config.from_object(config['dev'])
+db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = "login"
+login_manager.session_protection = "strong"
+
+""" DB Models """
+
+
+class User(db.Model, UserMixin):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    name = db.Column(db.String(100), nullable=True)
+    avatar = db.Column(db.String(200))
+    tokens = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+""" OAuth Session creation """
+
+
+def get_google_auth(state=None, token=None):
+    if token:
+        return OAuth2Session(Auth.CLIENT_ID, token=token)
+    if state:
+        return OAuth2Session(
+            Auth.CLIENT_ID,
+            state=state,
+            redirect_uri=Auth.REDIRECT_URI)
+    oauth = OAuth2Session(
+        Auth.CLIENT_ID,
+        redirect_uri=Auth.REDIRECT_URI,
+        scope=Auth.SCOPE)
+    return oauth
+
+
+@app.route('/')
+@login_required
+def index():
+    return render_template('index.html')
+
+
+@app.route('/login')
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    google = get_google_auth()
+    auth_url, state = google.authorization_url(
+        Auth.AUTH_URI, access_type='offline')
+    session['oauth_state'] = state
+    return render_template('login.html', auth_url=auth_url)
+
+
+@app.route('/gCallback')
+def callback():
+    if current_user is not None and current_user.is_authenticated:
+        return redirect(url_for('index'))
+    if 'error' in request.args:
+        if request.args.get('error') == 'access_denied':
+            return 'You denied access.'
+        return 'Error encountered.'
+    if 'code' not in request.args and 'state' not in request.args:
+        return redirect(url_for('login'))
+    else:
+        google = get_google_auth(state=session['oauth_state'])
+        try:
+            token = google.fetch_token(
+                Auth.TOKEN_URI,
+                client_secret=Auth.CLIENT_SECRET,
+                authorization_response=request.url)
+        except HTTPError:
+            return 'HTTPError occurred.'
+        google = get_google_auth(token=token)
+        resp = google.get(Auth.USER_INFO)
+        if resp.status_code == 200:
+            user_data = resp.json()
+            email = user_data['email']
+            user = User.query.filter_by(email=email).first()
+            if user is None:
+                user = User()
+                user.email = email
+            user.name = user_data['name']
+            print(token)
+            user.tokens = json.dumps(token)
+            user.avatar = user_data['picture']
+            db.session.add(user)
+            db.session.commit()
+            login_user(user)
+            return redirect(url_for('index'))
+        return 'Could not fetch your information.'
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
