@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import Cookie from 'js-cookie';
-import request from 'request';
+// import Cookie from 'js-cookie';
+// import request from 'request';
 import Manufacturers from './components/Manufacturers';
 import Navbarz from './components/Navbarz';
 import SubTableBody from './components/SubTableBody';
@@ -32,66 +32,66 @@ class App extends Component {
 
   // Authentication of the App and the user
   componentDidMount() {
-    const clientId = '7sXjUlgZGrJNd8L9Xbt2asCjvodDrilKkdgBxmWrn8BTRGDPFY';
-    const callbackURL = 'http://localhost:1212';
-    const currentURL = window.location.href;
-    console.log(currentURL);
-    const currentParms = this.parseURLParms(currentURL);
-    console.log(currentParms);
-    if (currentParms === undefined) {
-      const baseURL = 'https://api.shapeways.com/oauth2/authorize?response_type=token&client_id=';
-      const url = `${baseURL} ${clientId} &redirect_uri= ${callbackURL}`;
-      console.log(url);
-      this.setState({
-        authLink: url
-      })
-    } else {
-      const accessToken = currentParms.access_token[0];
-      Cookie.set('accessToken', accessToken)
-      this.setState({authorized: true}, this.getManufacturers)
-    }
-  }
-
-  parseURLParms(url) {
-    let queryStart = url.indexOf("#") + 1,
-        queryEnd = url.indexOf("?") + 1 || url.length + 1,
-        query = url.slice(queryStart, queryEnd - 1),
-        pairs = query.replace(/\+/g, " ").split("&"),
-        parms = {}, n, v, nv;
-
-    if (query === url || query === "") return;
-
-    for (let i = 0; i < pairs.length; i++) {
-      nv = pairs[i].split("=", 2);
-      n = decodeURIComponent(nv[0]);
-      v = decodeURIComponent(nv[1]);
-
-      if (!parms.hasOwnProperty(n)) parms[n] = [];
-      parms[n].push(nv.length === 2 ? v : null);
-    }
-    return parms;
-  }
-
-  getManufacturers() {
-    let token = Cookie.get('accessToken')
-    console.log("token: " + token);
-    let options = {
-      url: 'https://api.shapeways.com//models/v1',
-      headers: {
-        'Authorization': "bearer " + token
-      }
-    };
-
-    function callback(error, response, body) {
-      console.log(error);
-      console.log(response);
-      console.log(body);
-    }
-
-    request(options, callback);
-    // fetch('https://api.shapeways.com/manufacturers/v1', myInit)
-    //   .then( response => response.json() )
-    //   .then( ({manufacturers: allManufacturers}) => this.setState({allManufacturers}));
+  //   const clientId = '7sXjUlgZGrJNd8L9Xbt2asCjvodDrilKkdgBxmWrn8BTRGDPFY';
+  //   const callbackURL = 'http://localhost:1212';
+  //   const currentURL = window.location.href;
+  //   console.log(currentURL);
+  //   const currentParms = this.parseURLParms(currentURL);
+  //   console.log(currentParms);
+  //   if (currentParms === undefined) {
+  //     const baseURL = 'https://api.shapeways.com/oauth2/authorize?response_type=token&client_id=';
+  //     const url = `${baseURL} ${clientId} &redirect_uri= ${callbackURL}`;
+  //     console.log(url);
+  //     this.setState({
+  //       authLink: url
+  //     })
+  //   } else {
+  //     const accessToken = currentParms.access_token[0];
+  //     Cookie.set('accessToken', accessToken)
+  //     this.setState({authorized: true}, this.getManufacturers)
+  //   }
+  // }
+  //
+  // parseURLParms(url) {
+  //   let queryStart = url.indexOf("#") + 1,
+  //       queryEnd = url.indexOf("?") + 1 || url.length + 1,
+  //       query = url.slice(queryStart, queryEnd - 1),
+  //       pairs = query.replace(/\+/g, " ").split("&"),
+  //       parms = {}, n, v, nv;
+  //
+  //   if (query === url || query === "") return;
+  //
+  //   for (let i = 0; i < pairs.length; i++) {
+  //     nv = pairs[i].split("=", 2);
+  //     n = decodeURIComponent(nv[0]);
+  //     v = decodeURIComponent(nv[1]);
+  //
+  //     if (!parms.hasOwnProperty(n)) parms[n] = [];
+  //     parms[n].push(nv.length === 2 ? v : null);
+  //   }
+  //   return parms;
+  // }
+  //
+  // getManufacturers() {
+  //   let token = Cookie.get('accessToken')
+  //   console.log("token: " + token);
+  //   let options = {
+  //     url: 'https://api.shapeways.com//models/v1',
+  //     headers: {
+  //       'Authorization': "bearer " + token
+  //     }
+  //   };
+  //
+  //   function callback(error, response, body) {
+  //     console.log(error);
+  //     console.log(response);
+  //     console.log(body);
+  //   }
+  //
+  //   request(options, callback);
+  fetch('/manufacturers')
+    .then(response => response.json())
+    .then(({ manufacturers: allManufacturers }) => this.setState({ allManufacturers }));
   }
 
   fetchStatuses() {

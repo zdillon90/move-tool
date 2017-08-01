@@ -1,8 +1,4 @@
 import React, { Component } from 'react';
-import ManufacturersDrop from './ManufacturersDrop';
-import ProcessDrop from './ProcessDrop';
-import Auth from './Auth';
-// import PropTypes from 'prop-types';
 import {
   Container,
   Row,
@@ -10,21 +6,24 @@ import {
   Jumbotron,
   ButtonGroup,
  } from 'reactstrap';
+import ManufacturersDrop from './ManufacturersDrop';
+import ProcessDrop from './ProcessDrop';
+// import Auth from './Auth';
+// import PropTypes from 'prop-types';
+
 
 class Manufacturers extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       defaultProceess: false
-    }
+    };
   }
 
-
-
   render() {
-    let manList = this.props.list;
-    let processes = this.props.processes;
-    let authLink =  this.props.authLink;
+    const manList = this.props.list;
+    const processes = this.props.processes;
+    // let authLink =  this.props.authLink;
     return (
       <div>
         <Jumbotron>
@@ -38,14 +37,10 @@ class Manufacturers extends Component {
             <Row>
               <Col>
                 <ButtonGroup>
-                  {authLink ? (
-                    <Auth authLink={authLink}/>
-                  ) : (
-                    <ManufacturersDrop
-                      list={manList}
-                      onManufacturerChange={this.props.onManufacturerChange}
-                    />
-                  )}
+                  <ManufacturersDrop
+                    list={manList}
+                    onManufacturerChange={this.props.onManufacturerChange}
+                  />
                   {processes.length > 1 &&
                     <ProcessDrop
                       processlist={processes}

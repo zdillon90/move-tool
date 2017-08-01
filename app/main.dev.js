@@ -13,10 +13,13 @@
 import { app, BrowserWindow } from 'electron';
 import storage from 'electron-json-storage';
 import electronOauth2 from 'electron-oauth2';
+import express from 'express';
 import request from 'request';
 import MenuBuilder from './menu';
 
 let mainWindow = null;
+
+const router = express();
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -43,11 +46,6 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
-
-/**
- * Add event listeners...
- */
-
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
@@ -65,8 +63,8 @@ const config = {
   redirectUri: 'http://localhost:1212/'
 };
 
-const tokenPromise = new Promise(function(resolve, reject) {
-  storage.has('accessToken', function(error, hasKey) {
+const tokenPromise = new Promise((resolve, reject) => {
+  storage.has('accessToken', (error, hasKey) => {
     if (hasKey) {
       resolve('Stuff worked! There is a key!');
     } else {
@@ -74,6 +72,29 @@ const tokenPromise = new Promise(function(resolve, reject) {
     }
   });
 });
+
+router.get('/manufacturers', () => {
+  tokenPromise.then(function(result) {
+    console.log(result);
+    storage.get('accessToken', (error, data) => {
+      if (error) {
+        throw error;
+      }
+      console.log(data.access_token);
+      // Make first request
+      const req = { method: 'GET',
+        url: 'https://api.shapeways.com/manufacturers/v1',
+        headers:
+        { authorization: `bearer ${data.access_token}` }
+      };
+      request(req, (err, response, body) => {
+        if (err) throw new Error(err);
+        console.log(body);
+      });
+    });
+  });
+});
+
 
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
@@ -130,34 +151,10 @@ app.on('ready', async () => {
         if (error) {
           throw error
         }
-        // console.log(newToken);
+        // TODO: Store refresh token for later
       });
     });
-  });
-
-  tokenPromise.then(function(result) {
-    console.log(result);
-    storage.get('accessToken', function(error, data) {
-      if (error) {
-        throw error;
-      }
-      console.log(data.access_token);
-      // Make first request
-      let options = { method: 'GET',
-        url: 'https://api.shapeways.com/manufacturers/v1',
-        headers:
-        { 'cache-control': 'no-cache',
-          authorization: 'bearer ' + data.access_token
-        }
-      };
-      request(options, function (error, response, body) {
-        if (error) throw new Error(error);
-        console.log(body);
-      })
-    })
-  }, function(err) {
-    console.log(err);
-  });
+    });
 
   mainWindow.on('closed', () => {
     mainWindow = null;
