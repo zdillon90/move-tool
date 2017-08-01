@@ -11,6 +11,9 @@
  * @flow
  */
 import { app, BrowserWindow } from 'electron';
+import storage from 'electron-json-storage';
+import electronOauth2 from 'electron-oauth2';
+import request from 'request';
 import MenuBuilder from './menu';
 
 let mainWindow = null;
@@ -53,6 +56,24 @@ app.on('window-all-closed', () => {
   }
 });
 
+const config = {
+  clientId: '7sXjUlgZGrJNd8L9Xbt2asCjvodDrilKkdgBxmWrn8BTRGDPFY',
+  authorizationUrl: 'https://api.shapeways.com/oauth2/authorize',
+  tokenUrl: 'https://api.shapeways.com/oauth2/token',
+  response_type: 'token',
+  useBasicAuthorizationHeader: true,
+  redirectUri: 'http://localhost:1212/'
+};
+
+const tokenPromise = new Promise(function(resolve, reject) {
+  storage.has('accessToken', function(error, hasKey) {
+    if (hasKey) {
+      resolve('Stuff worked! There is a key!');
+    } else {
+      reject(Error(`It broke: ${error}`));
+    }
+  });
+});
 
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
@@ -75,6 +96,67 @@ app.on('ready', async () => {
     }
     mainWindow.show();
     mainWindow.focus();
+  });
+
+  const windowParams = {
+    alwaysOnTop: true,
+    autoHideMenuBar: true,
+    title: 'Authorization',
+    webPreferences: {
+      nodeIntegration: false
+    }
+  };
+
+  const options = {
+    accessType: 'Bearer'
+  };
+
+  const myApiOauth = electronOauth2(config, windowParams);
+
+  myApiOauth.getAccessToken(options)
+    .then(token => {
+      storage.set('accessToken', token, function(error) {
+        if (error) {
+          throw error
+        }
+      });
+
+      // const acctoken = readtoken();
+      // console.log("HERE IT IS", acctoken);
+
+  myApiOauth.refreshToken(token.refresh_token)
+    .then(newToken => {
+      storage.set('refreshToken', newtoken, function(error) {
+        if (error) {
+          throw error
+        }
+        // console.log(newToken);
+      });
+    });
+  });
+
+  tokenPromise.then(function(result) {
+    console.log(result);
+    storage.get('accessToken', function(error, data) {
+      if (error) {
+        throw error;
+      }
+      console.log(data.access_token);
+      // Make first request
+      let options = { method: 'GET',
+        url: 'https://api.shapeways.com/manufacturers/v1',
+        headers:
+        { 'cache-control': 'no-cache',
+          authorization: 'bearer ' + data.access_token
+        }
+      };
+      request(options, function (error, response, body) {
+        if (error) throw new Error(error);
+        console.log(body);
+      })
+    })
+  }, function(err) {
+    console.log(err);
   });
 
   mainWindow.on('closed', () => {

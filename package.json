@@ -185,9 +185,12 @@
     "webpack-merge": "^4.1.0"
   },
   "dependencies": {
+    "ajv": "^5.2.2",
     "ajv-keywords": "^2.1.0",
     "bootstrap": "^4.0.0-alpha.6",
     "electron-debug": "^1.1.0",
+    "electron-json-storage": "^3.0.7",
+    "electron-oauth2": "^3.0.0",
     "font-awesome": "^4.7.0",
     "history": "^4.6.1",
     "js-cookie": "^2.1.4",
