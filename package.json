@@ -1,5 +1,5 @@
 {
-  "name": "electron-react-boilerplate",
+  "name": "production-batch-movement-tool",
   "productName": "ElectronReact",
   "version": "0.12.0",
   "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",

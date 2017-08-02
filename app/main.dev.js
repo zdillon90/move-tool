@@ -19,7 +19,7 @@ import MenuBuilder from './menu';
 
 let mainWindow = null;
 
-const router = express();
+const router = express.Router();
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -74,8 +74,7 @@ const tokenPromise = new Promise((resolve, reject) => {
 });
 
 router.get('/manufacturers', () => {
-  tokenPromise.then(function(result) {
-    console.log(result);
+  tokenPromise.then((result) => {
     storage.get('accessToken', (error, data) => {
       if (error) {
         throw error;
@@ -92,7 +91,7 @@ router.get('/manufacturers', () => {
         console.log(body);
       });
     });
-  });
+  }).catch(console.log('Had an Error...'));
 });
 
 
@@ -102,6 +101,7 @@ app.on('ready', async () => {
   }
 
   mainWindow = new BrowserWindow({
+    nodeIntegration: false,
     show: false,
     width: 1024,
     height: 728

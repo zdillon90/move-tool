@@ -3,7 +3,7 @@
 // TODO: Fix router to new paths
 import React from 'react';
 import { Switch, Route } from 'react-router';
-import App from './containers/App';
+import App from './components/App';
 import HomePage from './containers/HomePage';
 import CounterPage from './containers/CounterPage';
 
