@@ -74,6 +74,7 @@ const tokenPromise = new Promise((resolve, reject) => {
 });
 
 router.get('/manufacturers', () => {
+  console.log('I made it here!!');
   tokenPromise.then((result) => {
     storage.get('accessToken', (error, data) => {
       if (error) {
@@ -101,7 +102,6 @@ app.on('ready', async () => {
   }
 
   mainWindow = new BrowserWindow({
-    nodeIntegration: false,
     show: false,
     width: 1024,
     height: 728

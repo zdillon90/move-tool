@@ -89,7 +89,13 @@ class App extends Component {
   //   }
   //
   //   request(options, callback);
-  fetch('/manufacturers')
+
+  fetch('/manufacturers', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
     .then(response => response.json())
     .then(({ manufacturers: allManufacturers }) => this.setState({ allManufacturers }));
   }
