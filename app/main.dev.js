@@ -12,10 +12,7 @@
  */
 import { app, BrowserWindow } from 'electron';
 import storage from 'electron-json-storage';
-import Cookie from 'js-cookie';
 import electronOauth2 from 'electron-oauth2';
-// import express from 'express';
-import request from 'request';
 import MenuBuilder from './menu';
 
 let mainWindow = null;
@@ -64,38 +61,6 @@ const config = {
   redirectUri: 'http://localhost:1212/'
 };
 
-// const tokenPromise = new Promise((resolve, reject) => {
-//   storage.has('accessToken', (error, hasKey) => {
-//     if (hasKey) {
-//       resolve('Stuff worked! There is a key!');
-//     } else {
-//       reject(Error(`It broke: ${error}`));
-//     }
-//   });
-// });
-//
-// // This should be on the react side only store the token in a cookie and then
-// // retreieve and use it with only on the react side
-// tokenPromise.then((result) => {
-//   storage.get('accessToken', (error, data) => {
-//     if (error) {
-//       throw error;
-//     }
-//     console.log(data.access_token);
-//     // Make first request
-//     const req = { method: 'GET',
-//       url: 'https://api.shapeways.com/manufacturers/v1',
-//       headers:
-//       { authorization: `bearer ${data.access_token}` }
-//     };
-//     request(req, (err, response, body) => {
-//       if (err) throw new Error(err);
-//       console.log(body);
-//     });
-//   });
-// }).catch(console.log('Had an Error...'));
-
-
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
@@ -137,25 +102,29 @@ app.on('ready', async () => {
   const myApiOauth = electronOauth2(config, windowParams);
 
   myApiOauth.getAccessToken(options)
-  .then(token => {
-    storage.set('accessToken', token, function(error) {
-      if (error) {
-        throw error
-      }
-    });
-  });
-
-      // const acctoken = readtoken();
-      // console.log("HERE IT IS", acctoken);
-
-  myApiOauth.refreshToken(token.refresh_token)
-    .then(newToken => {
-      storage.set('refreshToken', newtoken, function(error) {
-        if (error) {
-          throw error
-        }
-        // TODO: Store refresh token for later
+    .then((token, error) => {
+      console.log(`Electron ${token.access_token}`);
+      storage.set('accessToken', token.access_token)
+      .catch((err) => {
+        console.log(`Storage of access_token Error: ${err}`);
       });
+
+      myApiOauth.refreshToken(token.refresh_token)
+      .then((newToken, refreshError) => {
+        console.log(`refresh token: ${newToken}`);
+        storage.set('refreshToken', newToken)
+        .catch((err) => {
+          console.log(`Storage of token Error: ${err}`);
+        });
+        throw refreshError;
+      })
+      .catch((err) => {
+        console.log(`Aquire Refresh Token Error ${err}`);
+      });
+      throw error;
+    })
+    .catch((err) => {
+      console.log(`Aquire Access Token Error ${err}`);
     });
 
   mainWindow.on('closed', () => {

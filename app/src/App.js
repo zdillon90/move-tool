@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import storage from 'electron-json-storage';
-import axios from 'axios'
-// import request from 'request';
-// import Cookie from 'js-cookie';
-// import request from 'request';
+import axios from 'axios';
 import Manufacturers from './components/Manufacturers';
 import Navbarz from './components/Navbarz';
 import SubTableBody from './components/SubTableBody';
@@ -31,105 +28,47 @@ class App extends Component {
     };
   }
 
-  // TODO Add check for Auth component to check if the Auth Key is in a cookie
-
-  // Authentication of the App and the user
   componentDidMount() {
-  //   const clientId = '7sXjUlgZGrJNd8L9Xbt2asCjvodDrilKkdgBxmWrn8BTRGDPFY';
-  //   const callbackURL = 'http://localhost:1212';
-  //   const currentURL = window.location.href;
-  //   console.log(currentURL);
-  //   const currentParms = this.parseURLParms(currentURL);
-  //   console.log(currentParms);
-  //   if (currentParms === undefined) {
-  //     const baseURL = 'https://api.shapeways.com/oauth2/authorize?response_type=token&client_id=';
-  //     const url = `${baseURL} ${clientId} &redirect_uri= ${callbackURL}`;
-  //     console.log(url);
-  //     this.setState({
-  //       authLink: url
-  //     })
-  //   } else {
-  //     const accessToken = currentParms.access_token[0];
-  //     Cookie.set('accessToken', accessToken)
-  //     this.setState({authorized: true}, this.getManufacturers)
-  //   }
-  // }
-  //
-  // parseURLParms(url) {
-  //   let queryStart = url.indexOf("#") + 1,
-  //       queryEnd = url.indexOf("?") + 1 || url.length + 1,
-  //       query = url.slice(queryStart, queryEnd - 1),
-  //       pairs = query.replace(/\+/g, " ").split("&"),
-  //       parms = {}, n, v, nv;
-  //
-  //   if (query === url || query === "") return;
-  //
-  //   for (let i = 0; i < pairs.length; i++) {
-  //     nv = pairs[i].split("=", 2);
-  //     n = decodeURIComponent(nv[0]);
-  //     v = decodeURIComponent(nv[1]);
-  //
-  //     if (!parms.hasOwnProperty(n)) parms[n] = [];
-  //     parms[n].push(nv.length === 2 ? v : null);
-  //   }
-  //   return parms;
-  // }
-  //
-  // getManufacturers() {
-  //   let token = Cookie.get('accessToken')
-  //   console.log("token: " + token);
-  //   let options = {
-  //     url: 'https://api.shapeways.com//models/v1',
-  //     headers: {
-  //       'Authorization': "bearer " + token
-  //     }
-  //   };
-  //
-  //   function callback(error, response, body) {
-  //     console.log(error);
-  //     console.log(response);
-  //     console.log(body);
-  //   }
-  //
-  //   request(options, callback);
+    // const tokenPromise = new Promise((resolve, reject) => {
+    //   storage.has('accessToken', (error, hasKey) => {
+    //     if (hasKey) {
+    //       resolve('Stuff worked! There is a key!');
+    //     } else {
+    //       reject(Error(`It broke: ${error}`));
+    //     }
+    //   });
+    // });
 
-  const tokenPromise = new Promise((resolve, reject) => {
-    storage.has('accessToken', (error, hasKey) => {
-      if (hasKey) {
-        resolve('Stuff worked! There is a key!');
-      } else {
-        reject(Error(`It broke: ${error}`));
-      }
-    });
-  });
-
-  tokenPromise.then((result) => {
+    // tokenPromise.then((result) => {
     storage.get('accessToken', (error, data) => {
       if (error) {
         throw error;
       }
-      console.log(data.access_token);
-      // Make first request
+      console.log(data);
       const req = { method: 'get',
         url: 'https://api.shapeways.com/manufacturers/v1',
         headers:
-        { authorization: `bearer ${data.access_token}` }
+        { authorization: `bearer ${data}` }
       };
       axios(req)
       .then((response) => {
         console.log(response);
+        if (response.status === 200) {
+          this.setState({ authorized: true });
+        }
         return response.data;
       })
       .then(({ manufacturers: allManufacturers }) => this.setState({ allManufacturers }))
       .catch((err) => console.log(err));
     });
-  });
+      // return result;
+    // }).catch((promError) => console.log(promError));
   }
 
 
   fetchStatuses() {
-    let id = this.state.manufacturerId;
-    const manufacturerUrl  = '/manufacturer/' + id;
+    const id = this.state.manufacturerId;
+    const manufacturerUrl = `/manufacturer/${id}`;
     fetch(manufacturerUrl)
       .then( response => response.json() )
       .then( ({productionProcesses: processes}) =>
