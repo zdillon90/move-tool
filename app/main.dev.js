@@ -12,14 +12,15 @@
  */
 import { app, BrowserWindow } from 'electron';
 import storage from 'electron-json-storage';
+import Cookie from 'js-cookie';
 import electronOauth2 from 'electron-oauth2';
-import express from 'express';
+// import express from 'express';
 import request from 'request';
 import MenuBuilder from './menu';
 
 let mainWindow = null;
 
-const router = express.Router();
+// const router = express.Router();
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -63,37 +64,36 @@ const config = {
   redirectUri: 'http://localhost:1212/'
 };
 
-const tokenPromise = new Promise((resolve, reject) => {
-  storage.has('accessToken', (error, hasKey) => {
-    if (hasKey) {
-      resolve('Stuff worked! There is a key!');
-    } else {
-      reject(Error(`It broke: ${error}`));
-    }
-  });
-});
-
-router.get('/manufacturers', () => {
-  console.log('I made it here!!');
-  tokenPromise.then((result) => {
-    storage.get('accessToken', (error, data) => {
-      if (error) {
-        throw error;
-      }
-      console.log(data.access_token);
-      // Make first request
-      const req = { method: 'GET',
-        url: 'https://api.shapeways.com/manufacturers/v1',
-        headers:
-        { authorization: `bearer ${data.access_token}` }
-      };
-      request(req, (err, response, body) => {
-        if (err) throw new Error(err);
-        console.log(body);
-      });
-    });
-  }).catch(console.log('Had an Error...'));
-});
+// const tokenPromise = new Promise((resolve, reject) => {
+//   storage.has('accessToken', (error, hasKey) => {
+//     if (hasKey) {
+//       resolve('Stuff worked! There is a key!');
+//     } else {
+//       reject(Error(`It broke: ${error}`));
+//     }
+//   });
+// });
+//
+// // This should be on the react side only store the token in a cookie and then
+// // retreieve and use it with only on the react side
+// tokenPromise.then((result) => {
+//   storage.get('accessToken', (error, data) => {
+//     if (error) {
+//       throw error;
+//     }
+//     console.log(data.access_token);
+//     // Make first request
+//     const req = { method: 'GET',
+//       url: 'https://api.shapeways.com/manufacturers/v1',
+//       headers:
+//       { authorization: `bearer ${data.access_token}` }
+//     };
+//     request(req, (err, response, body) => {
+//       if (err) throw new Error(err);
+//       console.log(body);
+//     });
+//   });
+// }).catch(console.log('Had an Error...'));
 
 
 app.on('ready', async () => {
@@ -108,6 +108,8 @@ app.on('ready', async () => {
   });
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
+
+  mainWindow.webContents.openDevTools();
 
   // @TODO: Use 'ready-to-show' event
   //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
@@ -135,12 +137,13 @@ app.on('ready', async () => {
   const myApiOauth = electronOauth2(config, windowParams);
 
   myApiOauth.getAccessToken(options)
-    .then(token => {
-      storage.set('accessToken', token, function(error) {
-        if (error) {
-          throw error
-        }
-      });
+  .then(token => {
+    storage.set('accessToken', token, function(error) {
+      if (error) {
+        throw error
+      }
+    });
+  });
 
       // const acctoken = readtoken();
       // console.log("HERE IT IS", acctoken);
@@ -153,7 +156,6 @@ app.on('ready', async () => {
         }
         // TODO: Store refresh token for later
       });
-    });
     });
 
   mainWindow.on('closed', () => {

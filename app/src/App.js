@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import storage from 'electron-json-storage';
+import axios from 'axios'
+// import request from 'request';
 // import Cookie from 'js-cookie';
 // import request from 'request';
 import Manufacturers from './components/Manufacturers';
@@ -90,15 +93,39 @@ class App extends Component {
   //
   //   request(options, callback);
 
-  fetch('/manufacturers', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-    .then(response => response.json())
-    .then(({ manufacturers: allManufacturers }) => this.setState({ allManufacturers }));
+  const tokenPromise = new Promise((resolve, reject) => {
+    storage.has('accessToken', (error, hasKey) => {
+      if (hasKey) {
+        resolve('Stuff worked! There is a key!');
+      } else {
+        reject(Error(`It broke: ${error}`));
+      }
+    });
+  });
+
+  tokenPromise.then((result) => {
+    storage.get('accessToken', (error, data) => {
+      if (error) {
+        throw error;
+      }
+      console.log(data.access_token);
+      // Make first request
+      const req = { method: 'get',
+        url: 'https://api.shapeways.com/manufacturers/v1',
+        headers:
+        { authorization: `bearer ${data.access_token}` }
+      };
+      axios(req)
+      .then((response) => {
+        console.log(response);
+        return response.data;
+      })
+      .then(({ manufacturers: allManufacturers }) => this.setState({ allManufacturers }))
+      .catch((err) => console.log(err));
+    });
+  });
   }
+
 
   fetchStatuses() {
     let id = this.state.manufacturerId;

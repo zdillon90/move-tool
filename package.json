@@ -187,6 +187,7 @@
   "dependencies": {
     "ajv": "^5.2.2",
     "ajv-keywords": "^2.1.0",
+    "axios": "^0.16.2",
     "bootstrap": "^4.0.0-alpha.6",
     "electron-debug": "^1.1.0",
     "electron-json-storage": "^3.0.7",
