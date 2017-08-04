@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { InshapeAPI } from './Utils';
 import storage from 'electron-json-storage';
 import axios from 'axios';
 import Manufacturers from './components/Manufacturers';
@@ -38,39 +39,49 @@ class App extends Component {
     //     }
     //   });
     // });
-
     // tokenPromise.then((result) => {
-    storage.get('accessToken', (error, data) => {
-      if (error) {
-        throw error;
-      }
-      console.log(data);
-      const req = { method: 'get',
-        url: 'https://api.shapeways.com/manufacturers/v1',
-        headers:
-        { authorization: `bearer ${data}` }
-      };
-      axios(req)
-      .then((response) => {
-        console.log(response);
-        if (response.status === 200) {
-          this.setState({ authorized: true });
-        }
-        return response.data;
-      })
-      .then(({ manufacturers: allManufacturers }) => this.setState({ allManufacturers }))
-      .catch((err) => console.log(err));
-    });
+
+    // storage.get('accessToken', (error, data) => {
+    //   if (error) {
+    //     throw error;
+    //   }
+    //   console.log(data);
+    //   const req = { method: 'get',
+    //     url: 'https://api.shapeways.com/manufacturers/v1',
+    //     headers:
+    //     { authorization: `bearer ${data}` }
+    //   };
+    //   axios(req)
+    //   .then((response) => {
+    //     console.log(response);
+    //     if (response.status === 200) {
+    //       this.setState({ authorized: true });
+    //     }
+    //     return response.data;
+    //   })
+    //   .then(({ manufacturers: allManufacturers }) => this.setState({ allManufacturers }))
+    //   .catch((err) => console.log(err));
+    // });
+
       // return result;
     // }).catch((promError) => console.log(promError));
-  }
 
+    InshapeAPI('get', 'https://api.shapeways.com/manufacturers/v1')
+    .then((response) => {
+      console.log('made it back');
+      console.log(response);
+      this.setState({ allManufacturers: response.manufacturers });
+    })
+    // .then(({ manufacturers: allManufacturers }) => this.setState({ allManufacturers }))
+    // Add a then here to set manufacturers...?
+    .catch((err) => err);
+  }
 
   fetchStatuses() {
     const id = this.state.manufacturerId;
     const manufacturerUrl = `/manufacturer/${id}`;
     fetch(manufacturerUrl)
-      .then( response => response.json() )
+      .then(response => response.json())
       .then( ({productionProcesses: processes}) =>
         this.setState({processes}, this.defaultCheck));
   }
