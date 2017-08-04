@@ -15,7 +15,7 @@ const tokenPromise = new Promise((resolve, reject) => {
   });
 });
 
-export function InshapeAPI(requestMethod, endpoint) {
+export function InshapeAPI(requestMethod, endpoint, body) {
   return new Promise((resolve, reject) => {
     tokenPromise.then((data) => data)
     .then((token) => {
@@ -26,14 +26,19 @@ export function InshapeAPI(requestMethod, endpoint) {
           authorization: `bearer ${token}`
         }
       };
+      if (requestMethod === 'patch') {
+        req.body = body;
+      }
       axios(req)
       .then((response) => {
+        console.log(response);
         if (response.status === 200) {
           // Resolve the promise with the response text
           resolve(response.data);
         } else {
           // Otherwise reject with the status text
           // which will hopefully be a meaningful error
+          console.log(response.statusText);
           reject(Error(response.statusText));
         }
       })

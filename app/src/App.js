@@ -79,11 +79,7 @@ class App extends Component {
       subStatusIds.push(list.id);
     });
     const IdsString = subStatusIds.toString();
-    const poURL = `https://api.shapeways.com/production_orders/v1?manufacturer=${id}&subStatus=${IdsString}`
-    // fetch(poURL)
-    //   .then ( response => response.json() )
-    //   .then ( ({productionOrders: pos}) =>
-    //     this.setState({pos}));
+    const poURL = `https://api.shapeways.com/production_orders/v1?manufacturer=${id}&subStatus=${IdsString}`;
     InshapeAPI('get', poURL)
     .then((response) => {
       this.setState({ pos: response.productionOrders });
@@ -93,8 +89,8 @@ class App extends Component {
 
 
   defaultCheck() {
-    let currentProcesses = this.state.processes
-    const defaultName = {name: "default"}
+    const currentProcesses = this.state.processes;
+    const defaultName = { name: 'default' };
     if (currentProcesses.length === 1) {
       this.setProcessName(defaultName);
     }
@@ -105,31 +101,42 @@ class App extends Component {
   }
 
   patchPos(poPatchList) {
-    fetch('/update_production_orders', {
-      method: 'PATCH',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(poPatchList)
-    })
-    .then ( response => response.json() )
-    .then(function(jsonResponse) {
-      this.setState({patchResult: jsonResponse.result}, this.defaultCheck);
-
-      // If we have an error to display, reset after 3 seconds
-      if (jsonResponse.result !== "") {
+    // fetch('/update_production_orders', {
+    //   method: 'PATCH',
+    //   headers: {
+    //     'Accept': 'application/json',
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(poPatchList)
+    // })
+    // .then ( response => response.json() )
+    // .then(function(jsonResponse) {
+    //   this.setState({patchResult: jsonResponse.result}, this.defaultCheck);
+    //
+    //   // If we have an error to display, reset after 3 seconds
+    //   if (jsonResponse.result !== '') {
+    //     this.setStateWithTimeout('patchResult', '', 3000);
+    //   }
+    // }.bind(this));
+    const patchPoURL = 'https://api.shapeways.com/production_orders/v1'
+    const jsonPoList = JSON.stringify(poPatchList)
+    InshapeAPI('patch', patchPoURL, jsonPoList)
+    .then(function(response) {
+      this.setState({
+        patchResult: response.result
+      }, this.defaultCheck);
+      if (response.result !== '') {
         this.setStateWithTimeout('patchResult', '', 3000);
       }
     }.bind(this))
-
+    .catch((err) => err);
   }
 
   setStateWithTimeout(key, value, time) {
     return setTimeout(function() {
-        var newState = {};
-        newState[key] = value;
-        this.setState(newState);
+      const newState = {};
+      newState[key] = value;
+      this.setState(newState);
     }.bind(this), time);
   }
 
