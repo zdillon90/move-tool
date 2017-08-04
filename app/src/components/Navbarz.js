@@ -26,10 +26,10 @@ class Navbarz extends Component {
   }
   // TODO Change the Authorize Nav Link from a button to a indication if the user is Authoized
   render() {
-    let manufacturer = this.props.manufacturer;
-    let process = this.props.process;
-    let result = this.props.result;
-    let authorized = this.props.authorized
+    const manufacturer = this.props.manufacturer;
+    const process = this.props.process;
+    const result = this.props.result;
+    const authorized = this.props.authorized
     return (
       <div>
         <Navbar color="inverse" inverse toggleable>

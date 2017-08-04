@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { InshapeAPI } from './Utils';
-import storage from 'electron-json-storage';
-import axios from 'axios';
 import Manufacturers from './components/Manufacturers';
 import Navbarz from './components/Navbarz';
 import SubTableBody from './components/SubTableBody';
@@ -30,74 +28,40 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // const tokenPromise = new Promise((resolve, reject) => {
-    //   storage.has('accessToken', (error, hasKey) => {
-    //     if (hasKey) {
-    //       resolve('Stuff worked! There is a key!');
-    //     } else {
-    //       reject(Error(`It broke: ${error}`));
-    //     }
-    //   });
-    // });
-    // tokenPromise.then((result) => {
-
-    // storage.get('accessToken', (error, data) => {
-    //   if (error) {
-    //     throw error;
-    //   }
-    //   console.log(data);
-    //   const req = { method: 'get',
-    //     url: 'https://api.shapeways.com/manufacturers/v1',
-    //     headers:
-    //     { authorization: `bearer ${data}` }
-    //   };
-    //   axios(req)
-    //   .then((response) => {
-    //     console.log(response);
-    //     if (response.status === 200) {
-    //       this.setState({ authorized: true });
-    //     }
-    //     return response.data;
-    //   })
-    //   .then(({ manufacturers: allManufacturers }) => this.setState({ allManufacturers }))
-    //   .catch((err) => console.log(err));
-    // });
-
-      // return result;
-    // }).catch((promError) => console.log(promError));
-
     InshapeAPI('get', 'https://api.shapeways.com/manufacturers/v1')
     .then((response) => {
-      console.log('made it back');
-      console.log(response);
-      this.setState({ allManufacturers: response.manufacturers });
+      this.setState({
+        allManufacturers: response.manufacturers,
+        authorized: true
+      });
     })
-    // .then(({ manufacturers: allManufacturers }) => this.setState({ allManufacturers }))
-    // Add a then here to set manufacturers...?
     .catch((err) => err);
   }
 
   fetchStatuses() {
     const id = this.state.manufacturerId;
-    const manufacturerUrl = `/manufacturer/${id}`;
-    fetch(manufacturerUrl)
-      .then(response => response.json())
-      .then( ({productionProcesses: processes}) =>
-        this.setState({processes}, this.defaultCheck));
+    const manufacturerUrl = `https://api.shapeways.com/manufacturers/${id}/v1`;
+    InshapeAPI('get', manufacturerUrl)
+    .then((response) => {
+      this.setState({
+        processes: response.productionProcesses
+      }, this.defaultCheck);
+    })
+    .catch((err) => err);
   }
 
-  handleManufacturerChange(man_name, man_id) {
+  handleManufacturerChange(manName, manId) {
     this.setState(
       {
-        manufacturer: man_name,
-        manufacturerId: man_id
+        manufacturer: manName,
+        manufacturerId: manId
       },
       this.fetchStatuses
     );
   }
 
   setProcessName(target) {
-    this.state.processes.forEach(function(list) {
+    this.state.processes.forEach((list) => {
       if (list.name === target.name) {
         this.setState({
           process: list
@@ -107,19 +71,24 @@ class App extends Component {
   }
 
   fetchProductionOrders() {
-    let id = this.state.manufacturerId;
-    let process = this.state.process;
-    let processSteps = process.processSteps;
-    let subStatusIds = []
-    processSteps.forEach(function(list) {
+    const id = this.state.manufacturerId;
+    const process = this.state.process;
+    const processSteps = process.processSteps;
+    const subStatusIds = [];
+    processSteps.forEach((list) => {
       subStatusIds.push(list.id);
     });
-    let IdsString = subStatusIds.toString();
-    const poURL = '/production_orders/manufacturer=' + id + '/sub_statuses=' + IdsString;
-    fetch(poURL)
-      .then ( response => response.json() )
-      .then ( ({productionOrders: pos}) =>
-        this.setState({pos}));
+    const IdsString = subStatusIds.toString();
+    const poURL = `https://api.shapeways.com/production_orders/v1?manufacturer=${id}&subStatus=${IdsString}`
+    // fetch(poURL)
+    //   .then ( response => response.json() )
+    //   .then ( ({productionOrders: pos}) =>
+    //     this.setState({pos}));
+    InshapeAPI('get', poURL)
+    .then((response) => {
+      this.setState({ pos: response.productionOrders });
+    })
+    .catch((err) => err);
   }
 
 
