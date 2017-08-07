@@ -27,7 +27,7 @@ export function InshapeAPI(requestMethod, endpoint, body) {
         }
       };
       if (requestMethod === 'patch') {
-        req.body = body;
+        req.data = body;
       }
       axios(req)
       .then((response) => {

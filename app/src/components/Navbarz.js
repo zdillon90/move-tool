@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import MoveAlert from './MoveAlert';
+import { shell } from 'electron';
 import {
   Collapse,
   Navbar,
@@ -9,6 +9,7 @@ import {
   NavItem,
   NavLink
 } from 'reactstrap';
+import MoveAlert from './MoveAlert';
 
 // TODO Add a refreash button
 class Navbarz extends Component {
@@ -24,7 +25,9 @@ class Navbarz extends Component {
       isOpen: !this.state.isOpen
     });
   }
-  // TODO Change the Authorize Nav Link from a button to a indication if the user is Authoized
+  handleInshapeClick() {
+    shell.openExternal('https://inshape.shapeways.com/');
+  }
   render() {
     const manufacturer = this.props.manufacturer;
     const process = this.props.process;
@@ -38,7 +41,7 @@ class Navbarz extends Component {
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink href="https://inshape.shapeways.com">Inshape</NavLink>
+                <NavLink onClick={this.handleInshapeClick}>Inshape</NavLink>
               </NavItem>
               <NavItem>
                 {authorized ? (
