@@ -14,6 +14,7 @@ import { app, BrowserWindow } from 'electron';
 import storage from 'electron-json-storage';
 import electronOauth2 from 'electron-oauth2';
 import MenuBuilder from './menu';
+import { InshapeAPI } from './src/Utils';
 
 let mainWindow = null;
 
@@ -74,8 +75,6 @@ app.on('ready', async () => {
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
 
-  mainWindow.webContents.openDevTools();
-
   // @TODO: Use 'ready-to-show' event
   //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
   mainWindow.webContents.on('did-finish-load', () => {
@@ -101,30 +100,44 @@ app.on('ready', async () => {
 
   const myApiOauth = electronOauth2(config, windowParams);
 
-  myApiOauth.getAccessToken(options)
-    .then((token, error) => {
-      console.log(`Electron ${token.access_token}`);
-      storage.set('accessToken', token.access_token)
-      .catch((err) => {
-        console.log(`Storage of access_token Error: ${err}`);
-      });
-
-      myApiOauth.refreshToken(token.refresh_token)
-      .then((newToken, refreshError) => {
-        console.log(`refresh token: ${newToken}`);
-        storage.set('refreshToken', newToken)
+  InshapeAPI('get', 'https://api.shapeways.com/manufacturers/v1')
+    .then((response) => {
+      if (response.status === 200) {
+        myApiOauth.getAccessToken(options)
+        .then((token, error) => {
+          // console.log(`Electron ${token.access_token}`);
+          storage.set('accessToken', token.access_token)
+          .catch((err) => {
+            console.error(`Storage of access_token Error: ${err}`);
+          });
+          // console.log(`Electron ${token.refresh_token}`);
+          storage.set('refreshToken', token.refresh_token)
+          .catch((err) => {
+            console.error(`Storage of refresh_token Error: ${err}`);
+          });
+          throw error;
+        })
         .catch((err) => {
-          console.log(`Storage of token Error: ${err}`);
+          console.error(`Aquire Refresh Token Error ${err}`);
         });
-        throw refreshError;
-      })
-      .catch((err) => {
-        console.log(`Aquire Refresh Token Error ${err}`);
-      });
-      throw error;
+      } else {
+        const reToken = storage.get('refreshToken');
+        myApiOauth.refreshToken(reToken)
+        .then((newToken, refreshError) => {
+          // console.log(`refresh token: ${newToken}`);
+          storage.set('refreshToken', newToken)
+          .catch((err) => {
+            console.error(`Storage of token Error: ${err}`);
+          });
+          throw refreshError;
+        })
+        .catch((err) => {
+          console.error(`Aquire Refresh Token Error ${err}`);
+        });
+      }
     })
-    .catch((err) => {
-      console.log(`Aquire Access Token Error ${err}`);
+    .catch((getErr) => {
+      console.error(`Start up API token Error: ${getErr}`);
     });
 
   mainWindow.on('closed', () => {
