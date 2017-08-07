@@ -1,8 +1,8 @@
 {
   "name": "production-batch-movement-tool",
-  "productName": "ElectronReact",
+  "productName": "Inshape Move Tool",
   "version": "0.12.0",
-  "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
+  "description": "Drag and Drop Inshape batch movement application. Used to move batches through the Shapeways manufacturing processes",
   "scripts": {
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 node --trace-warnings ./test/runTests.js",
     "test-all": "npm run lint && npm run flow && npm run test && npm run build && npm run test-e2e",
@@ -31,8 +31,8 @@
   },
   "browserslist": "electron 1.6",
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.develar.ElectronReact",
+    "productName": "Inshape Move Tool",
+    "appId": "org.develar.Inshape_Move_Tool",
     "files": [
       "dist/",
       "node_modules/",
@@ -73,16 +73,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chentsulin/electron-react-boilerplate.git"
-  },
-  "author": {
-    "name": "C. T. Lin",
-    "email": "chentsulin@gmail.com",
-    "url": "https://github.com/chentsulin"
-  },
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/chentsulin/electron-react-boilerplate/issues"
+    "url": "git+https://github.com/Shapeways/production-batch-movement-tool.git"
   },
   "keywords": [
     "electron",
