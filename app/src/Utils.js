@@ -16,28 +16,35 @@ const tokenPromise = new Promise((resolve, reject) => {
   });
 });
 
-function getRefreshToken(token) {
-  const refreshReq = {
-    method: 'post',
-    url: 'https://api.shapeways.com/oauth2/token',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json'
-    },
-    grant_type: 'refresh_token',
-    response_type: 'token',
-    client_id: config.clientId,
-    refresh_token: token.refresh_token
-  };
-  console.log('Trying to get new token');
-  return axios(refreshReq);
+function getRefreshToken() {
+  console.log(tokenPromise);
+  console.log(tokenPromise.then((data) => data));
+  return new Promise((resolve, reject) => {
+    tokenPromise.then((data) => data)
+      .then((token) => {
+        const refreshReq = {
+          method: 'post',
+          url: 'https://api.shapeways.com/oauth2/token',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Accept: 'application/json'
+          },
+          grant_type: 'refresh_token',
+          response_type: 'token',
+          client_id: config.clientId,
+          refresh_token: token.refresh_token
+        };
+        console.log('Trying to get new token');
+        return axios(refreshReq);
+      });
+  })
 }
 
 axios.interceptors.response.use(undefined, (err) => {
   console.log('intercepting!!!');
-  console.log(`*${err}*`);
-  if (err.status === 404) {
-    return getRefreshToken()
+  console.log(err.response);
+  if (err.response.status === 400) {
+    getRefreshToken()
     .then((success) => {
       storage.set('token', success);
       console.log('new token set');
