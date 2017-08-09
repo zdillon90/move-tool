@@ -103,6 +103,7 @@ class App extends Component {
   patchPos(poPatchList) {
     const patchPoURL = 'https://api.shapeways.com/production_orders/v1';
     const jsonPoList = JSON.stringify(poPatchList);
+    this.setState({ patchResult: 'loading' });
     InshapeAPI('patch', patchPoURL, jsonPoList)
     .then((response) => {
       this.setState({

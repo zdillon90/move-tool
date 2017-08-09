@@ -24,7 +24,7 @@ class ProcessDrop extends Component {
   }
 
   handleChange(event) {
-    console.log(event.target);
+    // console.log(event.target);
     this.props.onProcessChange(event.target)
   }
 

@@ -1,11 +1,12 @@
 // Placeholder for the Inshape API endpoints
 import storage from 'electron-json-storage';
 import axios from 'axios';
+import config from './inshape_config.json';
 
 const tokenPromise = new Promise((resolve, reject) => {
-  storage.has('accessToken', (error, hasKey) => {
+  storage.has('token', (error, hasKey) => {
     if (hasKey) {
-      storage.get('accessToken', (err, data) => {
+      storage.get('token', (err, data) => {
         if (err) throw err;
         resolve(data);
       });
@@ -13,6 +14,42 @@ const tokenPromise = new Promise((resolve, reject) => {
       reject(Error(`Storage Error: ${error}`));
     }
   });
+});
+
+function getRefreshToken(token) {
+  const refreshReq = {
+    method: 'post',
+    url: 'https://api.shapeways.com/oauth2/token',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json'
+    },
+    grant_type: 'refresh_token',
+    response_type: 'token',
+    client_id: config.clientId,
+    refresh_token: token.refresh_token
+  };
+  console.log('Trying to get new token');
+  return axios(refreshReq);
+}
+
+axios.interceptors.response.use(undefined, (err) => {
+  console.log('intercepting!!!');
+  console.log(`*${err}*`);
+  if (err.status === 404) {
+    return getRefreshToken()
+    .then((success) => {
+      storage.set('token', success);
+      console.log('new token set');
+      return axios(err.config);
+    })
+    .catch((error) => {
+      console.log('Refresh login error: ', error);
+      throw error;
+    });
+  } else {
+    console.log('Did not catch error');
+  }
 });
 
 export function InshapeAPI(requestMethod, endpoint, body) {
@@ -23,27 +60,46 @@ export function InshapeAPI(requestMethod, endpoint, body) {
         method: requestMethod,
         url: endpoint,
         headers: {
-          authorization: `bearer ${token}`
+          authorization: `bearer ${token.access_token}`
         }
       };
+
       if (requestMethod === 'patch') {
         req.data = body;
       }
+
+      console.log('Inshape Call');
       axios(req)
-      .then((response) => {
-        console.log(response);
-        if (response.status === 200) {
-          // Resolve the promise with the response text
+        .then((response) => {
+          console.log(response);
           resolve(response.data);
-        } else {
+        })
+        .catch((err) => {
+          console.error(err);
+          reject(Error(err.statusText));
+          // // TODO Put the refresh token logic here!
+          // console.log('Going to use the refresh token');
+          // axios(refreshReq)
+          //   .then((refreshResponce) => {
+          //     storage.set('token', refreshResponce);
+          //     console.log('Used refresh token');
+          //     return refreshResponce
+          //   })
+          //   .then((refreshResponce) => {
+          //     req.headers = {
+          //       authorization: `bearer ${refreshResponce.access_token}`
+          //     }
+          //     axios(req)
+          //       .then((res) => res.data)
+          //       .catch((err) => console.error(err));
+          //   })
+          //   .catch((err) => console.error(err));
+
           // Otherwise reject with the status text
           // which will hopefully be a meaningful error
-          console.log(response.statusText);
-          reject(Error(response.statusText));
-        }
-      })
-      .catch((err) => console.log(err));
-    })
-    .catch((err) => console.log(err));
+          // console.log(response.statusText);
+          // reject(Error(response.statusText));
+        });
+    }).catch((err) => console.error(err));
   });
 }

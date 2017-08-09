@@ -14,7 +14,8 @@ import { app, BrowserWindow } from 'electron';
 import storage from 'electron-json-storage';
 import electronOauth2 from 'electron-oauth2';
 import MenuBuilder from './menu';
-import { InshapeAPI } from './src/Utils';
+// import { InshapeAPI } from './src/Utils';
+import config from './src/inshape_config.json';
 
 let mainWindow = null;
 
@@ -42,7 +43,7 @@ const installExtensions = async () => {
 
   return Promise
     .all(extensions.map(name => installer.default(installer[name], forceDownload)))
-    .catch(console.log);
+    .catch(console.log());
 };
 
 app.on('window-all-closed', () => {
@@ -53,14 +54,15 @@ app.on('window-all-closed', () => {
   }
 });
 
-const config = {
-  clientId: '7sXjUlgZGrJNd8L9Xbt2asCjvodDrilKkdgBxmWrn8BTRGDPFY',
-  authorizationUrl: 'https://api.shapeways.com/oauth2/authorize',
-  tokenUrl: 'https://api.shapeways.com/oauth2/token',
-  response_type: 'token',
-  useBasicAuthorizationHeader: true,
-  redirectUri: 'http://localhost:1212/'
-};
+// Move to Inshape config file?
+// const config = {
+//   clientId: '7sXjUlgZGrJNd8L9Xbt2asCjvodDrilKkdgBxmWrn8BTRGDPFY',
+//   authorizationUrl: 'https://api.shapeways.com/oauth2/authorize',
+//   tokenUrl: 'https://api.shapeways.com/oauth2/token',
+//   response_type: 'token',
+//   useBasicAuthorizationHeader: true,
+//   redirectUri: 'http://localhost:1212/'
+// };
 
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
@@ -89,6 +91,7 @@ app.on('ready', async () => {
     alwaysOnTop: true,
     autoHideMenuBar: true,
     title: 'Authorization',
+    frame: false,
     webPreferences: {
       nodeIntegration: false
     }
@@ -98,47 +101,52 @@ app.on('ready', async () => {
     accessType: 'Bearer'
   };
 
+// TODO Correct the auth flow on startup
   const myApiOauth = electronOauth2(config, windowParams);
 
-  InshapeAPI('get', 'https://api.shapeways.com/manufacturers/v1')
-    .then((response) => {
-      if (response.status === 200) {
-        myApiOauth.getAccessToken(options)
-        .then((token, error) => {
-          // console.log(`Electron ${token.access_token}`);
-          storage.set('accessToken', token.access_token)
-          .catch((err) => {
-            console.error(`Storage of access_token Error: ${err}`);
-          });
-          // console.log(`Electron ${token.refresh_token}`);
-          storage.set('refreshToken', token.refresh_token)
-          .catch((err) => {
-            console.error(`Storage of refresh_token Error: ${err}`);
-          });
-          throw error;
-        })
-        .catch((err) => {
-          console.error(`Aquire Refresh Token Error ${err}`);
+  // InshapeAPI('get', 'https://api.shapeways.com/manufacturers/v1')
+  //   .then((response) => {
+      // if (response.status !== 200) {
+        // console.log(`Responce Status: ${response.status}`);
+
+
+        // If the Storage is empty and there is no token yet
+        storage.has('token', (error, hasKey) => {
+          if (!hasKey) {
+            myApiOauth.getAccessToken(options)
+            .then((token, getError) => {
+              storage.set('token', token)
+              .catch((err) => {
+                console.error(`Storage of access_token Error: ${err}`);
+              });
+              throw getError;
+            });
+          }
         });
-      } else {
-        const reToken = storage.get('refreshToken');
-        myApiOauth.refreshToken(reToken)
-        .then((newToken, refreshError) => {
-          // console.log(`refresh token: ${newToken}`);
-          storage.set('refreshToken', newToken)
-          .catch((err) => {
-            console.error(`Storage of token Error: ${err}`);
-          });
-          throw refreshError;
-        })
-        .catch((err) => {
-          console.error(`Aquire Refresh Token Error ${err}`);
-        });
-      }
-    })
-    .catch((getErr) => {
-      console.error(`Start up API token Error: ${getErr}`);
-    });
+
+
+        // .catch((err) => {
+        //   console.error(`Aquire Refresh Token Error ${err}`);
+        // });
+      // } else {
+      //   const reToken = storage.get('refreshToken');
+      //   myApiOauth.refreshToken(reToken)
+      //   .then((newToken, refreshError) => {
+      //     // console.log(`refresh token: ${newToken}`);
+      //     storage.set('refreshToken', newToken)
+      //     .catch((err) => {
+      //       console.error(`Storage of token Error: ${err}`);
+      //     });
+      //     throw refreshError;
+      //   })
+      //   .catch((err) => {
+      //     console.error(`Aquire Refresh Token Error ${err}`);
+      //   });
+      // }
+    // })
+    // .catch((getErr) => {
+    //   console.error(`Start up API token Error: ${getErr}`);
+    // });
 
   mainWindow.on('closed', () => {
     mainWindow = null;

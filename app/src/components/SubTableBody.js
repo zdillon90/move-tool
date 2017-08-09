@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Board } from 'react-trello';
 // import { connect, PromiseState } from 'react-refetch'
-import CardModal from './CardModal'
+import CardModal from './CardModal';
 
 class SubTableBody extends Component {
   constructor(props) {
@@ -9,11 +9,11 @@ class SubTableBody extends Component {
     this.state = {
       modal: false,
       metadata: {},
-      cardId: "",
-      sourceLaneId: "",
-      targetLaneId: "",
+      cardId: '',
+      sourceLaneId: '',
+      targetLaneId: '',
       formatedPoPatchList: []
-      };
+    };
     this.toggle = this.toggle.bind(this);
   }
 
@@ -24,8 +24,8 @@ class SubTableBody extends Component {
   }
 
   totalPoCountPerTray(productionOrders) {
-    let totalTrayListIds = [];
-    let totalTrayList = [];
+    const totalTrayListIds = [];
+    const totalTrayList = [];
     let poCount = 0;
     productionOrders.forEach(function(po) {
       let trayId = po.productionTrayId.toString();
@@ -78,23 +78,23 @@ class SubTableBody extends Component {
       })
       // Creation of tags for tray size
       if (~card.title.indexOf('P1')) {
-          tag.title = "P1 - Small"
-          tag.bgcolor = '#76448A'
+        tag.title = 'P1 - Small';
+        tag.bgcolor = '#76448A';
       } else if (~card.title.indexOf('P3')) {
-          tag.title = "P3 - Medium"
-          tag.bgcolor = '#239B56'
+        tag.title = 'P3 - Medium';
+        tag.bgcolor = '#239B56';
       } else if (~card.title.indexOf('P7')) {
-          tag.title = "P7 - Large"
-          tag.bgcolor = '#E67E22'
+        tag.title = 'P7 - Large';
+        tag.bgcolor = '#E67E22';
       } else if (~card.title.indexOf('RUSH') || ~card.title.indexOf('Rush')) {
-        tag.title = "RUSH"
-        tag.bgcolor = '#C70039'
+        tag.title = 'RUSH';
+        tag.bgcolor = '#C70039';
       } else if (~card.title.indexOf('XHD') || ~card.title.indexOf('xhd')) {
-        tag.title = "XHD"
-        tag.bgcolor = '#27AE60'
+        tag.title = 'XHD';
+        tag.bgcolor = '#27AE60';
       } else {
-        tag.title = "No Tray Class"
-        tag.bgcolor = '#808B96'
+        tag.title = 'No Tray Class';
+        tag.bgcolor = '#808B96';
       }
       trayTags.push(tag);
       card.tags = trayTags

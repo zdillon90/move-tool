@@ -1,0 +1,8 @@
+{
+  "clientId": "7sXjUlgZGrJNd8L9Xbt2asCjvodDrilKkdgBxmWrn8BTRGDPFY",
+  "authorizationUrl": "https://api.shapeways.com/oauth2/authorize",
+  "tokenUrl": "https://api.shapeways.com/oauth2/token",
+  "response_type": "token",
+  "useBasicAuthorizationHeader": true,
+  "redirectUri": "http://localhost:1212/"
+}
