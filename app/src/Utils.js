@@ -16,11 +16,27 @@ const tokenPromise = new Promise((resolve, reject) => {
   });
 });
 
+const refreshPromise = new Promise((resolve, reject) => {
+  storage.has('token', (error, haskey) => {
+    if (haskey) {
+      storage.get('token', (err, data) => {
+        if (err) throw err;
+        resolve(data);
+      });
+    } else {
+      reject(Error(`Storage Error: ${error}`))
+    }
+  });
+});
+
 function getRefreshToken() {
-  console.log(tokenPromise);
-  console.log(tokenPromise.then((data) => data));
+  // console.log(tokenPromise);
+  // console.log(tokenPromise.then((data) => data));
   return new Promise((resolve, reject) => {
-    tokenPromise.then((data) => data)
+    refreshPromise.then((data) => {
+      console.log(data);
+      return data;
+    })
       .then((token) => {
         const refreshReq = {
           method: 'post',
@@ -36,8 +52,12 @@ function getRefreshToken() {
         };
         console.log('Trying to get new token');
         return axios(refreshReq);
+      })
+      .catch((err) => {
+        console.error(err);
+        reject(err);
       });
-  })
+  });
 }
 
 axios.interceptors.response.use(undefined, (err) => {
@@ -79,33 +99,11 @@ export function InshapeAPI(requestMethod, endpoint, body) {
       axios(req)
         .then((response) => {
           console.log(response);
-          resolve(response.data);
+          return resolve(response.data);
         })
         .catch((err) => {
           console.error(err);
           reject(Error(err.statusText));
-          // // TODO Put the refresh token logic here!
-          // console.log('Going to use the refresh token');
-          // axios(refreshReq)
-          //   .then((refreshResponce) => {
-          //     storage.set('token', refreshResponce);
-          //     console.log('Used refresh token');
-          //     return refreshResponce
-          //   })
-          //   .then((refreshResponce) => {
-          //     req.headers = {
-          //       authorization: `bearer ${refreshResponce.access_token}`
-          //     }
-          //     axios(req)
-          //       .then((res) => res.data)
-          //       .catch((err) => console.error(err));
-          //   })
-          //   .catch((err) => console.error(err));
-
-          // Otherwise reject with the status text
-          // which will hopefully be a meaningful error
-          // console.log(response.statusText);
-          // reject(Error(response.statusText));
         });
     }).catch((err) => console.error(err));
   });
