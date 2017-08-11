@@ -1,7 +1,9 @@
 // Placeholder for the Inshape API endpoints
 import storage from 'electron-json-storage';
 import axios from 'axios';
+import queryString from 'query-string';
 import config from './inshape_config.json';
+
 
 const tokenPromise = new Promise((resolve, reject) => {
   storage.has('token', (error, hasKey) => {
@@ -16,68 +18,64 @@ const tokenPromise = new Promise((resolve, reject) => {
   });
 });
 
-const refreshPromise = new Promise((resolve, reject) => {
-  storage.has('token', (error, haskey) => {
-    if (haskey) {
-      storage.get('token', (err, data) => {
-        if (err) throw err;
-        resolve(data);
-      });
-    } else {
-      reject(Error(`Storage Error: ${error}`))
-    }
-  });
-});
-
-function getRefreshToken() {
-  // console.log(tokenPromise);
-  // console.log(tokenPromise.then((data) => data));
-  return new Promise((resolve, reject) => {
-    refreshPromise.then((data) => {
-      console.log(data);
-      return data;
-    })
-      .then((token) => {
-        const refreshReq = {
-          method: 'post',
-          url: 'https://api.shapeways.com/oauth2/token',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Accept: 'application/json'
-          },
-          grant_type: 'refresh_token',
-          response_type: 'token',
-          client_id: config.clientId,
-          refresh_token: token.refresh_token
-        };
-        console.log('Trying to get new token');
-        return axios(refreshReq);
-      })
-      .catch((err) => {
-        console.error(err);
-        reject(err);
-      });
-  });
-}
-
 axios.interceptors.response.use(undefined, (err) => {
   console.log('intercepting!!!');
-  console.log(err.response);
-  if (err.response.status === 400) {
-    getRefreshToken()
+  console.log(err.config);
+  let res = err.response;
+  // TODO Add a condition to chek to see if the reason was bearer experation
+  if (res.status === 400 && res.config && !res.config.__isRetryRequest) {
+    return getRefreshToken(err.config)
     .then((success) => {
-      storage.set('token', success);
-      console.log('new token set');
-      return axios(err.config);
+      if (success !== undefined) {
+        console.log(`Success: ${success}`);
+        storage.set('token', success);
+        err.config.__isRetryRequest = true;
+        err.config.headers.Authorization = `Bearer ${success.data}`;
+        console.log('new token set');
+        // TODO fix the following axios call to redo the last request
+        return axios(err.config);
+      }
     })
     .catch((error) => {
       console.log('Refresh login error: ', error);
       throw error;
     });
-  } else {
-    console.log('Did not catch error');
   }
+  throw err;
 });
+
+function getRefreshToken(data) {
+  return new Promise((resolve, reject) => {
+    console.log(data.headers.refresh);
+    const body = {
+      grant_type: 'refresh_token',
+      client_id: config.clientId,
+      refresh_token: data.headers.refresh
+    };
+    const refreshReq = {
+      method: 'post',
+      url: 'https://api.shapeways.com/oauth2/token',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      data: queryString.stringify(body)
+    };
+    console.log('Trying to get new token');
+    refreshReq.headers.Authorization = 'Basic ' + new Buffer(config.clientId + ':' + config.clientSecret).toString('base64');
+    axios(refreshReq)
+      .then((response) => {
+        console.log(response);
+        if (response.status === 200) {
+          resolve(response.data);
+        } else {
+          reject(Error(response));
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  });
+}
 
 export function InshapeAPI(requestMethod, endpoint, body) {
   return new Promise((resolve, reject) => {
@@ -87,7 +85,8 @@ export function InshapeAPI(requestMethod, endpoint, body) {
         method: requestMethod,
         url: endpoint,
         headers: {
-          authorization: `bearer ${token.access_token}`
+          authorization: `bearer ${token.access_token}`,
+          refresh: token.refresh_token
         }
       };
 
@@ -96,14 +95,18 @@ export function InshapeAPI(requestMethod, endpoint, body) {
       }
 
       console.log('Inshape Call');
+      console.log(token);
       axios(req)
         .then((response) => {
           console.log(response);
-          return resolve(response.data);
+          if (response.status === 200) {
+            resolve(response.data);
+          } else {
+            reject(Error(response));
+          }
         })
         .catch((err) => {
           console.error(err);
-          reject(Error(err.statusText));
         });
     }).catch((err) => console.error(err));
   });
