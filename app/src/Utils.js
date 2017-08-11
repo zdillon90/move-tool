@@ -62,6 +62,7 @@ function getRefreshToken(data) {
     };
     console.log('Trying to get new token');
     refreshReq.headers.Authorization = 'Basic ' + new Buffer(config.clientId + ':' + config.clientSecret).toString('base64');
+    // TODO that refresh token is only given out once, I need to grab it form storage
     axios(refreshReq)
       .then((response) => {
         console.log(response);
