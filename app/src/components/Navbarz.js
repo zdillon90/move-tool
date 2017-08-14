@@ -32,7 +32,8 @@ class Navbarz extends Component {
     const manufacturer = this.props.manufacturer;
     const process = this.props.process;
     const result = this.props.result;
-    const authorized = this.props.authorized
+    const authorized = this.props.authorized;
+    const refreshButton = this.props.refresh;
     return (
       <div>
         <Navbar color="inverse" inverse toggleable>

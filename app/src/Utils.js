@@ -19,7 +19,6 @@ const accessTokenPromise = new Promise((resolve, reject) => {
   });
 });
 
-// TODO Make a new Promise for the Refresh Token
 const refreshTokenPromise = new Promise((resolve, reject) => {
   storage.has('token', (error, hasKey) => {
     if (hasKey) {
@@ -43,11 +42,20 @@ axios.interceptors.response.use(undefined, (err) => {
     return getRefreshToken()
     .then((success) => {
       if (success !== undefined) {
-        console.log(`Success: ${success}`);
-        storage.set('token', success);
+        console.log('Success:');
+        console.log(success);
+        const newToken = success.access_token;
+        storage.get('token', (error, data) => {
+          if (error) throw error;
+          const token = data;
+          token.access_token = newToken;
+        });
+        // This writes over the entire token with no refresh!
+        // Figure out how to store the new token but to keep the old refresh_token.
         err.config.__isRetryRequest = true;
-        err.config.headers.Authorization = `Bearer ${success.data}`;
+        err.config.headers.authorization = `bearer ${success.access_token}`;
         console.log('new token set');
+        console.log(err);
         // TODO fix the following axios call to redo the last request
         return axios(err.config);
       }

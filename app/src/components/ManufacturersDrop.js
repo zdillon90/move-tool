@@ -30,14 +30,20 @@ class ManufacturersDrop extends Component {
   }
 
   render() {
-    let items = this.props.list;
+    const items = this.props.list;
+    let header = null;
+    if (items.length > 1) {
+      header = <DropdownItem header>Choose One</DropdownItem>;
+    } else {
+      header = <DropdownItem header>Loading...</DropdownItem>;
+    }
     return (
       <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
         <DropdownToggle caret>
           Manufacturers
         </DropdownToggle>
         <DropdownMenu>
-          <DropdownItem header>Choose One</DropdownItem>
+          {header}
           {items.map(item =>
             <DropdownItem
               key={item.id}
