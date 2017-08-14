@@ -41,6 +41,13 @@ class Navbarz extends Component {
           <NavbarBrand href="">Inshape Movement Tool</NavbarBrand>
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
+              {process ? (
+                <NavItem>
+                  <NavLink disabled onClick={refreshButton}>Refresh</NavLink>
+                </NavItem>
+              ) : (
+                <NavLink></NavLink>
+              )}
               <NavItem>
                 <NavLink onClick={this.handleInshapeClick}>Inshape</NavLink>
               </NavItem>

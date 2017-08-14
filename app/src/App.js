@@ -154,7 +154,7 @@ class App extends Component {
     return (
       <div>
         <Navbarz
-          refresh={this.fetchProductionOrders}
+          refresh={this.fetchStatuses}
           manufacturer={manufacturer}
           process={currentProcess}
           result={result}

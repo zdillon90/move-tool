@@ -46,6 +46,12 @@ const installExtensions = async () => {
     .catch(console.log());
 };
 
+// app.on('before-quit', () => {
+//   storage.clear((error) => {
+//     if (error) throw error;
+//   });
+// });
+
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
@@ -54,15 +60,6 @@ app.on('window-all-closed', () => {
   }
 });
 
-// Move to Inshape config file?
-// const config = {
-//   clientId: '7sXjUlgZGrJNd8L9Xbt2asCjvodDrilKkdgBxmWrn8BTRGDPFY',
-//   authorizationUrl: 'https://api.shapeways.com/oauth2/authorize',
-//   tokenUrl: 'https://api.shapeways.com/oauth2/token',
-//   response_type: 'token',
-//   useBasicAuthorizationHeader: true,
-//   redirectUri: 'http://localhost:1212/'
-// };
 
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
@@ -99,52 +96,20 @@ app.on('ready', async () => {
     accessType: 'Bearer'
   };
 
-// TODO Correct the auth flow on startup
   const myApiOauth = electronOauth2(config, windowParams);
 
-  // InshapeAPI('get', 'https://api.shapeways.com/manufacturers/v1')
-  //   .then((response) => {
-      // if (response.status !== 200) {
-        // console.log(`Responce Status: ${response.status}`);
-
-
-        // If the Storage is empty and there is no token yet
-        storage.has('token', (error, hasKey) => {
-          if (!hasKey) {
-            myApiOauth.getAccessToken(options)
-            .then((token, getError) => {
-              storage.set('token', token)
-              .catch((err) => {
-                console.error(`Storage of access_token Error: ${err}`);
-              });
-              throw getError;
-            });
-          }
+  // storage.has('token', (error, hasKey) => {
+  //   if (!hasKey) {
+      myApiOauth.getAccessToken(options)
+      .then((token, getError) => {
+        storage.set('token', token)
+        .catch((err) => {
+          console.error(`Storage of access_token Error: ${err}`);
         });
-
-
-        // .catch((err) => {
-        //   console.error(`Aquire Refresh Token Error ${err}`);
-        // });
-      // } else {
-      //   const reToken = storage.get('refreshToken');
-      //   myApiOauth.refreshToken(reToken)
-      //   .then((newToken, refreshError) => {
-      //     // console.log(`refresh token: ${newToken}`);
-      //     storage.set('refreshToken', newToken)
-      //     .catch((err) => {
-      //       console.error(`Storage of token Error: ${err}`);
-      //     });
-      //     throw refreshError;
-      //   })
-      //   .catch((err) => {
-      //     console.error(`Aquire Refresh Token Error ${err}`);
-      //   });
-      // }
-    // })
-    // .catch((getErr) => {
-    //   console.error(`Start up API token Error: ${getErr}`);
-    // });
+        throw getError;
+      });
+  //   }
+  // });
 
   mainWindow.on('closed', () => {
     mainWindow = null;
