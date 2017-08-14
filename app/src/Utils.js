@@ -49,9 +49,8 @@ axios.interceptors.response.use(undefined, (err) => {
           if (error) throw error;
           const token = data;
           token.access_token = newToken;
+          storage.set('token', token);
         });
-        // This writes over the entire token with no refresh!
-        // Figure out how to store the new token but to keep the old refresh_token.
         err.config.__isRetryRequest = true;
         err.config.headers.authorization = `bearer ${success.access_token}`;
         console.log('new token set');
