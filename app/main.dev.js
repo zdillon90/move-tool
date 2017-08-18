@@ -73,7 +73,6 @@ app.on('ready', async () => {
   });
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
-  mainWindow.webContents.openDevTools()
 
   mainWindow.webContents.on('did-finish-load', () => {
     if (!mainWindow) {
