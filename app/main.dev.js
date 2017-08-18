@@ -73,6 +73,7 @@ app.on('ready', async () => {
   });
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
+  mainWindow.webContents.openDevTools()
 
   mainWindow.webContents.on('did-finish-load', () => {
     if (!mainWindow) {
@@ -100,14 +101,14 @@ app.on('ready', async () => {
 
   // storage.has('token', (error, hasKey) => {
   //   if (!hasKey) {
-      myApiOauth.getAccessToken(options)
-      .then((token, getError) => {
-        storage.set('token', token)
-        .catch((err) => {
-          console.error(`Storage of access_token Error: ${err}`);
-        });
-        throw getError;
-      });
+  myApiOauth.getAccessToken(options)
+  .then((token, getError) => {
+    storage.set('token', token);
+    throw getError;
+  })
+  .catch((err) => {
+    console.error(`Storage of access_token Error: ${err}`);
+  });
   //   }
   // });
 

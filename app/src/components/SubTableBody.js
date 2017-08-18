@@ -15,6 +15,7 @@ class SubTableBody extends Component {
       formatedPoPatchList: []
     };
     this.toggle = this.toggle.bind(this);
+    this.totalPoCountPerTray = this.totalPoCountPerTray.bind(this);
   }
 
   toggle() {
@@ -27,55 +28,55 @@ class SubTableBody extends Component {
     const totalTrayListIds = [];
     const totalTrayList = [];
     let poCount = 0;
-    productionOrders.forEach(function(po) {
-      let trayId = po.productionTrayId.toString();
+    productionOrders.forEach((po) => {
+      const trayId = po.productionTrayId.toString();
       if (totalTrayListIds.indexOf(trayId) === -1) {
-        totalTrayListIds.push(trayId)
+        totalTrayListIds.push(trayId);
       }
-    })
-    totalTrayListIds.forEach(function(tray) {
-      let trayObject = {};
+    });
+    totalTrayListIds.forEach((tray) => {
+      const trayObject = {};
       poCount = 0;
       trayObject.trayNumber = tray;
-      productionOrders.forEach(function(po) {
-        let trayId = po.productionTrayId.toString()
+      productionOrders.forEach((po) => {
+        const trayId = po.productionTrayId.toString();
         if (trayId === tray) {
-          poCount++;
+          poCount += 1;
         }
-      })
+      });
       trayObject.poCount = poCount;
       totalTrayList.push(trayObject);
-    })
+    });
     return totalTrayList;
   }
 
   makeCards(productionOrders, trayTotals) {
-    let cards = [];
-    let trayList = [];
-    productionOrders.forEach(function(po) {
-      let trayId = po.productionTrayId.toString();
+    const cards = [];
+    const trayList = [];
+    productionOrders.forEach((po) => {
+      const trayId = po.productionTrayId.toString();
       if (trayList.indexOf(trayId) === -1) {
         trayList.push(trayId);
       }
     });
-    trayList.forEach(function(tray) {
-      let card = {};
-      let poList = [];
-      let trayTags = [];
-      let tag = {};
+    trayList.forEach((tray) => {
+      const card = {};
+      const poList = [];
+      const trayTags = [];
+      const tag = {};
       card.id = tray;
       let trayPosInLane = 0;
-      productionOrders.forEach(function(po) {
+      productionOrders.forEach((po) => {
         if (po.productionTrayId.toString() === card.id) {
           poList.push(po.productionOrderName);
-          trayPosInLane++;
+          trayPosInLane += 1;
           if (po.productionTrayId === 0) {
-            card.title = "No_Tray_Name"
+            card.title = 'No_Tray_Name';
           } else {
             card.title = po.productionTrayName;
           }
         }
-      })
+      });
       // Creation of tags for tray size
       if (~card.title.indexOf('P1')) {
         tag.title = 'P1 - Small';
@@ -97,8 +98,8 @@ class SubTableBody extends Component {
         tag.bgcolor = '#808B96';
       }
       trayTags.push(tag);
-      card.tags = trayTags
-      trayTotals.forEach(function(trayTotal) {
+      card.tags = trayTags;
+      trayTotals.forEach((trayTotal) => {
         if (trayTotal.trayNumber === card.id) {
           card.description = (trayPosInLane + "/" + trayTotal.poCount + " PO(s)").toString()
         }
@@ -110,25 +111,25 @@ class SubTableBody extends Component {
   }
 
   makeLanes() {
-    let makeCards = this.makeCards;
-    let data = {};
-    let colums = [];
-    let list = this.props.list;
-    let subProcesses = list.processSteps;
-    let pos = this.props.pos;
-    let totals = this.totalPoCountPerTray(pos)
-    subProcesses.forEach(function(column) {
-      let lane = {};
-      let lanePos = [];
-      let columnName = column.name;
-      let columnId = column.id;
-      pos.forEach(function(po) {
-        let statusId = po.subStatusId;
+    const makeCards = this.makeCards;
+    const data = {};
+    const colums = [];
+    const list = this.props.list;
+    const subProcesses = list.processSteps;
+    const pos = this.props.pos;
+    const totals = this.totalPoCountPerTray(pos)
+    subProcesses.forEach((column) => {
+      const lane = {};
+      const lanePos = [];
+      const columnName = column.name;
+      const columnId = column.id;
+      pos.forEach((po) => {
+        const statusId = po.subStatusId;
         if (statusId === columnId) {
           lanePos.push(po);
         }
       });
-      let TrayCards = new makeCards(lanePos, totals);
+      const TrayCards = makeCards(lanePos, totals);
       lane.title = columnName;
       lane.id = columnId.toString();
       lane.cards = TrayCards;

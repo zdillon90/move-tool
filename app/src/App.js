@@ -23,7 +23,8 @@ class App extends Component {
       processes: [],
       process: null,
       pos: null,
-      patchResult: ''
+      patchResult: '',
+      loadingDone: false
     };
   }
 
@@ -82,7 +83,14 @@ class App extends Component {
     const poURL = `https://api.shapeways.com/production_orders/v1?manufacturer=${id}&subStatus=${IdsString}`;
     InshapeAPI('get', poURL)
     .then((response) => {
-      this.setState({ pos: response.productionOrders });
+      const manufacturersPos = response.productionOrders;
+      return manufacturersPos;
+    })
+    .then((manufacturersPos) => {
+      console.log(manufacturersPos);
+      this.setState({ pos: manufacturersPos }, this.handleLoading);
+      console.log('POs Set');
+      throw manufacturersPos;
     })
     .catch((err) => err);
   }
@@ -124,11 +132,19 @@ class App extends Component {
     }.bind(this), time);
   }
 
+  handleLoading() {
+    const pos = this.state.pos;
+    if (pos !== null) {
+      this.setState({ loadingDone: true }, this.loadingPos);
+    }
+  }
+
   // TODO Add in proper Loading screen
   loadingPos() {
     const currentProcess = this.state.process;
+    const loadingDone = this.state.loadingDone;
     const pos = this.state.pos;
-    if (pos) {
+    if (loadingDone) {
       return (
         <SubTableBody
           list={currentProcess}
