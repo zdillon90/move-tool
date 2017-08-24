@@ -7,6 +7,8 @@ import { Button,
   ModalFooter
 } from 'reactstrap';
 
+// This class renders out the modal when the card is clicked showing the list of
+// Pos
 class CardModal extends Component {
   render() {
     return (

@@ -14,6 +14,8 @@ import { app, BrowserWindow } from 'electron';
 import storage from 'electron-json-storage';
 import electronOauth2 from 'electron-oauth2';
 import MenuBuilder from './menu';
+// import { InshapeAPI } from './src/Utils';
+import config from './src/inshape_config.json';
 
 let mainWindow = null;
 
@@ -41,8 +43,14 @@ const installExtensions = async () => {
 
   return Promise
     .all(extensions.map(name => installer.default(installer[name], forceDownload)))
-    .catch(console.log);
+    .catch(console.log());
 };
+
+// app.on('before-quit', () => {
+//   storage.clear((error) => {
+//     if (error) throw error;
+//   });
+// });
 
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
@@ -52,14 +60,6 @@ app.on('window-all-closed', () => {
   }
 });
 
-const config = {
-  clientId: '7sXjUlgZGrJNd8L9Xbt2asCjvodDrilKkdgBxmWrn8BTRGDPFY',
-  authorizationUrl: 'https://api.shapeways.com/oauth2/authorize',
-  tokenUrl: 'https://api.shapeways.com/oauth2/token',
-  response_type: 'token',
-  useBasicAuthorizationHeader: true,
-  redirectUri: 'http://localhost:1212/'
-};
 
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
@@ -74,10 +74,6 @@ app.on('ready', async () => {
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
 
-  mainWindow.webContents.openDevTools();
-
-  // @TODO: Use 'ready-to-show' event
-  //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
   mainWindow.webContents.on('did-finish-load', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
@@ -90,6 +86,7 @@ app.on('ready', async () => {
     alwaysOnTop: true,
     autoHideMenuBar: true,
     title: 'Authorization',
+    frame: false,
     webPreferences: {
       nodeIntegration: false
     }
@@ -101,31 +98,18 @@ app.on('ready', async () => {
 
   const myApiOauth = electronOauth2(config, windowParams);
 
+  // storage.has('token', (error, hasKey) => {
+  //   if (!hasKey) {
   myApiOauth.getAccessToken(options)
-    .then((token, error) => {
-      console.log(`Electron ${token.access_token}`);
-      storage.set('accessToken', token.access_token)
-      .catch((err) => {
-        console.log(`Storage of access_token Error: ${err}`);
-      });
-
-      myApiOauth.refreshToken(token.refresh_token)
-      .then((newToken, refreshError) => {
-        console.log(`refresh token: ${newToken}`);
-        storage.set('refreshToken', newToken)
-        .catch((err) => {
-          console.log(`Storage of token Error: ${err}`);
-        });
-        throw refreshError;
-      })
-      .catch((err) => {
-        console.log(`Aquire Refresh Token Error ${err}`);
-      });
-      throw error;
-    })
-    .catch((err) => {
-      console.log(`Aquire Access Token Error ${err}`);
-    });
+  .then((token, getError) => {
+    storage.set('token', token);
+    throw getError;
+  })
+  .catch((err) => {
+    console.error(`Storage of access_token Error: ${err}`);
+  });
+  //   }
+  // });
 
   mainWindow.on('closed', () => {
     mainWindow = null;

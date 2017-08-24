@@ -11,7 +11,7 @@ import ProcessDrop from './ProcessDrop';
 // import Auth from './Auth';
 // import PropTypes from 'prop-types';
 
-
+// This class is the container that holds the manufacturer and process dropdown
 class Manufacturers extends Component {
   constructor(props) {
     super(props);

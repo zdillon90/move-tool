@@ -12,6 +12,8 @@ import {
 import MoveAlert from './MoveAlert';
 
 // TODO Add a refreash button
+
+// This class holds the Navigation bar components
 class Navbarz extends Component {
   constructor(props) {
     super(props);
@@ -20,19 +22,27 @@ class Navbarz extends Component {
       isOpen: false
     };
   }
+
+  // Toggels the Navbar actions if if the screen can't hold all the actions next
+  // to each other
   toggle() {
     this.setState({
       isOpen: !this.state.isOpen
     });
   }
+
+  // If opens a new Inshape page on the default browser
   handleInshapeClick() {
     shell.openExternal('https://inshape.shapeways.com/');
   }
+
+  // Renders the Navbar to the window
   render() {
     const manufacturer = this.props.manufacturer;
     const process = this.props.process;
     const result = this.props.result;
-    const authorized = this.props.authorized
+    const authorized = this.props.authorized;
+    const refreshButton = this.props.refresh;
     return (
       <div>
         <Navbar color="inverse" inverse toggleable>
@@ -40,6 +50,13 @@ class Navbarz extends Component {
           <NavbarBrand href="">Inshape Movement Tool</NavbarBrand>
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
+              {process ? (
+                <NavItem>
+                  <NavLink disabled onClick={refreshButton}>Refresh</NavLink>
+                </NavItem>
+              ) : (
+                <NavLink></NavLink>
+              )}
               <NavItem>
                 <NavLink onClick={this.handleInshapeClick}>Inshape</NavLink>
               </NavItem>

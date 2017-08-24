@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 // import { ListGroup, ListGroupItem } from 'reactstrap';
 
+// This class creates the PO list for each card when it is clicked
 class PoModalList extends Component {
   render() {
     let items = this.props.poList;
