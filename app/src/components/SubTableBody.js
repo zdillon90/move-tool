@@ -3,6 +3,10 @@ import { Board } from 'react-trello';
 // import { connect, PromiseState } from 'react-refetch'
 import CardModal from './CardModal';
 
+// This class organizes the manufacturer statuses and oragnizes the tray cards
+// within those specfifc statuses. It also is the main function for the drag
+// and drop functionality
+
 class SubTableBody extends Component {
   constructor(props) {
     super(props);
@@ -18,12 +22,16 @@ class SubTableBody extends Component {
     this.totalPoCountPerTray = this.totalPoCountPerTray.bind(this);
   }
 
+  // Takes care of toggleling the Card modal when the card is clicked.
   toggle() {
     this.setState({
       modal: !this.state.modal
     });
   }
 
+  // This function creates the PO count for that spacific tray within a cirtian
+  // substatus, so if a tray is in two different substatuses the amount in that
+  // substatus is compaired to the tray total
   totalPoCountPerTray(productionOrders) {
     const totalTrayListIds = [];
     const totalTrayList = [];
@@ -50,6 +58,7 @@ class SubTableBody extends Component {
     return totalTrayList;
   }
 
+// This function creates the cards for each substatus
   makeCards(productionOrders, trayTotals) {
     const cards = [];
     const trayList = [];
@@ -110,6 +119,7 @@ class SubTableBody extends Component {
     return cards;
   }
 
+  // This function makes the lines for the table
   makeLanes() {
     const makeCards = this.makeCards;
     const data = {};
@@ -139,13 +149,14 @@ class SubTableBody extends Component {
     return data;
   }
 
+  // If a card is moved this function patches the POs to the new substatus
   formatPoPatch() {
     let totalPoList = this.props.pos;
     let sourceLane = this.state.sourceLaneId;
     let card = this.state.cardId;
     let targetLane = this.state.targetLaneId;
     let poPatchList = [];
-    totalPoList.forEach(function(po) {
+    totalPoList.forEach((po) => {
       let poSubStatusId = po.subStatusId.toString();
       let poProductionTrayId = po.productionTrayId.toString();
       if (poSubStatusId === sourceLane && poProductionTrayId === card) {
@@ -154,56 +165,59 @@ class SubTableBody extends Component {
         patchPo.productionProcessStepId = targetLane;
         poPatchList.push(patchPo);
       }
-    })
+    });
     return poPatchList;
   }
 
+  // This function renders the entire table with the lanes and cards populated
   render() {
-    let processes = this.makeLanes();
+    const processes = this.makeLanes();
 
     const handleDragStart = (cardId, laneId) => {
-      // console.log('drag started')
-      // console.log(`cardId: ${cardId}`)
-      // console.log(`laneId: ${laneId}`)
-    }
+      console.log('drag started');
+      console.log(`cardId: ${cardId}`);
+      console.log(`laneId: ${laneId}`);
+    };
 
     const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
-      // console.log('drag ended')
-      // console.log(`cardId: ${cardId}`)
-      // console.log(`sourceLaneId: ${sourceLaneId}`)
-      // console.log(`targetLaneId: ${targetLaneId}`)
+      console.log('drag ended');
+      console.log(`cardId: ${cardId}`);
+      console.log(`sourceLaneId: ${sourceLaneId}`);
+      console.log(`targetLaneId: ${targetLaneId}`);
       this.setState({
-        cardId: cardId,
-        sourceLaneId: sourceLaneId,
-        targetLaneId: targetLaneId
-      })
+        cardId,
+        sourceLaneId,
+        targetLaneId
+      });
       let source = this.state.sourceLaneId;
       let target = this.state.targetLaneId;
       if (source !== target) {
         let formatPoPatch = this.formatPoPatch();
-        this.setState({ formatedPoPatchList: formatPoPatch});
-        // console.log(formatPoPatch);
+        this.setState({ formatedPoPatchList: formatPoPatch });
         this.props.patchPos(formatPoPatch);
       }
-    }
+    };
 
     const shouldReceiveNewData = (nextData) => {
-      // console.log('data has changed')
-      // console.log(nextData)
-    }
+      console.log('data has changed');
+      console.log(nextData);
+    };
 
     const onCardClick = (cardId, metadata) => {
       this.toggle();
       this.setState({
-        metadata: metadata
+        metadata
       });
-    }
+    };
 
     return (
       <div>
         <Board
           data={processes}
-          draggable={true}
+          style={
+            { backgroundColor: '#183643', paddingTop: 10, paddingLeft: 10 }
+          }
+          draggable
           onDataChange={shouldReceiveNewData}
           handleDragStart={handleDragStart}
           handleDragEnd={handleDragEnd}

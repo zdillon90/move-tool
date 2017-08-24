@@ -4,7 +4,7 @@ import axios from 'axios';
 import queryString from 'query-string';
 import config from './inshape_config.json';
 
-
+// Gathers the access token from storage
 const accessTokenPromise = new Promise((resolve, reject) => {
   storage.has('token', (error, hasKey) => {
     if (hasKey) {
@@ -19,6 +19,7 @@ const accessTokenPromise = new Promise((resolve, reject) => {
   });
 });
 
+// Gathers the refresh token from storage
 const refreshTokenPromise = new Promise((resolve, reject) => {
   storage.has('token', (error, hasKey) => {
     if (hasKey) {
@@ -33,6 +34,8 @@ const refreshTokenPromise = new Promise((resolve, reject) => {
   });
 });
 
+// Intercepts each request to chack if it has failed because of an expired token
+// and sends the request again with the new token
 axios.interceptors.response.use(undefined, (err) => {
   console.log('intercepting!!!');
   console.log(err.config);
@@ -67,6 +70,7 @@ axios.interceptors.response.use(undefined, (err) => {
   throw err;
 });
 
+// Uses the refreshtoken to get a new access token from Inshape
 function getRefreshToken() {
   return new Promise((resolve, reject) => {
     refreshTokenPromise.then((refreshToken) => refreshToken)
@@ -110,6 +114,7 @@ function getRefreshToken() {
   });
 }
 
+// Main request fuction to Inshape
 export function InshapeAPI(requestMethod, endpoint, body) {
   return new Promise((resolve, reject) => {
     accessTokenPromise.then((data) => data)

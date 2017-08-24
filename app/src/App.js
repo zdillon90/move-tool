@@ -4,6 +4,7 @@ import Manufacturers from './components/Manufacturers';
 import Navbarz from './components/Navbarz';
 import SubTableBody from './components/SubTableBody';
 
+// Main Application Class that holds all major functions
 class App extends Component {
   constructor(props) {
     super(props);
@@ -28,6 +29,7 @@ class App extends Component {
     };
   }
 
+// Gathers the list of manufactures from the inshape API
   componentDidMount() {
     InshapeAPI('get', 'https://api.shapeways.com/manufacturers/v1')
     .then((response) => {
@@ -39,6 +41,7 @@ class App extends Component {
     .catch((err) => err);
   }
 
+  // Gathers the Substatus within the "In Production" status per manufacturer
   fetchStatuses() {
     const id = this.state.manufacturerId;
     const manufacturerUrl = `https://api.shapeways.com/manufacturers/${id}/v1`;
@@ -51,6 +54,7 @@ class App extends Component {
     .catch((err) => err);
   }
 
+ // Changes the state when a manufacturer is selected
   handleManufacturerChange(manName, manId) {
     this.setState(
       {
@@ -61,6 +65,7 @@ class App extends Component {
     );
   }
 
+  // Sets the processes name
   setProcessName(target) {
     this.state.processes.forEach((list) => {
       if (list.name === target.name) {
@@ -71,6 +76,8 @@ class App extends Component {
     }, this);
   }
 
+  // When the manufacturer and process are selected, this function gets all of
+  // the POs for that spacific manufacturer in the "In Production" status
   fetchProductionOrders() {
     const id = this.state.manufacturerId;
     const process = this.state.process;
@@ -87,15 +94,14 @@ class App extends Component {
       return manufacturersPos;
     })
     .then((manufacturersPos) => {
-      console.log(manufacturersPos);
       this.setState({ pos: manufacturersPos }, this.handleLoading);
-      console.log('POs Set');
       throw manufacturersPos;
     })
     .catch((err) => err);
   }
 
-
+  // If the manufacturer only has one process this function checks that and sets
+  // it to 'default' if there is only one.
   defaultCheck() {
     const currentProcesses = this.state.processes;
     const defaultName = { name: 'default' };
@@ -104,10 +110,13 @@ class App extends Component {
     }
   }
 
+  // This function handles the process change when a process is selected
   handleProcessChange(target) {
     this.setProcessName(target);
   }
 
+  // If a move is made this fuctions sends a patch request with the updated
+  // statuses
   patchPos(poPatchList) {
     const patchPoURL = 'https://api.shapeways.com/production_orders/v1';
     const jsonPoList = JSON.stringify(poPatchList);
@@ -124,6 +133,7 @@ class App extends Component {
     .catch((err) => err);
   }
 
+  // User feedback alart with timmer
   setStateWithTimeout(key, value, time) {
     return setTimeout(function() {
       const newState = {};
@@ -132,6 +142,7 @@ class App extends Component {
     }.bind(this), time);
   }
 
+  // Handles the loading time for the POs
   handleLoading() {
     const pos = this.state.pos;
     if (pos !== null) {
@@ -140,6 +151,8 @@ class App extends Component {
   }
 
   // TODO Add in proper Loading screen
+
+  // Renders a loading screen or the board depending if the Pos have loaded
   loadingPos() {
     const currentProcess = this.state.process;
     const loadingDone = this.state.loadingDone;
@@ -159,6 +172,7 @@ class App extends Component {
     }
   }
 
+  // Renders the entire application to the window
   render() {
     const manList = this.state.allManufacturers;
     const manufacturer = this.state.manufacturer;

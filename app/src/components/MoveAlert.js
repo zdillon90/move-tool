@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Progress } from 'reactstrap';
 
+// This class renders a userfeedback notice when an action was taken
 class MoveAlert extends Component {
   handleFeedback() {
     let result = this.props.result;

@@ -7,6 +7,8 @@ import {
   DropdownItem,
 } from 'reactstrap';
 
+// If the manufacturer has more than one process then this dropdown apears with
+// a list of the manufacturers process flows
 class ProcessDrop extends Component {
   constructor(props) {
     super(props);
@@ -14,7 +16,7 @@ class ProcessDrop extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.state = {
       dropdownOpen: false
-    }
+    };
   }
 
   toggle() {
