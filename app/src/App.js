@@ -150,6 +150,10 @@ class App extends Component {
     }
   }
 
+  rerenderData() {
+    // Place holder for rerendering function
+  }
+
   // TODO Add in proper Loading screen
 
   // Renders a loading screen or the board depending if the Pos have loaded
@@ -184,7 +188,7 @@ class App extends Component {
     return (
       <div>
         <Navbarz
-          refresh={this.fetchStatuses}
+          refresh={this.fetchProductionOrders}
           manufacturer={manufacturer}
           process={currentProcess}
           result={result}

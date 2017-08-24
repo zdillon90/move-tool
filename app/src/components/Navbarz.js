@@ -52,7 +52,7 @@ class Navbarz extends Component {
             <Nav className="ml-auto" navbar>
               {process ? (
                 <NavItem>
-                  <NavLink disabled onClick={refreshButton}>Refresh</NavLink>
+                  <NavLink onClick={refreshButton}>Refresh</NavLink>
                 </NavItem>
               ) : (
                 <NavLink></NavLink>
