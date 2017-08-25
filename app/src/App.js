@@ -15,6 +15,8 @@ class App extends Component {
     this.defaultCheck = this.defaultCheck.bind(this);
     this.setProcessName = this.setProcessName.bind(this);
     this.patchPos = this.patchPos.bind(this);
+    this.rerenderData = this.rerenderData.bind(this);
+    this.resetRefreshSignal = this.resetRefreshSignal.bind(this);
     this.state = {
       authorized: null,
       authLink: null,
@@ -25,7 +27,8 @@ class App extends Component {
       process: null,
       pos: null,
       patchResult: '',
-      loadingDone: false
+      loadingDone: false,
+      refreshSignal: false
     };
   }
 
@@ -95,7 +98,9 @@ class App extends Component {
     })
     .then((manufacturersPos) => {
       this.setState({ pos: manufacturersPos }, this.handleLoading);
-      throw manufacturersPos;
+      console.log('Manufacturer Pos');
+      console.log(manufacturersPos);
+      return manufacturersPos;
     })
     .catch((err) => err);
   }
@@ -150,8 +155,24 @@ class App extends Component {
     }
   }
 
-  rerenderData() {
-    // Place holder for rerendering function
+  async rerenderData() {
+    let pos = await this.fetchProductionOrders();
+    await console.log('rerender pos');
+    await console.log(pos);
+    if (this.state.pos !== pos) {
+      console.log('POs Changed... sending refresh signal!');
+      this.setState({
+        refreshSignal: true
+      });
+    } else {
+      console.log('PO data has not changed');
+    }
+  }
+
+  resetRefreshSignal() {
+    this.setState({
+      refreshSignal: false
+    });
   }
 
   // TODO Add in proper Loading screen
@@ -161,9 +182,12 @@ class App extends Component {
     const currentProcess = this.state.process;
     const loadingDone = this.state.loadingDone;
     const pos = this.state.pos;
+    const refreshSignal = this.state.refreshSignal;
     if (loadingDone) {
       return (
         <SubTableBody
+          refreshSignal={refreshSignal}
+          resetRefresh={this.resetRefreshSignal}
           list={currentProcess}
           pos={pos}
           patchPos={this.patchPos}
@@ -188,7 +212,7 @@ class App extends Component {
     return (
       <div>
         <Navbarz
-          refresh={this.fetchProductionOrders}
+          refresh={this.rerenderData}
           manufacturer={manufacturer}
           process={currentProcess}
           result={result}

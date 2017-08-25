@@ -132,7 +132,7 @@ export function InshapeAPI(requestMethod, endpoint, body) {
       }
 
       console.log('Inshape Call');
-      console.log(accessToken);
+      // console.log(accessToken);
       axios(req)
         .then((response) => {
           console.log(response);

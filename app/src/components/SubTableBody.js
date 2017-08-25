@@ -171,7 +171,15 @@ class SubTableBody extends Component {
 
   // This function renders the entire table with the lanes and cards populated
   render() {
+    let eventBus = undefined
+
+    let setEventBus = (handle) => {
+      eventBus = handle;
+    };
+
     const processes = this.makeLanes();
+    console.log('initial data');
+    console.log(processes);
 
     const handleDragStart = (cardId, laneId) => {
       console.log('drag started');
@@ -199,8 +207,17 @@ class SubTableBody extends Component {
     };
 
     const shouldReceiveNewData = (nextData) => {
-      console.log('data has changed');
+      let condition = this.props.refreshSignal;
+      console.log('nextData');
       console.log(nextData);
+      if (condition) {
+        console.log('data has changed');
+        // eventBus.publish({ type: 'REFRESH_BOARD', data: nextData });
+        // TODO Need to set the refresh condition back to false
+        this.props.resetRefresh();
+      } else {
+        console.log('data has not changed');
+      }
     };
 
     const onCardClick = (cardId, metadata) => {
@@ -214,6 +231,7 @@ class SubTableBody extends Component {
       <div>
         <Board
           data={processes}
+          eventBusHandle={setEventBus}
           style={
             { backgroundColor: '#183643', paddingTop: 10, paddingLeft: 10 }
           }
