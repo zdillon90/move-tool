@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
 import { Board } from 'react-trello';
-// import { connect, PromiseState } from 'react-refetch'
 import CardModal from './CardModal';
 
 // This class organizes the manufacturer statuses and oragnizes the tray cards
 // within those specfifc statuses. It also is the main function for the drag
 // and drop functionality
 
-// TODO Move all functions outside of main render file
+// TODO Move all calculation functions outside of main render file
 
 let eventBus = undefined
-
 
 class SubTableBody extends Component {
   constructor(props) {
@@ -42,22 +40,8 @@ class SubTableBody extends Component {
     }
   }
 
-  componentDidUpdate() {
-    console.log('component did update');
-    // let signal = this.props.refreshSignal;
-    // if (signal) {
-    //   console.log('reseting signal');
-    //   this.props.resetRefreshSignal;
-    // }
-  }
-
   setEventBus = (handle) => {
     eventBus = handle;
-  }
-
-  refreshCards = () => {
-    // let newData = this.makeLanes();
-    // eventBus.publish({ type: 'REFRESH_BOARD', data: newData });
   }
 
   // Takes care of toggleling the Card modal when the card is clicked.
@@ -204,14 +188,6 @@ class SubTableBody extends Component {
         poPatchList.push(patchPo);
       }
     });
-
-    console.log(poPatchList);
-    totalPoList.forEach((localPo) => {
-      let id = localPo.subStatusId;
-      console.log(id);
-      console.log(targetLane);
-    })
-    // TODO Need to update the local POs with the status change
     return poPatchList;
   }
 
@@ -219,20 +195,10 @@ class SubTableBody extends Component {
   render() {
 
     const processes = this.makeLanes();
-    // console.log('initial data');
-    // console.log(processes);
 
-    const handleDragStart = (cardId, laneId) => {
-      // console.log('drag started');
-      // console.log(`cardId: ${cardId}`);
-      // console.log(`laneId: ${laneId}`);
-    };
+    const handleDragStart = (cardId, laneId) => {};
 
     const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
-      // console.log('drag ended');
-      // console.log(`cardId: ${cardId}`);
-      // console.log(`sourceLaneId: ${sourceLaneId}`);
-      // console.log(`targetLaneId: ${targetLaneId}`);
       this.setState({
         cardId,
         sourceLaneId,
@@ -256,7 +222,6 @@ class SubTableBody extends Component {
 
     return (
       <div>
-        {/* <button onClick={this.refreshCards} style={{ margin: 5 }}>Refresh Board</button> */}
         <Board
           data={processes}
           eventBusHandle={this.setEventBus}

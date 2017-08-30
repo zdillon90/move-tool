@@ -11,7 +11,6 @@ import {
 } from 'reactstrap';
 import MoveAlert from './MoveAlert';
 
-// TODO Add a refreash button
 
 // This class holds the Navigation bar components
 class Navbarz extends Component {

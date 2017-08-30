@@ -58,7 +58,6 @@ axios.interceptors.response.use(undefined, (err) => {
         err.config.headers.authorization = `bearer ${success.access_token}`;
         console.log('new token set');
         console.log(err);
-        // TODO fix the following axios call to redo the last request
         return axios(err.config);
       }
     })
@@ -94,7 +93,6 @@ function getRefreshToken() {
     .then((request) => {
       console.log('Trying to get new token');
       request.headers.Authorization = 'Basic ' + new Buffer(config.clientId + ':' + config.clientSecret).toString('base64');
-      // TODO that refresh token is only given out once, I need to grab it form storage
       axios(request)
         .then((response) => {
           console.log(response);

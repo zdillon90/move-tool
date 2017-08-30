@@ -98,12 +98,9 @@ class App extends Component {
     })
     .then((manufacturersPos) => {
       this.setState({ pos: manufacturersPos }, this.handleLoading);
-      // console.log('Manufacturer Pos');
-      // console.log(manufacturersPos);
-      // return manufacturersPos;
-      return new Promise((resolve) => {
-        setTimeout(() => resolve(manufacturersPos), 3000);
-      });
+      return manufacturersPos;
+
+
     })
     .catch((err) => err);
   }
