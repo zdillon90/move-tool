@@ -7,6 +7,11 @@ import CardModal from './CardModal';
 // within those specfifc statuses. It also is the main function for the drag
 // and drop functionality
 
+// TODO Move all functions outside of main render file
+
+let eventBus = undefined
+
+
 class SubTableBody extends Component {
   constructor(props) {
     super(props);
@@ -16,10 +21,43 @@ class SubTableBody extends Component {
       cardId: '',
       sourceLaneId: '',
       targetLaneId: '',
-      formatedPoPatchList: []
+      formatedPoPatchList: [],
+      localPos: null
     };
     this.toggle = this.toggle.bind(this);
     this.totalPoCountPerTray = this.totalPoCountPerTray.bind(this);
+  }
+
+  componentWillMount() {
+    this.setState({ localPos: this.props.pos });
+  }
+
+  componentWillUpdate() {
+    let signal = this.props.refreshSignal;
+    if (signal) {
+      let newData = this.makeLanes();
+      eventBus.publish({ type: 'REFRESH_BOARD', data: newData },
+        this.props.resetRefresh()
+      );
+    }
+  }
+
+  componentDidUpdate() {
+    console.log('component did update');
+    // let signal = this.props.refreshSignal;
+    // if (signal) {
+    //   console.log('reseting signal');
+    //   this.props.resetRefreshSignal;
+    // }
+  }
+
+  setEventBus = (handle) => {
+    eventBus = handle;
+  }
+
+  refreshCards = () => {
+    // let newData = this.makeLanes();
+    // eventBus.publish({ type: 'REFRESH_BOARD', data: newData });
   }
 
   // Takes care of toggleling the Card modal when the card is clicked.
@@ -33,21 +71,21 @@ class SubTableBody extends Component {
   // substatus, so if a tray is in two different substatuses the amount in that
   // substatus is compaired to the tray total
   totalPoCountPerTray(productionOrders) {
-    const totalTrayListIds = [];
-    const totalTrayList = [];
+    let totalTrayListIds = [];
+    let totalTrayList = [];
     let poCount = 0;
     productionOrders.forEach((po) => {
-      const trayId = po.productionTrayId.toString();
+      let trayId = po.productionTrayId.toString();
       if (totalTrayListIds.indexOf(trayId) === -1) {
         totalTrayListIds.push(trayId);
       }
     });
     totalTrayListIds.forEach((tray) => {
-      const trayObject = {};
+      let trayObject = {};
       poCount = 0;
       trayObject.trayNumber = tray;
       productionOrders.forEach((po) => {
-        const trayId = po.productionTrayId.toString();
+        let trayId = po.productionTrayId.toString();
         if (trayId === tray) {
           poCount += 1;
         }
@@ -60,19 +98,19 @@ class SubTableBody extends Component {
 
 // This function creates the cards for each substatus
   makeCards(productionOrders, trayTotals) {
-    const cards = [];
-    const trayList = [];
+    let cards = [];
+    let trayList = [];
     productionOrders.forEach((po) => {
-      const trayId = po.productionTrayId.toString();
+      let trayId = po.productionTrayId.toString();
       if (trayList.indexOf(trayId) === -1) {
         trayList.push(trayId);
       }
     });
     trayList.forEach((tray) => {
-      const card = {};
-      const poList = [];
-      const trayTags = [];
-      const tag = {};
+      let card = {};
+      let poList = [];
+      let trayTags = [];
+      let tag = {};
       card.id = tray;
       let trayPosInLane = 0;
       productionOrders.forEach((po) => {
@@ -121,20 +159,20 @@ class SubTableBody extends Component {
 
   // This function makes the lines for the table
   makeLanes() {
-    const makeCards = this.makeCards;
-    const data = {};
-    const colums = [];
-    const list = this.props.list;
-    const subProcesses = list.processSteps;
-    const pos = this.props.pos;
-    const totals = this.totalPoCountPerTray(pos)
+    let makeCards = this.makeCards;
+    let data = {};
+    let colums = [];
+    let list = this.props.list;
+    let subProcesses = list.processSteps;
+    let pos = this.props.pos;
+    let totals = this.totalPoCountPerTray(pos)
     subProcesses.forEach((column) => {
-      const lane = {};
-      const lanePos = [];
-      const columnName = column.name;
-      const columnId = column.id;
+      let lane = {};
+      let lanePos = [];
+      let columnName = column.name;
+      let columnId = column.id;
       pos.forEach((po) => {
-        const statusId = po.subStatusId;
+        let statusId = po.subStatusId;
         if (statusId === columnId) {
           lanePos.push(po);
         }
@@ -166,32 +204,35 @@ class SubTableBody extends Component {
         poPatchList.push(patchPo);
       }
     });
+
+    console.log(poPatchList);
+    totalPoList.forEach((localPo) => {
+      let id = localPo.subStatusId;
+      console.log(id);
+      console.log(targetLane);
+    })
+    // TODO Need to update the local POs with the status change
     return poPatchList;
   }
 
   // This function renders the entire table with the lanes and cards populated
   render() {
-    let eventBus = undefined
-
-    let setEventBus = (handle) => {
-      eventBus = handle;
-    };
 
     const processes = this.makeLanes();
-    console.log('initial data');
-    console.log(processes);
+    // console.log('initial data');
+    // console.log(processes);
 
     const handleDragStart = (cardId, laneId) => {
-      console.log('drag started');
-      console.log(`cardId: ${cardId}`);
-      console.log(`laneId: ${laneId}`);
+      // console.log('drag started');
+      // console.log(`cardId: ${cardId}`);
+      // console.log(`laneId: ${laneId}`);
     };
 
     const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
-      console.log('drag ended');
-      console.log(`cardId: ${cardId}`);
-      console.log(`sourceLaneId: ${sourceLaneId}`);
-      console.log(`targetLaneId: ${targetLaneId}`);
+      // console.log('drag ended');
+      // console.log(`cardId: ${cardId}`);
+      // console.log(`sourceLaneId: ${sourceLaneId}`);
+      // console.log(`targetLaneId: ${targetLaneId}`);
       this.setState({
         cardId,
         sourceLaneId,
@@ -206,20 +247,6 @@ class SubTableBody extends Component {
       }
     };
 
-    const shouldReceiveNewData = (nextData) => {
-      let condition = this.props.refreshSignal;
-      console.log('nextData');
-      console.log(nextData);
-      if (condition) {
-        console.log('data has changed');
-        // eventBus.publish({ type: 'REFRESH_BOARD', data: nextData });
-        // TODO Need to set the refresh condition back to false
-        this.props.resetRefresh();
-      } else {
-        console.log('data has not changed');
-      }
-    };
-
     const onCardClick = (cardId, metadata) => {
       this.toggle();
       this.setState({
@@ -229,14 +256,14 @@ class SubTableBody extends Component {
 
     return (
       <div>
+        {/* <button onClick={this.refreshCards} style={{ margin: 5 }}>Refresh Board</button> */}
         <Board
           data={processes}
-          eventBusHandle={setEventBus}
+          eventBusHandle={this.setEventBus}
           style={
             { backgroundColor: '#183643', paddingTop: 10, paddingLeft: 10 }
           }
           draggable
-          onDataChange={shouldReceiveNewData}
           handleDragStart={handleDragStart}
           handleDragEnd={handleDragEnd}
           onCardClick={onCardClick}

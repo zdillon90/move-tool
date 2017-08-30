@@ -98,9 +98,12 @@ class App extends Component {
     })
     .then((manufacturersPos) => {
       this.setState({ pos: manufacturersPos }, this.handleLoading);
-      console.log('Manufacturer Pos');
-      console.log(manufacturersPos);
-      return manufacturersPos;
+      // console.log('Manufacturer Pos');
+      // console.log(manufacturersPos);
+      // return manufacturersPos;
+      return new Promise((resolve) => {
+        setTimeout(() => resolve(manufacturersPos), 3000);
+      });
     })
     .catch((err) => err);
   }
@@ -130,7 +133,7 @@ class App extends Component {
     .then((response) => {
       this.setState({
         patchResult: response.result
-      }, this.defaultCheck);
+      }, this.fetchProductionOrders);
       if (response.result !== '') {
         this.setStateWithTimeout('patchResult', '', 3000);
       }
@@ -155,23 +158,17 @@ class App extends Component {
     }
   }
 
-  async rerenderData() {
-    let pos = await this.fetchProductionOrders();
-    await console.log('rerender pos');
-    await console.log(pos);
-    if (this.state.pos !== pos) {
-      console.log('POs Changed... sending refresh signal!');
-      this.setState({
-        refreshSignal: true
-      });
-    } else {
-      console.log('PO data has not changed');
-    }
+  rerenderData() {
+    this.setState({
+      refreshSignal: true,
+      patchResult: 'loading'
+    }, this.fetchProductionOrders);
   }
 
   resetRefreshSignal() {
     this.setState({
-      refreshSignal: false
+      refreshSignal: false,
+      patchResult: ''
     });
   }
 
