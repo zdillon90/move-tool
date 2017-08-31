@@ -1,7 +1,12 @@
 /*@import "~font-awesome/css/font-awesome.css";*/
 @import "~bootstrap/dist/css/bootstrap.css";
 
-/*body {
+/*img {
+  display: block;
+  margin: 0 auto;
+}*/
+
+/*body {ß
   position: relative;
   color: white;
   height: 100vh;

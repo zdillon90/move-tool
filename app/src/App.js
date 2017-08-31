@@ -3,6 +3,8 @@ import { InshapeAPI } from './Utils';
 import Manufacturers from './components/Manufacturers';
 import Navbarz from './components/Navbarz';
 import SubTableBody from './components/SubTableBody';
+import LoadingScreen from './components/LoadingScreen';
+import RefreshTimer from './components/RefreshTimer';
 
 // Main Application Class that holds all major functions
 class App extends Component {
@@ -17,6 +19,7 @@ class App extends Component {
     this.patchPos = this.patchPos.bind(this);
     this.rerenderData = this.rerenderData.bind(this);
     this.resetRefreshSignal = this.resetRefreshSignal.bind(this);
+    this.refreshTimer = this.refreshTimer.bind(this);
     this.state = {
       authorized: null,
       authLink: null,
@@ -28,9 +31,13 @@ class App extends Component {
       pos: null,
       patchResult: '',
       loadingDone: false,
-      refreshSignal: false
+      refreshSignal: false,
+      refreshStart: null
     };
   }
+
+  // TODO: Add a draggable prop to make sure the table is locked when updating.
+  // TODO: Add a Refresh Date.now when the production table is rendered.
 
 // Gathers the list of manufactures from the inshape API
   componentDidMount() {
@@ -169,7 +176,11 @@ class App extends Component {
     });
   }
 
-  // TODO Add in proper Loading screen
+  refreshTimer() {
+    return (
+      <RefreshTimer secondsRemaining="10" />
+    );
+  }
 
   // Renders a loading screen or the board depending if the Pos have loaded
   loadingPos() {
@@ -189,10 +200,12 @@ class App extends Component {
       );
     } else {
       return (
-        <h1>Loading...</h1>
+        <LoadingScreen />
       );
     }
   }
+
+  // TODO: Add Shapeways Logo
 
   // Renders the entire application to the window
   render() {
@@ -206,6 +219,7 @@ class App extends Component {
     return (
       <div>
         <Navbarz
+          refreshTimer={this.refreshTimer}
           refresh={this.rerenderData}
           manufacturer={manufacturer}
           process={currentProcess}

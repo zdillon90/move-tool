@@ -226,7 +226,7 @@ class SubTableBody extends Component {
           data={processes}
           eventBusHandle={this.setEventBus}
           style={
-            { backgroundColor: '#183643', paddingTop: 10, paddingLeft: 10 }
+            { backgroundColor: '#191F26', paddingTop: 10, paddingLeft: 10 }
           }
           draggable
           handleDragStart={handleDragStart}
