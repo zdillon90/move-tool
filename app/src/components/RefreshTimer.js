@@ -9,7 +9,6 @@ var CountdownTimer = React.createClass({
   tick() {
     this.setState({ secondsRemaining: this.state.secondsRemaining - 1 });
     if (this.state.secondsRemaining <= 0) {
-      console.log('0 check');
       this.props.refresh();
       clearInterval(this.interval);
       this.setState({ secondsRemaining: this.props.secondsRemaining });

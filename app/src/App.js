@@ -36,7 +36,7 @@ class App extends Component {
     };
   }
 
-  // TODO: Add a draggable prop to make sure the table is locked when updating.
+  // TODO: Add a "draggable" prop to make sure the table is locked when updating.
   // TODO: Add a Refresh Date.now when the production table is rendered.
 
 // Gathers the list of manufactures from the inshape API
@@ -179,7 +179,7 @@ class App extends Component {
   refreshTimer() {
     return (
       <CountdownTimer
-        secondsRemaining="30"
+        secondsRemaining="300"
         refresh={this.rerenderData}
       />
     );
