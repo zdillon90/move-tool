@@ -1,31 +1,33 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class RefreshTimer extends Component {
+var CountdownTimer = React.createClass({
   getInitialState() {
     return {
       secondsRemaining: 0
     };
-  }
-  componentWillUpdate() {
-    if (this.props.pos !== null) {
-      this.setState({ secondsRemaining: this.props.secondsRemaining });
-      this.interval = setInterval(this.tick, 1000);
-    }
-  }
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
+  },
   tick() {
     this.setState({ secondsRemaining: this.state.secondsRemaining - 1 });
     if (this.state.secondsRemaining <= 0) {
+      console.log('0 check');
+      this.props.refresh();
       clearInterval(this.interval);
+      this.setState({ secondsRemaining: this.props.secondsRemaining });
+      this.interval = setInterval(this.tick, 1000);
     }
-  }
+  },
+  componentDidMount() {
+    this.setState({ secondsRemaining: this.props.secondsRemaining });
+    this.interval = setInterval(this.tick, 1000);
+  },
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  },
   render() {
     return (
-      <p>Seconds Remaining: {this.state.secondsRemaining}</p>
+      <span>{this.state.secondsRemaining}</span>
     );
   }
-}
+});
 
-export default RefreshTimer;
+export default CountdownTimer;

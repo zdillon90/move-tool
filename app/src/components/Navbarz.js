@@ -35,11 +35,6 @@ class Navbarz extends Component {
     shell.openExternal('https://inshape.shapeways.com/');
   }
 
-  handleRefreshTimer() {
-    // Take care of the action of timmer here
-    // run this.props.refresh
-  }
-
   // Renders the Navbar to the window
   render() {
     const manufacturer = this.props.manufacturer;
@@ -47,6 +42,7 @@ class Navbarz extends Component {
     const result = this.props.result;
     const authorized = this.props.authorized;
     const refreshButton = this.props.refresh;
+    const refreshTime = this.props.refreshTimer;
     return (
       <div>
         <Navbar color="inverse" inverse toggleable>
@@ -56,7 +52,7 @@ class Navbarz extends Component {
             <Nav className="ml-auto" navbar>
               {process ? (
                 <NavItem>
-                  <NavLink onClick={refreshButton}>Refresh({this.props.refreshTimer})</NavLink>
+                  <NavLink onClick={refreshButton}>Refresh({refreshTime})</NavLink>
                 </NavItem>
               ) : (
                 <NavLink></NavLink>

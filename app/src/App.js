@@ -4,7 +4,7 @@ import Manufacturers from './components/Manufacturers';
 import Navbarz from './components/Navbarz';
 import SubTableBody from './components/SubTableBody';
 import LoadingScreen from './components/LoadingScreen';
-import RefreshTimer from './components/RefreshTimer';
+import CountdownTimer from './components/RefreshTimer';
 
 // Main Application Class that holds all major functions
 class App extends Component {
@@ -178,7 +178,10 @@ class App extends Component {
 
   refreshTimer() {
     return (
-      <RefreshTimer secondsRemaining="10" />
+      <CountdownTimer
+        secondsRemaining="30"
+        refresh={this.rerenderData}
+      />
     );
   }
 
@@ -219,7 +222,7 @@ class App extends Component {
     return (
       <div>
         <Navbarz
-          refreshTimer={this.refreshTimer}
+          refreshTimer={this.refreshTimer()}
           refresh={this.rerenderData}
           manufacturer={manufacturer}
           process={currentProcess}
