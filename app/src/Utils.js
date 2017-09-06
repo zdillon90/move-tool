@@ -37,8 +37,6 @@ const refreshTokenPromise = new Promise((resolve, reject) => {
 // Intercepts each request to chack if it has failed because of an expired token
 // and sends the request again with the new token
 axios.interceptors.response.use(undefined, (err) => {
-  console.log('intercepting!!!');
-  console.log(err.config);
   const res = err.response;
   // TODO Add a condition to chek to see if the reason was bearer experation
   if (res.status === 400 && res.config && !res.config.__isRetryRequest) {
@@ -129,8 +127,6 @@ export function InshapeAPI(requestMethod, endpoint, body) {
         req.data = body;
       }
 
-      console.log('Inshape Call');
-      // console.log(accessToken);
       axios(req)
         .then((response) => {
           console.log(response);

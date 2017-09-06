@@ -17,7 +17,7 @@ class App extends Component {
     this.defaultCheck = this.defaultCheck.bind(this);
     this.setProcessName = this.setProcessName.bind(this);
     this.patchPos = this.patchPos.bind(this);
-    this.rerenderData = this.rerenderData.bind(this);
+    this.triggerRefresh = this.triggerRefresh.bind(this);
     this.resetRefreshSignal = this.resetRefreshSignal.bind(this);
     this.refreshTimer = this.refreshTimer.bind(this);
     this.state = {
@@ -162,7 +162,7 @@ class App extends Component {
     }
   }
 
-  rerenderData() {
+  triggerRefresh() {
     this.setState({
       refreshSignal: true,
       patchResult: 'loading'
@@ -180,7 +180,7 @@ class App extends Component {
     return (
       <CountdownTimer
         secondsRemaining="300"
-        refresh={this.rerenderData}
+        refresh={this.triggerRefresh}
       />
     );
   }
@@ -223,7 +223,7 @@ class App extends Component {
       <div>
         <Navbarz
           refreshTimer={this.refreshTimer()}
-          refresh={this.rerenderData}
+          refresh={this.triggerRefresh}
           manufacturer={manufacturer}
           process={currentProcess}
           result={result}
