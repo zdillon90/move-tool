@@ -14,7 +14,7 @@ class LoadingScreen extends Component {
 
     return (
       <div style={bodyStyle}>
-        <img style={imgStyle} className="loading" src="src/assets/loading.gif" alt="Loading..." />
+        <img style={imgStyle} className="loading" src="https://imgur.com/iaS9EbP.gif" alt="Loading..." />
       </div>
     );
   }

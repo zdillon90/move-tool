@@ -56,7 +56,7 @@ class Manufacturers extends Component {
             </Row>
           </Container>
         </Jumbotron>
-        <img style={imgStyle} className="shapewaysLogo" src="src/assets/shapeways-logo.png" alt="Shapeways" />
+        <img style={imgStyle} className="shapewaysLogo" src="https://imgur.com/BgyYIa0.png" alt="Shapeways" />
       </div>
     );
   }
