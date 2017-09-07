@@ -23,10 +23,6 @@ class Manufacturers extends Component {
   render() {
     const manList = this.props.list;
     const processes = this.props.processes;
-    let imgStyle = {
-      display: 'block',
-      margin: '0 auto'
-    };
     // let authLink =  this.props.authLink;
     return (
       <div>
@@ -56,7 +52,7 @@ class Manufacturers extends Component {
             </Row>
           </Container>
         </Jumbotron>
-        <img style={imgStyle} className="shapewaysLogo" src="https://imgur.com/BgyYIa0.png" alt="Shapeways" />
+        <img className="pbmt-loading__image" src="https://imgur.com/BgyYIa0.png" alt="Shapeways" />
       </div>
     );
   }
