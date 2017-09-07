@@ -220,14 +220,14 @@ class SubTableBody extends Component {
       });
     };
 
+    // Note: react-trello only seems to work with inline styling.
+
     return (
       <div>
         <Board
           data={processes}
           eventBusHandle={this.setEventBus}
-          style={
-            { backgroundColor: '#191F26', paddingTop: 10, paddingLeft: 10 }
-          }
+          style={{ backgroundColor: '#191F26', paddingTop: 10, paddingLeft: 10 }}
           draggable
           handleDragStart={handleDragStart}
           handleDragEnd={handleDragEnd}

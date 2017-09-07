@@ -3,12 +3,14 @@ import React, { Component } from 'react';
 class CountdownTimer extends Component {
   constructor(props) {
     super(props);
+    this.tick = this.tick.bind(this);
     this.state = {
-      secondsRemaining: 0
+      secondsRemaining: this.props.secondsRemaining
     };
   }
   componentDidMount() {
-    this.setState({ secondsRemaining: this.props.secondsRemaining });
+    // this.setState({ secondsRemaining: this.props.secondsRemaining });
+    console.log(this.state.secondsRemaining);
     this.interval = setInterval(this.tick, 1000);
   }
   componentWillUnmount() {
@@ -17,11 +19,10 @@ class CountdownTimer extends Component {
   tick() {
     this.setState({ secondsRemaining: this.state.secondsRemaining - 1 });
     if (this.state.secondsRemaining <= 0) {
-      // This pulls in the refresh fuction from the main app. It will trigger
-      // the refresh if the timer hits zero.
       this.props.refresh();
+      // ^^^ This pulls in the refresh fuction from the main app. It will trigger
+      // the refresh of the board data when the timer hits zero.
       clearInterval(this.interval);
-      // TODO: Seperate out into a different function to use in multiple locations
       this.setState({ secondsRemaining: this.props.secondsRemaining });
       this.interval = setInterval(this.tick, 1000);
     }

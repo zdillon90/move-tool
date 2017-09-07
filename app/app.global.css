@@ -1,6 +1,6 @@
 @import "~bootstrap/dist/css/bootstrap.css";
 
-.pbmt-loading__container  {
+.pbmt-loading__container {
   background-color: #191F26;
   height: 100vh;
 }

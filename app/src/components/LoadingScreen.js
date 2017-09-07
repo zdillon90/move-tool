@@ -5,16 +5,6 @@ import React, { Component } from 'react';
 // loaded and formated into the batches.
 class LoadingScreen extends Component {
   render() {
-    // let imgStyle = {
-    //   display: 'block',
-    //   margin: '0 auto'
-    // };
-
-    // let bodyStyle = {
-    //   backgroundColor: '#191F26',
-    //   height: '100vh'
-    // };
-
     return (
       <div className="pbmt-loading__container">
         <img className="pbmt-loading__image" src="https://imgur.com/iaS9EbP.gif" alt="Loading..." />

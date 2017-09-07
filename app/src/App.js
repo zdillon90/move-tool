@@ -208,8 +208,6 @@ class App extends Component {
     }
   }
 
-  // TODO: Add Shapeways Logo
-
   // Renders the entire application to the window
   render() {
     const manList = this.state.allManufacturers;
