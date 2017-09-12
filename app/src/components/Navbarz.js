@@ -12,7 +12,12 @@ import {
 import MoveAlert from './MoveAlert';
 
 
-// This class holds the Navigation bar components
+/**
+ * This class holds the Navigation bar components
+ * @param {Bool} isOpen If the full menu bar can't fit on the screen then it
+ * formats those options into a dropdown menu
+ * @type {Class}
+ */
 class Navbarz extends Component {
   constructor(props) {
     super(props);
@@ -22,20 +27,30 @@ class Navbarz extends Component {
     };
   }
 
-  // Toggels the Navbar actions if if the screen can't hold all the actions next
-  // to each other
+  /**
+   * Toggels the Navbar actions if if the screen can't hold all the actions next
+   * to each other
+   */
   toggle() {
     this.setState({
       isOpen: !this.state.isOpen
     });
   }
 
-  // If opens a new Inshape page on the default browser
+  /**
+   * If opens a new Inshape page on the default browser
+   */
   handleInshapeClick() {
     shell.openExternal('https://inshape.shapeways.com/');
   }
 
-  // Renders the Navbar to the window
+  /**
+   * Renders the Navbar to the window. This includes the home button that will
+   * take the user back to the start screen, The refresh button and timer for
+   * refreshing the table's data, an external Inshape link, and
+   * manufacturer-process info
+   * @return {HTML} render of component
+   */
   render() {
     const manufacturer = this.props.manufacturer;
     const process = this.props.process;

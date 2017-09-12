@@ -8,10 +8,13 @@ import {
  } from 'reactstrap';
 import ManufacturersDrop from './ManufacturersDrop';
 import ProcessDrop from './ProcessDrop';
-// import Auth from './Auth';
-// import PropTypes from 'prop-types';
 
-// This class is the container that holds the manufacturer and process dropdown
+/**
+ * This class is the container that holds the manufacturer and process dropdown
+ * @param {Bool} defaultProceess If there is only one process to a specific
+ * manufacturer it will not render the process dropdown.
+ * @type {Class}
+ */
 class Manufacturers extends Component {
   constructor(props) {
     super(props);
@@ -20,10 +23,14 @@ class Manufacturers extends Component {
     };
   }
 
+  /**
+   * Renders the Manufacturers Page, a container to hold the manufacturer and
+   * process dropdowns and some instructions, as well as a Shapeways logo
+   * @return {HTML} render of component
+   */
   render() {
     const manList = this.props.list;
     const processes = this.props.processes;
-    // let authLink =  this.props.authLink;
     return (
       <div>
         <Jumbotron>

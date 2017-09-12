@@ -1,8 +1,17 @@
 import React, { Component } from 'react';
 import { Progress } from 'reactstrap';
 
-// This class renders a userfeedback notice when an action was taken
+/**
+ * This class renders a userfeedback notice when an action was taken
+ * @type {Class}
+ */
 class MoveAlert extends Component {
+
+  /**
+   * Handles the type of userfeedback that is need.
+   * @return {HTML} Renders a bar on the top of of the screen depending on the
+   * action taken
+   */
   handleFeedback() {
     let result = this.props.result;
     if (result === 'success') {
@@ -30,6 +39,10 @@ class MoveAlert extends Component {
     }
   }
 
+  /**
+   * renders the above If statement above
+   * @return {HTML} render of component
+   */
   render() {
     return (
       this.handleFeedback()

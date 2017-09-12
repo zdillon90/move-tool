@@ -1,9 +1,17 @@
 import React, { Component } from 'react';
 
-// This class loads renders a loading screen when a manufacturer is slected.
-// It is triggered when the manufacturer is slected while the POs are being
-// loaded and formated into the batches.
+/**
+ * This class loads renders a loading screen when a manufacturer is slected.
+ * It is triggered when the manufacturer is slected while the POs are being
+ * loaded and formated into the batches.
+ * @type {Class}
+ */
 class LoadingScreen extends Component {
+
+  /**
+   * Loaidng image
+   * @return {HTML} render of component
+   */
   render() {
     return (
       <div className="pbmt-loading__container">

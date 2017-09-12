@@ -46,11 +46,6 @@ const installExtensions = async () => {
     .catch(console.log());
 };
 
-// app.on('before-quit', () => {
-//   storage.clear((error) => {
-//     if (error) throw error;
-//   });
-// });
 
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
@@ -98,8 +93,6 @@ app.on('ready', async () => {
 
   const myApiOauth = electronOauth2(config, windowParams);
 
-  // storage.has('token', (error, hasKey) => {
-  //   if (!hasKey) {
   myApiOauth.getAccessToken(options)
   .then((token, getError) => {
     storage.set('token', token);
@@ -108,8 +101,6 @@ app.on('ready', async () => {
   .catch((err) => {
     console.error(`Storage of access_token Error: ${err}`);
   });
-  //   }
-  // });
 
   mainWindow.on('closed', () => {
     mainWindow = null;
