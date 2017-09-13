@@ -14,8 +14,16 @@ class LoadingScreen extends Component {
    */
   render() {
     return (
-      <div className="pbmt-loading__container">
-        <img className="pbmt-loading__image" src="https://imgur.com/iaS9EbP.gif" alt="Loading..." />
+      <div className="pbmt-loading__window">
+        <div className="pbmt-loading__container">
+          <div className="pbmt-loading__image">
+            <img
+              src="https://static1.sw-cdn.net/files/cms/brand-resources/spark-on-blue-rgb-20160613.png"
+              alt="Loading..."
+            />
+            <h2 className="pbmt-welcome__image_text">Loading...</h2>
+          </div>
+        </div>
       </div>
     );
   }

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Board } from 'react-trello';
 import CardModal from './CardModal';
+import styles from '../../app.global.css';
 
 /** TODO Move all calculation functions outside of main render file */
 
@@ -268,14 +269,11 @@ class SubTableBody extends Component {
       });
     };
 
-    // Note: react-trello only seems to work with inline styling.
-
     return (
       <div>
         <Board
           data={processes}
           eventBusHandle={this.setEventBus}
-          style={{ backgroundColor: '#191F26', paddingTop: 10, paddingLeft: 10 }}
           draggable
           handleDragStart={handleDragStart}
           handleDragEnd={handleDragEnd}

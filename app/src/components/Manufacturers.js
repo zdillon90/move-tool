@@ -59,7 +59,11 @@ class Manufacturers extends Component {
             </Row>
           </Container>
         </Jumbotron>
-        <img className="pbmt-loading__image" src="https://imgur.com/BgyYIa0.png" alt="Shapeways" />
+        <img
+          className="pbmt-welcome__image"
+          src="https://static1.sw-cdn.net/files/cms/brand-resources/shapeways-logo-rgb-20141008.png"
+          alt="Shapeways"
+        />
       </div>
     );
   }
