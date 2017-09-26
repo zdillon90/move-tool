@@ -69,6 +69,8 @@ app.on('ready', async () => {
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
 
+  // mainWindow.webContents.openDevTools();
+
   mainWindow.webContents.on('did-finish-load', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
@@ -81,7 +83,7 @@ app.on('ready', async () => {
     alwaysOnTop: true,
     autoHideMenuBar: true,
     title: 'Authorization',
-    frame: false,
+    frame: true,
     webPreferences: {
       nodeIntegration: false
     }

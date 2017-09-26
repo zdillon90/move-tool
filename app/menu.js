@@ -1,5 +1,6 @@
 // @flow
-import { app, Menu, shell, BrowserWindow } from 'electron';
+import { app, Menu, shell, BrowserWindow, session } from 'electron';
+import storage from 'electron-json-storage'
 
 export default class MenuBuilder {
   mainWindow: BrowserWindow;
@@ -44,12 +45,22 @@ export default class MenuBuilder {
   }
 
   buildDarwinTemplate() {
+    const ses = session.fromPartition('persist:name');
+    console.log(ses.getUserAgent());
     const subMenuAbout = {
-      label: 'Electron',
+      label: 'File',
       submenu: [
         { label: 'About ElectronReact', selector: 'orderFrontStandardAboutPanel:' },
         { type: 'separator' },
-        { label: 'Services', submenu: [] },
+        { label: 'Clear User Data',
+          click: () => {
+            storage.clear((error) => {
+              if (error) throw error;
+            }, ses.clearStorageData((data) => {
+              console.log('Data Cleared');
+              console.log(data);
+            }));
+          } },
         { type: 'separator' },
         { label: 'Hide ElectronReact', accelerator: 'Command+H', selector: 'hide:' },
         { label: 'Hide Others', accelerator: 'Command+Shift+H', selector: 'hideOtherApplications:' },
@@ -97,7 +108,7 @@ export default class MenuBuilder {
       label: 'Help',
       submenu: [
         { label: 'Learn More', click() { shell.openExternal('http://electron.atom.io'); } },
-        { label: 'Documentation', click() { shell.openExternal('https://github.com/atom/electron/tree/master/docs#readme'); } },
+        { label: 'Documentation', click() { shell.openExternal('https://github.com/Shapeways/production-batch-movement-tool/blob/master/README.md'); } },
         { label: 'Community Discussions', click() { shell.openExternal('https://discuss.atom.io/c/electron'); } },
         { label: 'Search Issues', click() { shell.openExternal('https://github.com/atom/electron/issues'); } }
       ]
@@ -166,7 +177,7 @@ export default class MenuBuilder {
       }, {
         label: 'Documentation',
         click() {
-          shell.openExternal('https://github.com/atom/electron/tree/master/docs#readme');
+          shell.openExternal('https://github.com/Shapeways/production-batch-movement-tool/blob/master/README.md');
         }
       }, {
         label: 'Community Discussions',

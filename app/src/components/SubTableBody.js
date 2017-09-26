@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Board } from 'react-trello';
 import CardModal from './CardModal';
-import styles from '../../app.global.css';
 
 /** TODO Move all calculation functions outside of main render file */
 

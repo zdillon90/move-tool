@@ -227,7 +227,7 @@ class App extends Component {
   refreshTimer() {
     return (
       <CountdownTimer
-        secondsRemaining="300"
+        secondsRemaining="120"
         refresh={this.triggerRefresh}
       />
     );
