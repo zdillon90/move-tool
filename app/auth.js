@@ -20,7 +20,12 @@ var generateRandomString = function (length) {
 
   return text;
 };
-
+/**
+ * This module take care of the authentication of the application.
+ * @param  {Object} config       All the params needed for authentication
+ * @param  {Object} windowParams Auth window options
+ * @return {Object}              Returns the tokens nessary for authentication
+ */
 module.exports = function (config, windowParams) {
   function getAuthorizationCode(opts) {
     opts = opts || {};
@@ -47,6 +52,11 @@ module.exports = function (config, windowParams) {
     var inshapeUrl = config.inshapeUrl
     var url = config.authorizationUrl + '?' + queryString.stringify(urlParams);
 
+    /**
+     * Opens a new BrowserWindow directing to the authentication url
+     * @param  {Object} resolve callback code from url
+     * @param  {Error}  reject  validation error
+     */
     return new Promise(function (resolve, reject) {
       const authWindow = new BrowserWindow(windowParams || { 'use-content-size': true });
       const ses = authWindow.webContents.session;
@@ -62,6 +72,10 @@ module.exports = function (config, windowParams) {
         reject(new Error('window was closed by user'));
       });
 
+      /**
+       * Handles the callbcak URL
+       * @param  {String} url callbcak URL
+       */
       function onCallback(url) {
         var url_parts = nodeUrl.parse(url, true);
         var query = url_parts.query;
@@ -89,6 +103,11 @@ module.exports = function (config, windowParams) {
     });
   }
 
+  /**
+   * Handles formating and sending the Auth POST request
+   * @param  {Object} data Holds the nessary information to send with Auth request
+   * @return {[type]}      Returns the request in JSON format
+   */
   function tokenRequest(data) {
     const header = {
       'Accept': 'application/json',
@@ -113,6 +132,11 @@ module.exports = function (config, windowParams) {
     });
   }
 
+  /**
+   * Retrieves the access token from the Auth server
+   * @param  {Object} opts optional params
+   * @return {Object}      Returns the response from the Auth request
+   */
   function getAccessToken(opts) {
     return getAuthorizationCode(opts)
       .then(authorizationCode => {
@@ -126,6 +150,11 @@ module.exports = function (config, windowParams) {
       });
   }
 
+  /**
+   * Retrieves the refresh token from the Auth server
+   * @param  {String} refreshToken Old refresh token
+   * @return {Object}              Returns the response from the Auth request
+   */
   function refreshToken(refreshToken) {
     return tokenRequest({
       refresh_token: refreshToken,
