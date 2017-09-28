@@ -128,19 +128,26 @@ export default class MenuBuilder {
   buildDefaultTemplate() {
     const templateDefault = [{
       label: '&File',
-      submenu: [{
-        label: '&Open',
-        accelerator: 'Ctrl+O'
-      }, {
-        label: '&Close',
-        accelerator: 'Ctrl+W',
-        click: () => {
-          this.mainWindow.close();
-        }
-      }]
+      submenu: [
+        { label: 'Clear User Data',
+          click: () => {
+            storage.clear((error) => {
+              if (error) throw error;
+            });
+          } },
+        {
+          label: '&Open',
+          accelerator: 'Ctrl+O'
+        }, {
+          label: '&Close',
+          accelerator: 'Ctrl+W',
+          click: () => {
+            this.mainWindow.close();
+          }
+        }]
     }, {
       label: '&View',
-      submenu: (process.env.NODE_ENV === 'development') ? [{
+      submenu: [{
         label: '&Reload',
         accelerator: 'Ctrl+R',
         click: () => {
@@ -157,12 +164,6 @@ export default class MenuBuilder {
         accelerator: 'Alt+Ctrl+I',
         click: () => {
           this.mainWindow.toggleDevTools();
-        }
-      }] : [{
-        label: 'Toggle &Full Screen',
-        accelerator: 'F11',
-        click: () => {
-          this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen());
         }
       }]
     }, {
