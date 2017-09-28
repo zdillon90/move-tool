@@ -12,15 +12,11 @@
  */
 import { app, BrowserWindow } from 'electron';
 import storage from 'electron-json-storage';
-// import electronOauth2 from 'electron-oauth2';
 import auth from './auth';
 import MenuBuilder from './menu';
-// import { InshapeAPI } from './src/Utils';
 import config from './src/inshape_config.json';
 
 let mainWindow = null;
-
-// const router = express.Router();
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');

@@ -58,13 +58,6 @@ export default class MenuBuilder {
               if (error) throw error;
             });
           } },
-        { label: 'Inshape',
-          click: () => {
-            app.on('ready', async () => {
-              this.mainWindow.loadURL('https://inshape.shapeways.com/login?targetUrl=%2F');
-              this.mainWindow.show();
-            });
-          } },
         { type: 'separator' },
         { label: 'Hide ElectronReact', accelerator: 'Command+H', selector: 'hide:' },
         { label: 'Hide Others', accelerator: 'Command+Shift+H', selector: 'hideOtherApplications:' },
