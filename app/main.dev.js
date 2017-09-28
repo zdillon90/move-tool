@@ -12,7 +12,8 @@
  */
 import { app, BrowserWindow } from 'electron';
 import storage from 'electron-json-storage';
-import electronOauth2 from 'electron-oauth2';
+// import electronOauth2 from 'electron-oauth2';
+import auth from './auth';
 import MenuBuilder from './menu';
 // import { InshapeAPI } from './src/Utils';
 import config from './src/inshape_config.json';
@@ -93,7 +94,7 @@ app.on('ready', async () => {
     accessType: 'Bearer'
   };
 
-  const myApiOauth = electronOauth2(config, windowParams);
+  const myApiOauth = auth(config, windowParams);
 
   myApiOauth.getAccessToken(options)
   .then((token, getError) => {

@@ -1,6 +1,6 @@
 // @flow
 import { app, Menu, shell, BrowserWindow, session } from 'electron';
-import storage from 'electron-json-storage'
+import storage from 'electron-json-storage';
 
 export default class MenuBuilder {
   mainWindow: BrowserWindow;
@@ -56,10 +56,14 @@ export default class MenuBuilder {
           click: () => {
             storage.clear((error) => {
               if (error) throw error;
-            }, ses.clearStorageData((data) => {
-              console.log('Data Cleared');
-              console.log(data);
-            }));
+            });
+          } },
+        { label: 'Inshape',
+          click: () => {
+            app.on('ready', async () => {
+              this.mainWindow.loadURL('https://inshape.shapeways.com/login?targetUrl=%2F');
+              this.mainWindow.show();
+            });
           } },
         { type: 'separator' },
         { label: 'Hide ElectronReact', accelerator: 'Command+H', selector: 'hide:' },
@@ -92,7 +96,8 @@ export default class MenuBuilder {
     const subMenuViewProd = {
       label: 'View',
       submenu: [
-        { label: 'Toggle Full Screen', accelerator: 'Ctrl+Command+F', click: () => { this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen()); } }
+        { label: 'Toggle Full Screen', accelerator: 'Ctrl+Command+F', click: () => { this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen()); } },
+        { label: 'Toggle Developer Tools', accelerator: 'Alt+Command+I', click: () => { this.mainWindow.toggleDevTools(); } }
       ]
     };
     const subMenuWindow = {
