@@ -4,5 +4,6 @@
   "tokenUrl": "https://api.shapeways.com/oauth2/token",
   "response_type": "token",
   "useBasicAuthorizationHeader": true,
-  "redirectUri": "http://localhost:1212/"
+  "redirectUri": "http://localhost:1212/",
+  "inshapeUrl": "https://inshape.shapeways.com/login?targetUrl=%2F"
 }

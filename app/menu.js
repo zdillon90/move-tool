@@ -1,5 +1,6 @@
 // @flow
-import { app, Menu, shell, BrowserWindow } from 'electron';
+import { app, Menu, shell, BrowserWindow, session } from 'electron';
+import storage from 'electron-json-storage';
 
 export default class MenuBuilder {
   mainWindow: BrowserWindow;
@@ -44,12 +45,19 @@ export default class MenuBuilder {
   }
 
   buildDarwinTemplate() {
+    const ses = session.fromPartition('persist:name');
+    console.log(ses.getUserAgent());
     const subMenuAbout = {
-      label: 'Electron',
+      label: 'File',
       submenu: [
         { label: 'About ElectronReact', selector: 'orderFrontStandardAboutPanel:' },
         { type: 'separator' },
-        { label: 'Services', submenu: [] },
+        { label: 'Clear User Data',
+          click: () => {
+            storage.clear((error) => {
+              if (error) throw error;
+            });
+          } },
         { type: 'separator' },
         { label: 'Hide ElectronReact', accelerator: 'Command+H', selector: 'hide:' },
         { label: 'Hide Others', accelerator: 'Command+Shift+H', selector: 'hideOtherApplications:' },
@@ -81,7 +89,8 @@ export default class MenuBuilder {
     const subMenuViewProd = {
       label: 'View',
       submenu: [
-        { label: 'Toggle Full Screen', accelerator: 'Ctrl+Command+F', click: () => { this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen()); } }
+        { label: 'Toggle Full Screen', accelerator: 'Ctrl+Command+F', click: () => { this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen()); } },
+        { label: 'Toggle Developer Tools', accelerator: 'Alt+Command+I', click: () => { this.mainWindow.toggleDevTools(); } }
       ]
     };
     const subMenuWindow = {
@@ -97,7 +106,7 @@ export default class MenuBuilder {
       label: 'Help',
       submenu: [
         { label: 'Learn More', click() { shell.openExternal('http://electron.atom.io'); } },
-        { label: 'Documentation', click() { shell.openExternal('https://github.com/atom/electron/tree/master/docs#readme'); } },
+        { label: 'Documentation', click() { shell.openExternal('https://github.com/Shapeways/production-batch-movement-tool/blob/master/README.md'); } },
         { label: 'Community Discussions', click() { shell.openExternal('https://discuss.atom.io/c/electron'); } },
         { label: 'Search Issues', click() { shell.openExternal('https://github.com/atom/electron/issues'); } }
       ]
@@ -119,19 +128,26 @@ export default class MenuBuilder {
   buildDefaultTemplate() {
     const templateDefault = [{
       label: '&File',
-      submenu: [{
-        label: '&Open',
-        accelerator: 'Ctrl+O'
-      }, {
-        label: '&Close',
-        accelerator: 'Ctrl+W',
-        click: () => {
-          this.mainWindow.close();
-        }
-      }]
+      submenu: [
+        { label: 'Clear User Data',
+          click: () => {
+            storage.clear((error) => {
+              if (error) throw error;
+            });
+          } },
+        {
+          label: '&Open',
+          accelerator: 'Ctrl+O'
+        }, {
+          label: '&Close',
+          accelerator: 'Ctrl+W',
+          click: () => {
+            this.mainWindow.close();
+          }
+        }]
     }, {
       label: '&View',
-      submenu: (process.env.NODE_ENV === 'development') ? [{
+      submenu: [{
         label: '&Reload',
         accelerator: 'Ctrl+R',
         click: () => {
@@ -149,12 +165,6 @@ export default class MenuBuilder {
         click: () => {
           this.mainWindow.toggleDevTools();
         }
-      }] : [{
-        label: 'Toggle &Full Screen',
-        accelerator: 'F11',
-        click: () => {
-          this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen());
-        }
       }]
     }, {
       label: 'Help',
@@ -166,7 +176,7 @@ export default class MenuBuilder {
       }, {
         label: 'Documentation',
         click() {
-          shell.openExternal('https://github.com/atom/electron/tree/master/docs#readme');
+          shell.openExternal('https://github.com/Shapeways/production-batch-movement-tool/blob/master/README.md');
         }
       }, {
         label: 'Community Discussions',

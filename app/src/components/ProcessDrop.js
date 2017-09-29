@@ -7,8 +7,12 @@ import {
   DropdownItem,
 } from 'reactstrap';
 
-// If the manufacturer has more than one process then this dropdown apears with
-// a list of the manufacturers process flows
+/**
+ * If the manufacturer has more than one process then this dropdown apears with
+ * a list of the manufacturers process flows
+ * @param {Bool} dropdownOpen If true shows the process dropdown menu
+ * @type {Class}
+ */
 class ProcessDrop extends Component {
   constructor(props) {
     super(props);
@@ -19,17 +23,27 @@ class ProcessDrop extends Component {
     };
   }
 
+  /**
+   * Toggles the menu to be open or closed
+   */
   toggle() {
     this.setState({
       dropdownOpen: !this.state.dropdownOpen
     });
   }
 
+  /**
+   * Take care of the selection of a process
+   * @param  {String} event clicked process
+   */
   handleChange(event) {
-    // console.log(event.target);
     this.props.onProcessChange(event.target)
   }
 
+  /**
+   * Renders out the process dropdown onto the page
+   * @return {HTML} render of component
+   */
   render() {
     let items = this.props.processlist
     return (

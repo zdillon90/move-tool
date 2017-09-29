@@ -12,14 +12,11 @@
  */
 import { app, BrowserWindow } from 'electron';
 import storage from 'electron-json-storage';
-import electronOauth2 from 'electron-oauth2';
+import auth from './auth';
 import MenuBuilder from './menu';
-// import { InshapeAPI } from './src/Utils';
 import config from './src/inshape_config.json';
 
 let mainWindow = null;
-
-// const router = express.Router();
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -46,11 +43,6 @@ const installExtensions = async () => {
     .catch(console.log());
 };
 
-// app.on('before-quit', () => {
-//   storage.clear((error) => {
-//     if (error) throw error;
-//   });
-// });
 
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
@@ -74,6 +66,8 @@ app.on('ready', async () => {
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
 
+  // mainWindow.webContents.openDevTools();
+
   mainWindow.webContents.on('did-finish-load', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
@@ -86,7 +80,7 @@ app.on('ready', async () => {
     alwaysOnTop: true,
     autoHideMenuBar: true,
     title: 'Authorization',
-    frame: false,
+    frame: true,
     webPreferences: {
       nodeIntegration: false
     }
@@ -96,10 +90,8 @@ app.on('ready', async () => {
     accessType: 'Bearer'
   };
 
-  const myApiOauth = electronOauth2(config, windowParams);
+  const myApiOauth = auth(config, windowParams);
 
-  // storage.has('token', (error, hasKey) => {
-  //   if (!hasKey) {
   myApiOauth.getAccessToken(options)
   .then((token, getError) => {
     storage.set('token', token);
@@ -108,8 +100,6 @@ app.on('ready', async () => {
   .catch((err) => {
     console.error(`Storage of access_token Error: ${err}`);
   });
-  //   }
-  // });
 
   mainWindow.on('closed', () => {
     mainWindow = null;

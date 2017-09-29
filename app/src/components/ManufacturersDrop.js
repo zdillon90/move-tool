@@ -7,7 +7,12 @@ import {
   DropdownItem
  } from 'reactstrap';
 
- // This class renders the Manufacturers in a dropdown menu
+ /**
+  * This class renders the Manufacturers in a dropdown menu
+  * @param {Bool} dropdownOpen Handles the state of the dropdown manufacturer
+  * menu
+  * @type {Class}
+  */
 class ManufacturersDrop extends Component {
   constructor(props){
     super(props);
@@ -18,14 +23,19 @@ class ManufacturersDrop extends Component {
     };
   }
 
-  // Toggels the state of the dropdown closed or open
+  /**
+   * Toggles the state of the dropdown closed or open
+   */
   toggle() {
     this.setState({
       dropdownOpen: !this.state.dropdownOpen
     });
   }
 
-// Handles the action if a manufacturer is clicked
+/**
+ * Handles the action if a manufacturer is clicked
+ * @param  {String} event Click event when a manufacturer is selected
+ */
   handleChange (event) {
     this.props.onManufacturerChange(
       event.target.name,
@@ -33,7 +43,11 @@ class ManufacturersDrop extends Component {
     );
   }
 
-  // Renders the dropdown menu
+  /**
+   * Renders the manufacturer dropdown menu
+   * @return {HTML} Depending on the state of the Manufacturers will populate
+   * the dropdown with a clickable list of manufactures.
+   */
   render() {
     const items = this.props.list;
     let header = null;
