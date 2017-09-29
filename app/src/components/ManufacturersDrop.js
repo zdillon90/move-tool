@@ -24,7 +24,7 @@ class ManufacturersDrop extends Component {
   }
 
   /**
-   * Toggels the state of the dropdown closed or open
+   * Toggles the state of the dropdown closed or open
    */
   toggle() {
     this.setState({

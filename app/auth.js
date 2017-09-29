@@ -5,11 +5,13 @@ const objectAssign = require('object-assign');
 const nodeUrl = require('url');
 const electron = require('electron');
 
-const Menu = electron.Menu;
-const session = electron.session;
 const BrowserWindow = electron.BrowserWindow || electron.remote.BrowserWindow;
 
-
+/**
+ * creates a random string to compare against when authenticating
+ * @param  {Number} length length of generated string needed
+ * @return {String}        Random string of characters
+ */
 var generateRandomString = function (length) {
   var text = '';
   var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -41,10 +43,18 @@ module.exports = function (config, windowParams) {
       state: generateRandomString(16)
     };
 
+    /**
+     * Adds the OAuth2 scope to the URL if there is one in the config
+     * @param  {Object} opts URL options
+     */
     if (opts.scope) {
       urlParams.scope = opts.scope;
     }
 
+    /**
+     * Adds the OAuth2 access type to the URL if there is one in the config
+     * @param  {Object} opts URL options
+     */
     if (opts.accessType) {
       urlParams.access_type = opts.accessType;
     }
@@ -106,7 +116,7 @@ module.exports = function (config, windowParams) {
   /**
    * Handles formating and sending the Auth POST request
    * @param  {Object} data Holds the nessary information to send with Auth request
-   * @return {[type]}      Returns the request in JSON format
+   * @return {Object}      Returns the request in JSON format
    */
   function tokenRequest(data) {
     const header = {
@@ -135,7 +145,7 @@ module.exports = function (config, windowParams) {
   /**
    * Retrieves the access token from the Auth server
    * @param  {Object} opts optional params
-   * @return {Object}      Returns the response from the Auth request
+   * @return {Promise}     Returns the response from the Auth request
    */
   function getAccessToken(opts) {
     return getAuthorizationCode(opts)
