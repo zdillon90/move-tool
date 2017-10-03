@@ -12,7 +12,7 @@ class PoModalList extends Component {
    * @return {HTML} render of component
    */
   render() {
-    let items = this.props.poList;
+    let items = this.props.metadata.poList;
     return (
       <div>
         <ul>

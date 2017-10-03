@@ -23,10 +23,10 @@ class CardModal extends Component {
     return (
       <div>
         <Modal isOpen={this.props.isOpen} toggle={this.props.toggle} className={this.props.className}>
-          <ModalHeader toggle={this.props.toggle}>Tray</ModalHeader>
+          <ModalHeader toggle={this.props.toggle}>{this.props.metadata.trayName}</ModalHeader>
           <ModalBody>
             Production Order list:
-            <PoModalList poList={this.props.metadata} />
+            <PoModalList metadata={this.props.metadata} />
           </ModalBody>
           <ModalFooter>
             <Button color="primary" onClick={this.props.toggle}>Close</Button>{' '}

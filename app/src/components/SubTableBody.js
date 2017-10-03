@@ -116,6 +116,7 @@ class SubTableBody extends Component {
     });
     trayList.forEach((tray) => {
       let card = {};
+      let cardMeta = {};
       let poList = [];
       let trayTags = [];
       let tag = {};
@@ -159,7 +160,10 @@ class SubTableBody extends Component {
           card.description = (trayPosInLane + " / " + trayTotal.poCount + " PO(s)").toString()
         }
       });
-      card.metadata = poList;
+      /** @TODO Add poList to the card meta */
+      cardMeta.poList = poList;
+      cardMeta.trayName = card.title;
+      card.metadata = cardMeta;
       cards.push(card);
     });
     return cards;
