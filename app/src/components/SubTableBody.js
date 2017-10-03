@@ -260,7 +260,7 @@ class SubTableBody extends Component {
      * Function that is triggered when the card is clicked. This will show the
      * list of POs within the tray card.
      * @param  {String} cardId   The unique card identifier
-     * @param  {List} metadata   POs within the tray card
+     * @param  {Object} metadata   POs within the tray card
      */
     const onCardClick = (cardId, metadata) => {
       this.toggle();
@@ -271,6 +271,11 @@ class SubTableBody extends Component {
 
     return (
       <div>
+        <CardModal
+          isOpen={this.state.modal}
+          toggle={this.toggle}
+          metadata={this.state.metadata}
+        />
         <Board
           data={processes}
           eventBusHandle={this.setEventBus}
@@ -278,11 +283,6 @@ class SubTableBody extends Component {
           handleDragStart={handleDragStart}
           handleDragEnd={handleDragEnd}
           onCardClick={onCardClick}
-        />
-        <CardModal
-          isOpen={this.state.modal}
-          toggle={this.toggle}
-          metadata={this.state.metadata}
         />
       </div>
     );
