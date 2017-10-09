@@ -62,7 +62,7 @@ class Navbarz extends Component {
       <div>
         <Navbar color="inverse" inverse toggleable>
           <NavbarToggler right onClick={this.toggle} />
-          <NavbarBrand href="">Inshape Movement Tool</NavbarBrand>
+          <NavbarBrand href="">Inshape Movement Assistant</NavbarBrand>
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               {process ? (

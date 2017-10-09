@@ -26,6 +26,7 @@ class App extends Component {
     super(props);
     this.handleManufacturerChange = this.handleManufacturerChange.bind(this);
     this.handleProcessChange = this.handleProcessChange.bind(this);
+    this.handleToolChange = this.handleToolChange.bind(this);
     this.fetchStatuses = this.fetchStatuses.bind(this);
     this.fetchProductionOrders = this.fetchProductionOrders.bind(this);
     this.defaultCheck = this.defaultCheck.bind(this);
@@ -44,7 +45,9 @@ class App extends Component {
       pos: null,
       patchResult: '',
       loadingDone: false,
-      refreshSignal: false
+      refreshSignal: false,
+      inshapeTools: ['Overview', 'Polishing'],
+      currentTool: null
     };
   }
 
@@ -233,29 +236,54 @@ class App extends Component {
     );
   }
 
+  handleToolChange(tool) {
+    this.setState({
+      currentTool: tool
+    });
+  }
+
   /**
    * Renders a loading screen or the board depending if the Pos have loaded
    * @return {HTML} Renders a loading screen if there are no POs and renders the
    * the production board if there are
    */
-  loadingPos() {
+  mainView() {
+    const manufacturer = this.state.manufacturer;
+    const manList = this.state.allManufacturers;
+    const processes = this.state.processes;
+    const inshapeTools = this.state.inshapeTools;
     const currentProcess = this.state.process;
+    const currentTool = this.state.currentTool;
     const loadingDone = this.state.loadingDone;
     const pos = this.state.pos;
     const refreshSignal = this.state.refreshSignal;
-    if (loadingDone) {
-      return (
-        <SubTableBody
-          refreshSignal={refreshSignal}
-          resetRefresh={this.resetRefreshSignal}
-          list={currentProcess}
-          pos={pos}
-          patchPos={this.patchPos}
-        />
-      );
+    if (currentProcess !== null && currentTool !== null) {
+      if (loadingDone) {
+        return (
+          <SubTableBody
+            refreshSignal={refreshSignal}
+            resetRefresh={this.resetRefreshSignal}
+            list={currentProcess}
+            pos={pos}
+            patchPos={this.patchPos}
+          />
+        );
+      } else {
+        return (
+          <LoadingScreen />
+        );
+      }
     } else {
       return (
-        <LoadingScreen />
+        <Manufacturers
+          list={manList}
+          manufacturer={manufacturer}
+          toolList={inshapeTools}
+          onToolChange={this.handleToolChange}
+          onManufacturerChange={this.handleManufacturerChange}
+          processes={processes}
+          onProcessChange={this.handleProcessChange}
+        />
       );
     }
   }
@@ -264,10 +292,10 @@ class App extends Component {
    * Renders the entire application to the window
    * @return {HTML} render of component
    */
+  /** @TODO Add a condition with the currentProcess to also chek the current
+   * Tool selected */
   render() {
-    const manList = this.state.allManufacturers;
     const manufacturer = this.state.manufacturer;
-    const processes = this.state.processes;
     const currentProcess = this.state.process;
     const result = this.state.patchResult;
     const authorized = this.state.authorized;
@@ -281,16 +309,7 @@ class App extends Component {
           result={result}
           authorized={authorized}
         />
-        {currentProcess ? (
-          this.loadingPos()
-        ) : (
-          <Manufacturers
-            list={manList}
-            onManufacturerChange={this.handleManufacturerChange}
-            processes={processes}
-            onProcessChange={this.handleProcessChange}
-          />
-        )}
+        {this.mainView()}
       </div>
     );
   }

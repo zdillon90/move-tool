@@ -38,7 +38,7 @@ class Manufacturers extends Component {
             <Row>
               <Col>
                 <h1>Welcome to The Future!</h1>
-                <h4>Choose a Manufacturer:</h4>
+                <h4>Choose a Manufacturer and Tool:</h4>
               </Col>
             </Row>
             <Row>
@@ -48,7 +48,8 @@ class Manufacturers extends Component {
                     list={manList}
                     onManufacturerChange={this.props.onManufacturerChange}
                   />
-                  {processes.length > 1 &&
+                  {
+                    processes.length > 1 &&
                     <ProcessDrop
                       processlist={processes}
                       onProcessChange={this.props.onProcessChange}
