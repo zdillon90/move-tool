@@ -38,7 +38,7 @@ class App extends Component {
     this.state = {
       authorized: null,
       allManufacturers: [],
-      manufacturer: '',
+      manufacturer: 'Manufacturers',
       manufacturerId: null,
       processes: [],
       process: null,
@@ -46,8 +46,14 @@ class App extends Component {
       patchResult: '',
       loadingDone: false,
       refreshSignal: false,
-      inshapeTools: ['Overview', 'Polishing'],
-      currentTool: null
+      currentTool: 'Tools',
+      inshapeTools: [{
+        id: 1,
+        name: 'Overview'
+      }, {
+        id: 2,
+        name: 'Polishing'
+      }]
     };
   }
 
@@ -90,13 +96,16 @@ class App extends Component {
   * @param  {String} manId   Identify each manufacturer given by InshapeAPI
   */
   handleManufacturerChange(manName, manId) {
-    this.setState(
-      {
-        manufacturer: manName,
-        manufacturerId: manId
-      },
-      this.fetchStatuses
-    );
+    this.setState({
+      manufacturer: manName,
+      manufacturerId: manId
+    });
+  }
+
+  handleToolChange(tool) {
+    this.setState({
+      currentTool: tool
+    }, this.fetchStatuses);
   }
 
   /**
@@ -236,12 +245,6 @@ class App extends Component {
     );
   }
 
-  handleToolChange(tool) {
-    this.setState({
-      currentTool: tool
-    });
-  }
-
   /**
    * Renders a loading screen or the board depending if the Pos have loaded
    * @return {HTML} Renders a loading screen if there are no POs and renders the
@@ -257,7 +260,7 @@ class App extends Component {
     const loadingDone = this.state.loadingDone;
     const pos = this.state.pos;
     const refreshSignal = this.state.refreshSignal;
-    if (currentProcess !== null && currentTool !== null) {
+    if (currentProcess !== null && currentTool !== 'Tools') {
       if (loadingDone) {
         return (
           <SubTableBody
@@ -279,6 +282,7 @@ class App extends Component {
           list={manList}
           manufacturer={manufacturer}
           toolList={inshapeTools}
+          currentTool={currentTool}
           onToolChange={this.handleToolChange}
           onManufacturerChange={this.handleManufacturerChange}
           processes={processes}

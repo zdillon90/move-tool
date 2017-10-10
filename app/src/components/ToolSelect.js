@@ -22,23 +22,35 @@ class ToolSelect extends Component {
     });
   }
 
-  // handleChange (event) {
-  //   this.props.onToolSelect(
-  //     event.target.name,
-  //     event.target.value
-  //   );
-  // }
+  handleChange(event) {
+    this.props.onToolChange(
+      event.target.name
+    );
+  }
 
   render() {
+    const tools = this.props.toolList;
+    const currentTool = this.props.currentTool;
     return (
       <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
         <DropdownToggle caret>
-          Tool Select
+          {currentTool}
         </DropdownToggle>
         <DropdownMenu>
           <DropdownItem header>Choose One</DropdownItem>
+          {tools.map(tool =>
+            <DropdownItem
+              key={tool.id}
+              name={tool.name}
+              onClick={this.handleChange}>
+              {tool.name}
+            </DropdownItem>
+            , this)
+          }
         </DropdownMenu>
       </ButtonDropdown>
     );
   }
 }
+
+export default ToolSelect;

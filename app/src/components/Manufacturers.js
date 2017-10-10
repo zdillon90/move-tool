@@ -8,6 +8,7 @@ import {
  } from 'reactstrap';
 import ManufacturersDrop from './ManufacturersDrop';
 import ProcessDrop from './ProcessDrop';
+import ToolSelect from './ToolSelect';
 
 /**
  * This class is the container that holds the manufacturer and process dropdown
@@ -29,8 +30,11 @@ class Manufacturers extends Component {
    * @return {HTML} render of component
    */
   render() {
+    const manufacturer = this.props.manufacturer
     const manList = this.props.list;
     const processes = this.props.processes;
+    const toolList = this.props.toolList;
+    const currentTool = this.props.currentTool;
     return (
       <div>
         <Jumbotron>
@@ -45,6 +49,7 @@ class Manufacturers extends Component {
               <Col>
                 <ButtonGroup>
                   <ManufacturersDrop
+                    manufacturer={manufacturer}
                     list={manList}
                     onManufacturerChange={this.props.onManufacturerChange}
                   />
@@ -55,6 +60,11 @@ class Manufacturers extends Component {
                       onProcessChange={this.props.onProcessChange}
                     />
                   }
+                  <ToolSelect
+                    currentTool={currentTool}
+                    toolList={toolList}
+                    onToolChange={this.props.onToolChange}
+                  />
                 </ButtonGroup>
               </Col>
             </Row>
