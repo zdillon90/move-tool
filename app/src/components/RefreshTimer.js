@@ -19,7 +19,6 @@ class CountdownTimer extends Component {
    * interval to tick every second
    */
   componentDidMount() {
-    console.log(this.state.secondsRemaining);
     this.interval = setInterval(this.tick, 1000);
   }
 

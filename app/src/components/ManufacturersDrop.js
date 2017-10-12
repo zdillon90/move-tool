@@ -36,7 +36,7 @@ class ManufacturersDrop extends Component {
  * Handles the action if a manufacturer is clicked
  * @param  {String} event Click event when a manufacturer is selected
  */
-  handleChange (event) {
+  handleChange(event) {
     this.props.onManufacturerChange(
       event.target.name,
       event.target.value

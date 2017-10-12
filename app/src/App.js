@@ -35,6 +35,8 @@ class App extends Component {
     this.triggerRefresh = this.triggerRefresh.bind(this);
     this.resetRefreshSignal = this.resetRefreshSignal.bind(this);
     this.refreshTimer = this.refreshTimer.bind(this);
+    this.limitSubProcesses = this.limitSubProcesses.bind(this);
+    this.limitPos = this.limitPos.bind(this);
     this.state = {
       authorized: null,
       allManufacturers: [],
@@ -49,10 +51,12 @@ class App extends Component {
       currentTool: 'Tools',
       inshapeTools: [{
         id: 1,
-        name: 'Overview'
+        name: 'Overview',
+        substatuses: null
       }, {
         id: 2,
-        name: 'Polishing'
+        name: 'Polishing',
+        substatuses: [374, 1005, 371, 373, 200, 376]
       }]
     };
   }
@@ -245,6 +249,27 @@ class App extends Component {
     );
   }
 
+  limitSubProcesses(subProcesses, limitIds) {
+    const filteredList = [];
+    subProcesses.forEach((subProcess) => {
+      if (~limitIds.indexOf(subProcess.id)) {
+        filteredList.push(subProcess);
+      }
+    });
+    return filteredList;
+  }
+
+  limitPos(pos, limitIds) {
+    console.log('limiting POs');
+    const filteredPoList = [];
+    pos.forEach((po) => {
+      if (~limitIds.indexOf(po.subStatusId)) {
+        filteredPoList.push(po);
+      }
+    });
+    return filteredPoList;
+  }
+
   /**
    * Renders a loading screen or the board depending if the Pos have loaded
    * @return {HTML} Renders a loading screen if there are no POs and renders the
@@ -260,7 +285,7 @@ class App extends Component {
     const loadingDone = this.state.loadingDone;
     const pos = this.state.pos;
     const refreshSignal = this.state.refreshSignal;
-    if (currentProcess !== null && currentTool !== 'Tools') {
+    if (currentProcess !== null && currentTool === 'Overview') {
       if (loadingDone) {
         return (
           <SubTableBody
@@ -268,6 +293,32 @@ class App extends Component {
             resetRefresh={this.resetRefreshSignal}
             list={currentProcess}
             pos={pos}
+            patchPos={this.patchPos}
+          />
+        );
+      } else {
+        return (
+          <LoadingScreen />
+        );
+      }
+    } else if (currentProcess !== null && currentTool === 'Polishing') {
+      console.log('Polishing Tool Selected');
+      const toolObj = inshapeTools.filter((item) => item.name === 'Polishing');
+      const laneIds = toolObj[0].substatuses;
+      const filteredProcesses = this.limitSubProcesses(currentProcess.processSteps, laneIds);
+      // console.log(filteredProcesses);
+      // console.log(currentProcess);
+      currentProcess.processSteps = filteredProcesses;
+      /** @TODO Change to Polishing Table Component */
+      if (loadingDone) {
+        const filteredPos = this.limitPos(pos, laneIds);
+        console.log(filteredPos);
+        return (
+          <SubTableBody
+            refreshSignal={refreshSignal}
+            resetRefresh={this.resetRefreshSignal}
+            list={currentProcess}
+            pos={filteredPos}
             patchPos={this.patchPos}
           />
         );
@@ -296,7 +347,7 @@ class App extends Component {
    * Renders the entire application to the window
    * @return {HTML} render of component
    */
-  /** @TODO Add a condition with the currentProcess to also chek the current
+  /** @TODO Add a condition with the currentProcess to also check the current
    * Tool selected */
   render() {
     const manufacturer = this.state.manufacturer;

@@ -10,7 +10,6 @@ const accessTokenPromise = new Promise((resolve, reject) => {
     if (hasKey) {
       storage.get('token', (err, data) => {
         if (err) throw err;
-        console.log(`Promise Access Token: ${data.access_token}`);
         resolve(data.access_token);
       });
     } else {
@@ -25,7 +24,6 @@ const refreshTokenPromise = new Promise((resolve, reject) => {
     if (hasKey) {
       storage.get('token', (err, data) => {
         if (err) throw err;
-        console.log(`Promise Refresh Token: ${data.refresh_token}`);
         resolve(data.refresh_token);
       });
     } else {
@@ -47,8 +45,6 @@ axios.interceptors.response.use(undefined, (err) => {
     return getRefreshToken()
     .then((success) => {
       if (success !== undefined) {
-        console.log('Success:');
-        console.log(success);
         const newToken = success.access_token;
         storage.get('token', (error, data) => {
           if (error) throw error;
@@ -58,13 +54,11 @@ axios.interceptors.response.use(undefined, (err) => {
         });
         err.config.__isRetryRequest = true;
         err.config.headers.authorization = `bearer ${success.access_token}`;
-        console.log('new token set');
-        console.log(err);
         return axios(err.config);
       }
     })
     .catch((error) => {
-      console.log('Refresh login error: ', error);
+      console.error('Refresh login error: ', error);
       throw error;
     });
   }
@@ -82,7 +76,6 @@ function getRefreshToken() {
   return new Promise((resolve, reject) => {
     refreshTokenPromise.then((refreshToken) => refreshToken)
     .then((token) => {
-      console.log(`refresh token: ${token}`);
       const body = {
         grant_type: 'refresh_token',
         client_id: config.clientId,
@@ -99,11 +92,9 @@ function getRefreshToken() {
       return refreshReq;
     })
     .then((request) => {
-      console.log('Trying to get new token');
       request.headers.Authorization = 'Basic ' + new Buffer(config.clientId + ':' + config.clientSecret).toString('base64');
       axios(request)
         .then((response) => {
-          console.log(response);
           if (response.status === 200) {
             resolve(response.data);
           } else {
@@ -144,7 +135,6 @@ export function InshapeAPI(requestMethod, endpoint, body) {
 
       axios(req)
         .then((response) => {
-          console.log(response);
           if (response.status === 200) {
             resolve(response.data);
           } else {

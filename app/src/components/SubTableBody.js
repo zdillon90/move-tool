@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Board } from 'react-trello';
 import CardModal from './CardModal';
 
-/** TODO Move all calculation functions outside of main render file */
 /** TODO Organize Tray Cards by machine type */
 
 let eventBus = undefined
