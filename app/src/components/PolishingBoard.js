@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { Board } from 'react-trello';
 import CardModal from './CardModal';
 
-/** @TODO Organize Tray Cards by machine type */
-
 let eventBus = undefined
 
 /**
@@ -21,7 +19,7 @@ let eventBus = undefined
  * card was moved to a new status
  * @type {Class}
  */
-class SubTableBody extends Component {
+class PolishingBoard extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -33,7 +31,6 @@ class SubTableBody extends Component {
       formatedPoPatchList: []
     };
     this.toggle = this.toggle.bind(this);
-    this.totalPoCountPerTray = this.totalPoCountPerTray.bind(this);
   }
 
   /**
@@ -63,4 +60,211 @@ class SubTableBody extends Component {
       modal: !this.state.modal
     });
   }
+
+  makeCards(productionOrders) {
+    let cards = [];
+    let materialList = [];
+    productionOrders.forEach((po) => {
+      let cardId = po.materialId
+      if (materialList.indexOf(cardId) === -1) {
+        materialList.push(cardId)
+      }
+    });
+    materialList.forEach((material) => {
+      let card = {};
+      let cardMeta = {};
+      let poList = [];
+      let materialTags = [];
+      let tag = {};
+      card.id = material;
+      let posInLane = 0;
+      productionOrders.forEach((po) => {
+        if (po.materialId === card.id) {
+          poList.push(po.productionOrderName);
+          posInLane += 1;
+        }
+      });
+      if (card.id === 6) {
+        /** TODO Mark this card as Red and warn user*/
+        card.title = 'White';
+        tag.title = 'WSF';
+        card.bgcolor = '#FFFFFF';
+      } else if (card.id === 25) {
+        card.title = 'Black';
+        tag.title = 'BSF';
+        tag.bgcolor = '#000000';
+      } else if (card.id === 62) {
+        card.title = 'White Polished';
+        tag.title = 'WSFP';
+        tag.bgcolor = '#B8B8B8';
+      } else if (card.id === 75) {
+        card.title = 'Purple';
+        tag.title = 'PSFP';
+        tag.bgcolor = '#800080';
+      } else if (card.id === 76) {
+        card.title = 'Red';
+        tag.title = 'RSFP';
+        tag.bgcolor = '#FF0000';
+      } else if (card.id === 77) {
+        card.title = 'Pink';
+        tag.title = 'PSFP';
+        tag.bgcolor = '#808B96';
+      } else if (card.id === 78) {
+        card.title = 'Blue';
+        tag.title = 'BSFP';
+        tag.bgcolor = '#0000FF';
+      } else if (card.id === 93) {
+        card.title = 'Yellow';
+        tag.title = 'YSFP';
+        tag.color = '#000000'
+        tag.bgcolor = '#FFFF00';
+      } else if (card.id === 94) {
+        card.title = 'Green';
+        tag.title = 'GSFP';
+        tag.bgcolor = '#008000';
+      } else if (card.id === 95) {
+        card.title = 'Orange';
+        tag.title = 'OSFP';
+        tag.bgcolor = '#FFA500';
+      } else if (card.id === 133) {
+        card.title = 'White Premium';
+        tag.title = 'WPSF';
+        tag.bgcolor = '#808080';
+      } else if (card.id === 134) {
+        card.title = 'Black Premium';
+        tag.title = 'BPSF';
+        tag.bgcolor = '#363636';
+      }
+      materialTags.push(tag);
+      card.description = `${posInLane} PO(s)`;
+      card.tags = materialTags;
+      cardMeta.poList = poList;
+      cardMeta.materialName = card.title;
+      card.metadata = cardMeta;
+      cards.push(card);
+    });
+    return cards;
+  }
+  /**
+   * This function makes the sub status columns for the production table.
+   * @return {Object} formated object containing tray cards and sub status columns
+   */
+  makeLanes() {
+    let makeCards = this.makeCards;
+    let data = {};
+    let columns = [];
+    let list = this.props.list;
+    let subProcesses = list.processSteps;
+    let pos = this.props.pos;
+    subProcesses.forEach((column) => {
+      let lane = {};
+      let lanePos = [];
+      let columnName = column.name;
+      let columnId = column.id;
+      pos.forEach((po) => {
+        let statusId = po.subStatusId;
+        if (statusId === columnId) {
+          lanePos.push(po);
+        }
+      });
+      const materialCards = makeCards(lanePos);
+      lane.title = columnName;
+      lane.id = columnId.toString();
+      lane.cards = materialCards;
+      columns.push(lane);
+    });
+    data.lanes = columns;
+    return data;
+  }
+
+  /**
+   * If a tray card is moved this function patches the POs to the new sub status
+   * within Inshape
+   * @return {List} POs to be moved to new status
+   */
+  formatPoPatch() {
+    let totalPoList = this.props.pos;
+    let sourceLane = this.state.sourceLaneId;
+    let card = this.state.cardId;
+    let targetLane = this.state.targetLaneId;
+    let poPatchList = [];
+    totalPoList.forEach((po) => {
+      let poSubStatusId = po.subStatusId.toString();
+      let poMaterialId = po.materialId;
+      if (poSubStatusId === sourceLane && poMaterialId === card) {
+        let patchPo = {};
+        patchPo.productionOrderId = po.productionOrderId;
+        patchPo.productionProcessStepId = targetLane;
+        poPatchList.push(patchPo);
+      }
+    });
+    return poPatchList;
+  }
+  /**
+   * Complete formated table render function with sub status lanes and tray
+   * cards included
+   * @return {HTML} render of component
+   */
+  render() {
+
+    const processes = this.makeLanes();
+
+    const handleDragStart = (cardId, laneId) => {};
+
+    /**
+     * This function is triggered when the card is placed and checks to see if
+     * the card was moved to a different lane. If the card was placed in a new
+     * lane it patches those POs to the new status
+     * @param  {String} cardId       The unique card identifier
+     * @param  {String} sourceLaneId The unique source lane identifier
+     * @param  {String} targetLaneId The unique target lane identifier
+     */
+    const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
+      this.setState({
+        cardId,
+        sourceLaneId,
+        targetLaneId
+      });
+      let source = this.state.sourceLaneId;
+      let target = this.state.targetLaneId;
+      if (source !== target) {
+        let formatPoPatch = this.formatPoPatch();
+        this.setState({ formatedPoPatchList: formatPoPatch });
+        this.props.patchPos(formatPoPatch);
+      }
+    };
+
+    /**
+     * Function that is triggered when the card is clicked. This will show the
+     * list of POs within the tray card.
+     * @param  {String} cardId   The unique card identifier
+     * @param  {Object} metadata   POs within the tray card
+     */
+    const onCardClick = (cardId, metadata) => {
+      this.toggle();
+      this.setState({
+        metadata
+      });
+    };
+
+    return (
+      <div>
+        <CardModal
+          isOpen={this.state.modal}
+          toggle={this.toggle}
+          metadata={this.state.metadata}
+        />
+        <Board
+          data={processes}
+          eventBusHandle={this.setEventBus}
+          draggable
+          handleDragStart={handleDragStart}
+          handleDragEnd={handleDragEnd}
+          onCardClick={onCardClick}
+        />
+      </div>
+    );
+  }
 }
+
+export default PolishingBoard;

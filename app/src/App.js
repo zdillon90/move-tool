@@ -5,6 +5,7 @@ import Navbarz from './components/Navbarz';
 import SubTableBody from './components/SubTableBody';
 import LoadingScreen from './components/LoadingScreen';
 import CountdownTimer from './components/RefreshTimer';
+import PolishingBoard from './components/PolishingBoard';
 
 /**
  * Main Application Class that holds all major functions and InshapeAPI calls
@@ -260,7 +261,6 @@ class App extends Component {
   }
 
   limitPos(pos, limitIds) {
-    console.log('limiting POs');
     const filteredPoList = [];
     pos.forEach((po) => {
       if (~limitIds.indexOf(po.subStatusId)) {
@@ -302,19 +302,15 @@ class App extends Component {
         );
       }
     } else if (currentProcess !== null && currentTool === 'Polishing') {
-      console.log('Polishing Tool Selected');
       const toolObj = inshapeTools.filter((item) => item.name === 'Polishing');
       const laneIds = toolObj[0].substatuses;
       const filteredProcesses = this.limitSubProcesses(currentProcess.processSteps, laneIds);
-      // console.log(filteredProcesses);
-      // console.log(currentProcess);
       currentProcess.processSteps = filteredProcesses;
       /** @TODO Change to Polishing Table Component */
       if (loadingDone) {
         const filteredPos = this.limitPos(pos, laneIds);
-        console.log(filteredPos);
         return (
-          <SubTableBody
+          <PolishingBoard
             refreshSignal={refreshSignal}
             resetRefresh={this.resetRefreshSignal}
             list={currentProcess}

@@ -53,18 +53,17 @@ class Manufacturers extends Component {
                     list={manList}
                     onManufacturerChange={this.props.onManufacturerChange}
                   />
-                  <ToolSelect
-                    currentTool={currentTool}
-                    toolList={toolList}
-                    onToolChange={this.props.onToolChange}
-                  />
-                  {
-                    processes.length > 1 &&
+                  {manufacturer !== 'Manufacturers' &&
+                    <ToolSelect
+                      currentTool={currentTool}
+                      toolList={toolList}
+                      onToolChange={this.props.onToolChange}
+                    />}
+                  {processes.length > 1 &&
                     <ProcessDrop
                       processlist={processes}
                       onProcessChange={this.props.onProcessChange}
-                    />
-                  }
+                    />}
                 </ButtonGroup>
               </Col>
             </Row>

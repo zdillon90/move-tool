@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { Board } from 'react-trello';
 import CardModal from './CardModal';
 
-/** TODO Organize Tray Cards by machine type */
-
 let eventBus = undefined
 
 /**
@@ -159,7 +157,6 @@ class SubTableBody extends Component {
           card.description = (trayPosInLane + " / " + trayTotal.poCount + " PO(s)").toString()
         }
       });
-      /** @TODO Add poList to the card meta */
       cardMeta.poList = poList;
       cardMeta.trayName = card.title;
       card.metadata = cardMeta;
