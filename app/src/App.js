@@ -4,7 +4,7 @@ import Manufacturers from './components/Manufacturers';
 import Navbarz from './components/Navbarz';
 import SubTableBody from './components/SubTableBody';
 import LoadingScreen from './components/LoadingScreen';
-import CountdownTimer from './components/RefreshTimer';
+import CountdownTimer from './components/CountdownTimer';
 import PolishingBoard from './components/PolishingBoard';
 
 /**

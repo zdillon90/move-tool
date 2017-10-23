@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Board } from 'react-trello';
 import CardModal from './CardModal';
+import CountdownTimer from './CountdownTimer';
+import PolishingCard from './PolishingCard';
 
 let eventBus = undefined
 
@@ -28,9 +30,12 @@ class PolishingBoard extends Component {
       cardId: '',
       sourceLaneId: '',
       targetLaneId: '',
-      formatedPoPatchList: []
+      formatedPoPatchList: [],
+      refreshSignal: false
     };
     this.toggle = this.toggle.bind(this);
+    this.triggerRefresh = this.triggerRefresh.bind(this);
+    this.polishingTimer = this.polishingTimer.bind(this);
   }
 
   /**
@@ -59,6 +64,24 @@ class PolishingBoard extends Component {
     this.setState({
       modal: !this.state.modal
     });
+  }
+
+  /** TODO When the card is moved into a polishing status change the color of
+   * the card and when it is out  */
+
+  triggerRefresh() {
+    this.setState({
+      refreshSignal: true
+    });
+  }
+
+  polishingTimer() {
+    return (
+      <CountdownTimer
+        secondsRemaining="10"
+        refresh={this.triggerRefresh}
+      />
+    );
   }
 
   makeCards(productionOrders) {
@@ -108,7 +131,7 @@ class PolishingBoard extends Component {
       } else if (card.id === 77) {
         card.title = 'Pink';
         tag.title = 'PSFP';
-        tag.bgcolor = '#808B96';
+        tag.bgcolor = '#FFC0CB';
       } else if (card.id === 78) {
         card.title = 'Blue';
         tag.title = 'BSFP';
@@ -116,7 +139,7 @@ class PolishingBoard extends Component {
       } else if (card.id === 93) {
         card.title = 'Yellow';
         tag.title = 'YSFP';
-        tag.color = '#000000'
+        tag.color = '#000000';
         tag.bgcolor = '#FFFF00';
       } else if (card.id === 94) {
         card.title = 'Green';
@@ -200,13 +223,13 @@ class PolishingBoard extends Component {
     });
     return poPatchList;
   }
+
   /**
    * Complete formated table render function with sub status lanes and tray
    * cards included
    * @return {HTML} render of component
    */
   render() {
-
     const processes = this.makeLanes();
 
     const handleDragStart = (cardId, laneId) => {};
@@ -255,13 +278,18 @@ class PolishingBoard extends Component {
           metadata={this.state.metadata}
         />
         <Board
+          customCardLayout
           data={processes}
           eventBusHandle={this.setEventBus}
           draggable
           handleDragStart={handleDragStart}
           handleDragEnd={handleDragEnd}
           onCardClick={onCardClick}
-        />
+        >
+          <PolishingCard
+            timer={this.polishingTimer()}
+          />
+        </Board>
       </div>
     );
   }
