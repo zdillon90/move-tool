@@ -17,6 +17,7 @@ class PolishingCard extends Component {
     const timer = this.props.timer;
     const description = this.props.description;
     const tags = this.props.tags;
+    const source = this.props.source;
     return (
       <div>
         <CardHeader>
@@ -24,11 +25,11 @@ class PolishingCard extends Component {
             {title}
           </CardTitle>
           <CardRightContent>
-            {timer}
+            {source}
           </CardRightContent>
         </CardHeader>
         <Detail>
-          {description}
+          {description}{' - Timer: '}{timer}{' sec'}
         </Detail>
         {tags &&
           <Footer>

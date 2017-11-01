@@ -78,7 +78,7 @@ class PolishingBoard extends Component {
   polishingTimer() {
     return (
       <CountdownTimer
-        secondsRemaining="10"
+        secondsRemaining="180"
         refresh={this.triggerRefresh}
       />
     );
@@ -288,6 +288,7 @@ class PolishingBoard extends Component {
         >
           <PolishingCard
             timer={this.polishingTimer()}
+            source={this.state.sourceLaneId}
           />
         </Board>
       </div>
