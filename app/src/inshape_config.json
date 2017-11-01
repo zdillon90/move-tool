@@ -5,5 +5,23 @@
   "response_type": "token",
   "useBasicAuthorizationHeader": true,
   "redirectUri": "http://localhost:1212/",
-  "inshapeUrl": "https://inshape.shapeways.com/login?targetUrl=%2F"
+  "inshapeUrl": "https://inshape.shapeways.com/login?targetUrl=%2F",
+  "toolBag": [{
+    "id": 0,
+    "name": "Overview",
+    "substatuses": null
+  }, {
+    "id": 1,
+    "name": "Polishing",
+    "substatuses": [374, 1005, 371, 373, 200, 376]
+  }],
+  "ehvProcessStepsMatches": [{
+    "id": 0,
+    "name": "Planned",
+    "processSteps": [43, 586, 593, 602, 614, 991]
+  }, {
+    "id": 1,
+    "name": "Printing",
+    "processSteps": [44, 587, 594, 603, 615, 992]
+  }]
 }

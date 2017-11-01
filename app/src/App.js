@@ -6,6 +6,7 @@ import SubTableBody from './components/SubTableBody';
 import LoadingScreen from './components/LoadingScreen';
 import CountdownTimer from './components/CountdownTimer';
 import PolishingBoard from './components/PolishingBoard';
+import config from './inshape_config.json';
 
 /**
  * Main Application Class that holds all major functions and InshapeAPI calls
@@ -50,15 +51,7 @@ class App extends Component {
       loadingDone: false,
       refreshSignal: false,
       currentTool: 'Tools',
-      inshapeTools: [{
-        id: 1,
-        name: 'Overview',
-        substatuses: null
-      }, {
-        id: 2,
-        name: 'Polishing',
-        substatuses: [374, 1005, 371, 373, 200, 376]
-      }]
+      inshapeTools: config.toolBag
     };
   }
 
