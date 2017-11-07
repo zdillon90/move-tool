@@ -51,7 +51,7 @@ class App extends Component {
       loadingDone: false,
       refreshSignal: false,
       currentTool: 'Tools',
-      inshapeTools: config.toolBag
+      inshapeTools: []
     };
   }
 
@@ -97,7 +97,21 @@ class App extends Component {
     this.setState({
       manufacturer: manName,
       manufacturerId: manId
-    });
+    }, this.setToolBag);
+  }
+
+  setToolBag() {
+    console.log(this.state.manufacturerId);
+    const manId = this.state.manufacturerId;
+    if (manId === '13') {
+      this.setState({
+        inshapeTools: config.licToolBag
+      });
+    } else {
+      this.setState({
+        inshapeTools: config.toolBag
+      });
+    }
   }
 
   handleToolChange(tool) {
@@ -126,14 +140,7 @@ class App extends Component {
  */
   fetchProductionOrders() {
     const id = this.state.manufacturerId;
-    const process = this.state.process;
-    const processSteps = process.processSteps;
-    const subStatusIds = [];
-    processSteps.forEach((list) => {
-      subStatusIds.push(list.id);
-    });
-    const IdsString = subStatusIds.toString();
-    const poURL = `https://api.shapeways.com/production_orders/v1?manufacturer=${id}&subStatus=${IdsString}`;
+    const poURL = `https://api.shapeways.com/production_orders/v1?manufacturer=${id}`;
     InshapeAPI('get', poURL)
     .then((response) => {
       const manufacturersPos = response.productionOrders;
@@ -249,7 +256,7 @@ class App extends Component {
       if (~limitIds.indexOf(subProcess.id)) {
         filteredList.push(subProcess);
       }
-    });
+    }, this);
     return filteredList;
   }
 
@@ -259,8 +266,12 @@ class App extends Component {
       if (~limitIds.indexOf(po.subStatusId)) {
         filteredPoList.push(po);
       }
-    });
+    }, this);
     return filteredPoList;
+  }
+
+  mergingStatuses() {
+    console.log('Merging Statuses');
   }
 
   /**
@@ -299,7 +310,6 @@ class App extends Component {
       const laneIds = toolObj[0].substatuses;
       const filteredProcesses = this.limitSubProcesses(currentProcess.processSteps, laneIds);
       currentProcess.processSteps = filteredProcesses;
-      /** @TODO Change to Polishing Table Component */
       if (loadingDone) {
         const filteredPos = this.limitPos(pos, laneIds);
         return (

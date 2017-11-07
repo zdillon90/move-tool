@@ -10,18 +10,30 @@
     "id": 0,
     "name": "Overview",
     "substatuses": null
+  }],
+  "licToolBag": [{
+    "id": 0,
+    "name": "Overview",
+    "substatuses": null
   }, {
     "id": 1,
     "name": "Polishing",
     "substatuses": [374, 1005, 371, 373, 200, 376]
   }],
-  "ehvProcessStepsMatches": [{
-    "id": 0,
-    "name": "Planned",
-    "processSteps": [43, 586, 593, 602, 614, 991]
-  }, {
-    "id": 1,
-    "name": "Printing",
-    "processSteps": [44, 587, 594, 603, 615, 992]
-  }]
+  "ehvProcessStepsMatches": {
+    "production_process_id": "0",
+    "name": "customehv",
+    "display_name": "Custom",
+    "processSteps": [
+      {
+        "id": 0,
+        "name": "Planned",
+        "processStepsIds": [43, 586, 593, 602, 614, 991]
+      }, {
+        "id": 1,
+        "name": "Printing",
+        "processStepsIds": [44, 587, 594, 603, 615, 992]
+      }
+    ]
+  }
 }
