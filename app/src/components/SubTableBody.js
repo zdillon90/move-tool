@@ -176,7 +176,7 @@ class SubTableBody extends Component {
     let list = this.props.list;
     let subProcesses = list.processSteps;
     let pos = this.props.pos;
-    let totals = this.totalPoCountPerTray(pos)
+    let totals = this.totalPoCountPerTray(pos);
     subProcesses.forEach((column) => {
       let lane = {};
       let lanePos = [];

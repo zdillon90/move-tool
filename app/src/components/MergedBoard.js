@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import { Board } from 'react-trello';
 import CardModal from './CardModal';
-import CountdownTimer from './CountdownTimer';
-import PolishingCard from './PolishingCard';
 
-let eventBus = undefined
+let eventBus = undefined;
 
 /**
  * This class takes the POs endpoint from the InshapeAPI and organizes it into
@@ -21,7 +19,7 @@ let eventBus = undefined
  * card was moved to a new status
  * @type {Class}
  */
-class PolishingBoard extends Component {
+class MergedBoard extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -30,12 +28,10 @@ class PolishingBoard extends Component {
       cardId: '',
       sourceLaneId: '',
       targetLaneId: '',
-      formatedPoPatchList: [],
-      refreshSignal: false
+      formatedPoPatchList: []
     };
     this.toggle = this.toggle.bind(this);
-    this.triggerRefresh = this.triggerRefresh.bind(this);
-    this.polishingTimer = this.polishingTimer.bind(this);
+    this.totalPoCountPerTray = this.totalPoCountPerTray.bind(this);
   }
 
   /**
@@ -66,108 +62,109 @@ class PolishingBoard extends Component {
     });
   }
 
-  /** @TODO When the card is moved into a polishing status change the color of
-   * the card and when it is out  */
-
-  triggerRefresh() {
-    this.setState({
-      refreshSignal: true
-    });
-  }
-
-  polishingTimer() {
-    return (
-      <CountdownTimer
-        secondsRemaining="180"
-        refresh={this.triggerRefresh}
-      />
-    );
-  }
-
-  makeCards(productionOrders) {
-    let cards = [];
-    let materialList = [];
+  /**
+   * This function creates the PO count for that specific tray within a certain
+   * sub status, so if a tray is in two different sub statuses the amount in that
+   * sub status is compared to the tray total
+   * @param  {List} productionOrders manufacturer specific POs
+   * @return {List}                  POs within a specific tray
+   */
+  totalPoCountPerTray(productionOrders) {
+    let totalTrayListIds = [];
+    let totalTrayList = [];
+    let poCount = 0;
     productionOrders.forEach((po) => {
-      let cardId = po.materialId
-      if (materialList.indexOf(cardId) === -1) {
-        materialList.push(cardId)
+      let trayId = po.productionTrayId.toString();
+      if (totalTrayListIds.indexOf(trayId) === -1) {
+        totalTrayListIds.push(trayId);
       }
     });
-    materialList.forEach((material) => {
+    totalTrayListIds.forEach((tray) => {
+      let trayObject = {};
+      poCount = 0;
+      trayObject.trayNumber = tray;
+      productionOrders.forEach((po) => {
+        let trayId = po.productionTrayId.toString();
+        if (trayId === tray) {
+          poCount += 1;
+        }
+      });
+      trayObject.poCount = poCount;
+      totalTrayList.push(trayObject);
+    });
+    return totalTrayList;
+  }
+
+/**
+ * This function creates the cards for each substatus column
+ * @param  {List} productionOrders manufacturer specific POs
+ * @param  {List} trayTotals       PO totals from a specific tray
+ * @return {List}                  Tray Cards that belong to that substatus
+ * column
+ */
+  makeCards(productionOrders, trayTotals) {
+    let cards = [];
+    let trayList = [];
+    productionOrders.forEach((po) => {
+      let trayId = po.productionTrayId.toString();
+      if (trayList.indexOf(trayId) === -1) {
+        trayList.push(trayId);
+      }
+    });
+    trayList.forEach((tray) => {
       let card = {};
       let cardMeta = {};
       let poList = [];
-      let materialTags = [];
+      let trayTags = [];
       let tag = {};
-      card.id = material;
-      let posInLane = 0;
+      card.id = tray;
+      let trayPosInLane = 0;
       productionOrders.forEach((po) => {
-        if (po.materialId === card.id) {
+        if (po.productionTrayId.toString() === card.id) {
           poList.push(po.productionOrderName);
-          posInLane += 1;
+          trayPosInLane += 1;
+          if (po.productionTrayId === 0) {
+            card.title = 'No_Tray_Name';
+          } else {
+            card.title = po.productionTrayName;
+          }
         }
       });
-      if (card.id === 6) {
-        /** @TODO Mark this card as Red and warn user*/
-        card.title = 'White';
-        tag.title = 'WSF';
-        card.bgcolor = '#FFFFFF';
-      } else if (card.id === 25) {
-        card.title = 'Black';
-        tag.title = 'BSF';
-        tag.bgcolor = '#000000';
-      } else if (card.id === 62) {
-        card.title = 'White Polished';
-        tag.title = 'WSFP';
-        tag.bgcolor = '#B8B8B8';
-      } else if (card.id === 75) {
-        card.title = 'Purple';
-        tag.title = 'PSFP';
-        tag.bgcolor = '#800080';
-      } else if (card.id === 76) {
-        card.title = 'Red';
-        tag.title = 'RSFP';
-        tag.bgcolor = '#FF0000';
-      } else if (card.id === 77) {
-        card.title = 'Pink';
-        tag.title = 'PSFP';
-        tag.bgcolor = '#FFC0CB';
-      } else if (card.id === 78) {
-        card.title = 'Blue';
-        tag.title = 'BSFP';
-        tag.bgcolor = '#0000FF';
-      } else if (card.id === 93) {
-        card.title = 'Yellow';
-        tag.title = 'YSFP';
-        tag.color = '#000000';
-        tag.bgcolor = '#FFFF00';
-      } else if (card.id === 94) {
-        card.title = 'Green';
-        tag.title = 'GSFP';
-        tag.bgcolor = '#008000';
-      } else if (card.id === 95) {
-        card.title = 'Orange';
-        tag.title = 'OSFP';
-        tag.bgcolor = '#FFA500';
-      } else if (card.id === 133) {
-        card.title = 'White Premium';
-        tag.title = 'WPSF';
-        tag.bgcolor = '#808080';
-      } else if (card.id === 134) {
-        card.title = 'Black Premium';
-        tag.title = 'BPSF';
-        tag.bgcolor = '#363636';
+      // Creation of tags for tray size
+      if (~card.title.indexOf('P7')) {
+        tag.title = 'P7 - Large';
+        tag.bgcolor = '#E67E22';
+      } else if (~card.title.indexOf('P3')) {
+        tag.title = 'P3 - Medium';
+        tag.bgcolor = '#239B56';
+      } else if (~card.title.indexOf('P1')) {
+        tag.title = 'P1 - Small';
+        tag.bgcolor = '#76448A';
+      } else if (~card.title.indexOf('RUSH') || ~card.title.indexOf('Rush')) {
+        tag.title = 'RUSH';
+        tag.bgcolor = '#C70039';
+      } else if (~card.title.indexOf('XHD') || ~card.title.indexOf('xhd')) {
+        tag.title = 'XHD';
+        tag.bgcolor = '#27AE60';
+      } else {
+        tag.title = 'No Tray Class';
+        tag.bgcolor = '#808B96';
       }
-      materialTags.push(tag);
-      card.description = `${posInLane} PO(s)`;
-      card.tags = materialTags;
+      trayTags.push(tag);
+      card.tags = trayTags;
+      trayTotals.forEach((trayTotal) => {
+        if (trayTotal.trayNumber === card.id) {
+          card.description = (trayPosInLane + " / " + trayTotal.poCount + " PO(s)").toString()
+        }
+      });
       cardMeta.poList = poList;
-      cardMeta.materialName = card.title;
+      cardMeta.trayName = card.title;
       card.metadata = cardMeta;
       cards.push(card);
     });
     return cards;
   }
+
   /**
    * This function makes the sub status columns for the production table.
    * @return {Object} formated object containing tray cards and sub status columns
@@ -178,7 +175,9 @@ class PolishingBoard extends Component {
     let columns = [];
     let list = this.props.list;
     let subProcesses = list.processSteps;
+    /** @TODO If the PO is within the processStepsIds list add it to the lane */
     let pos = this.props.pos;
+    let totals = this.totalPoCountPerTray(pos);
     subProcesses.forEach((column) => {
       let lane = {};
       let lanePos = [];
@@ -190,10 +189,10 @@ class PolishingBoard extends Component {
           lanePos.push(po);
         }
       });
-      const materialCards = makeCards(lanePos);
+      const TrayCards = makeCards(lanePos, totals);
       lane.title = columnName;
       lane.id = columnId.toString();
-      lane.cards = materialCards;
+      lane.cards = TrayCards;
       columns.push(lane);
     });
     data.lanes = columns;
@@ -213,8 +212,8 @@ class PolishingBoard extends Component {
     let poPatchList = [];
     totalPoList.forEach((po) => {
       let poSubStatusId = po.subStatusId.toString();
-      let poMaterialId = po.materialId;
-      if (poSubStatusId === sourceLane && poMaterialId === card) {
+      let poProductionTrayId = po.productionTrayId.toString();
+      if (poSubStatusId === sourceLane && poProductionTrayId === card) {
         let patchPo = {};
         patchPo.productionOrderId = po.productionOrderId;
         patchPo.productionProcessStepId = targetLane;
@@ -230,6 +229,7 @@ class PolishingBoard extends Component {
    * @return {HTML} render of component
    */
   render() {
+
     const processes = this.makeLanes();
 
     const handleDragStart = (cardId, laneId) => {};
@@ -278,22 +278,16 @@ class PolishingBoard extends Component {
           metadata={this.state.metadata}
         />
         <Board
-          customCardLayout
           data={processes}
           eventBusHandle={this.setEventBus}
           draggable
           handleDragStart={handleDragStart}
           handleDragEnd={handleDragEnd}
           onCardClick={onCardClick}
-        >
-          <PolishingCard
-            timer={this.polishingTimer()}
-            source={this.state.sourceLaneId}
-          />
-        </Board>
+        />
       </div>
     );
   }
 }
 
-export default PolishingBoard;
+export default MergedBoard;

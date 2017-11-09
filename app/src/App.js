@@ -6,6 +6,7 @@ import SubTableBody from './components/SubTableBody';
 import LoadingScreen from './components/LoadingScreen';
 import CountdownTimer from './components/CountdownTimer';
 import PolishingBoard from './components/PolishingBoard';
+import MergedBoard from './components/MergedBoard';
 import config from './inshape_config.json';
 
 /**
@@ -107,6 +108,10 @@ class App extends Component {
       this.setState({
         inshapeTools: config.licToolBag
       });
+    } else if (manId === '22'){
+      this.setState({
+        inshapeTools: config.ehvToolBag
+      });
     } else {
       this.setState({
         inshapeTools: config.toolBag
@@ -124,14 +129,22 @@ class App extends Component {
    * Sets the processes name
    * @param {String} target Selection of a process
    */
+  /** @TODO Need to set the process to the merged process flow in the config file  */
   setProcessName(target) {
-    this.state.processes.forEach((list) => {
+    const mergedProcess = config.ehvToolBag.find(item => item.id === 1);
+    if (target.name === 'Merged') {
+      this.setState({
+        process: mergedProcess
+      }, this.fetchProductionOrders);
+    } else {
+      this.state.processes.forEach((list) => {
       if (list.name === target.name) {
         this.setState({
           process: list
         }, this.fetchProductionOrders);
       }
     }, this);
+    }
   }
 
 /**
@@ -156,11 +169,17 @@ class App extends Component {
    * If the manufacturer only has one process this function checks that and sets
    * it to 'default' if there is only one.
    */
+  /** @TODO If the current tool is merged set the defaultName to Merged. */
   defaultCheck() {
     const currentProcesses = this.state.processes;
+    const currentTool = this.state.currentTool;
     const defaultName = { name: 'default' };
+    const mergedName = { name: 'Merged' };
     if (currentProcesses.length === 1) {
       this.setProcessName(defaultName);
+    } else if (currentTool === 'Merged') {
+      console.log('Setting ProcessName: Merged');
+      this.setProcessName(mergedName);
     }
   }
 
@@ -308,8 +327,7 @@ class App extends Component {
     } else if (currentProcess !== null && currentTool === 'Polishing') {
       const toolObj = inshapeTools.filter((item) => item.name === 'Polishing');
       const laneIds = toolObj[0].substatuses;
-      const filteredProcesses = this.limitSubProcesses(currentProcess.processSteps, laneIds);
-      currentProcess.processSteps = filteredProcesses;
+      currentProcess.processSteps = this.limitSubProcesses(currentProcess.processSteps, laneIds);
       if (loadingDone) {
         const filteredPos = this.limitPos(pos, laneIds);
         return (
@@ -323,7 +341,24 @@ class App extends Component {
         );
       } else {
         return (
-          <LoadingScreen />
+          <LoadingScreen/>
+        );
+      }
+    } else if (currentProcess !== null && currentTool === 'Merged') {
+      console.log('Merged Board goes here!');
+      if (loadingDone) {
+        return (
+          <MergedBoard
+            refreshSignal={refreshSignal}
+            resetRefresh={this.resetRefreshSignal}
+            list={currentProcess}
+            pos={pos}
+            patchPos={this.patchPos}
+          />
+        );
+      } else {
+        return (
+          <LoadingScreen/>
         );
       }
     } else {

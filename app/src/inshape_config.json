@@ -6,12 +6,14 @@
   "useBasicAuthorizationHeader": true,
   "redirectUri": "http://localhost:1212/",
   "inshapeUrl": "https://inshape.shapeways.com/login?targetUrl=%2F",
-  "toolBag": [{
+  "toolBag":
+  [{
     "id": 0,
     "name": "Overview",
     "substatuses": null
   }],
-  "licToolBag": [{
+  "licToolBag":
+  [{
     "id": 0,
     "name": "Overview",
     "substatuses": null
@@ -20,10 +22,15 @@
     "name": "Polishing",
     "substatuses": [374, 1005, 371, 373, 200, 376]
   }],
-  "ehvProcessStepsMatches": {
-    "production_process_id": "0",
-    "name": "customehv",
-    "display_name": "Custom",
+  "ehvToolBag":
+  [{
+    "id": 0,
+    "name": "Overview",
+    "substatuses": null
+  }, {
+    "id": 1,
+    "name": "Merged",
+    "display_name": "Merged",
     "processSteps": [
       {
         "id": 0,
@@ -35,5 +42,5 @@
         "processStepsIds": [44, 587, 594, 603, 615, 992]
       }
     ]
-  }
+  }]
 }
