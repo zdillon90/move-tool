@@ -289,10 +289,6 @@ class App extends Component {
     return filteredPoList;
   }
 
-  mergingStatuses() {
-    console.log('Merging Statuses');
-  }
-
   /**
    * Renders a loading screen or the board depending if the Pos have loaded
    * @return {HTML} Renders a loading screen if there are no POs and renders the
@@ -345,7 +341,6 @@ class App extends Component {
         );
       }
     } else if (currentProcess !== null && currentTool === 'Merged') {
-      console.log('Merged Board goes here!');
       if (loadingDone) {
         return (
           <MergedBoard

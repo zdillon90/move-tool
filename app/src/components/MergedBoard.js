@@ -175,7 +175,6 @@ class MergedBoard extends Component {
     let columns = [];
     let list = this.props.list;
     let subProcesses = list.processSteps;
-    /** @TODO If the PO is within the processStepsIds list add it to the lane */
     let pos = this.props.pos;
     let totals = this.totalPoCountPerTray(pos);
     subProcesses.forEach((column) => {
@@ -183,10 +182,11 @@ class MergedBoard extends Component {
       let lanePos = [];
       let columnName = column.name;
       let columnId = column.id;
+      let subIds = column.processStepIds;
       pos.forEach((po) => {
         let statusId = po.subStatusId;
-        if (statusId === columnId) {
-          lanePos.push(po);
+        if (subIds.includes(statusId)) {
+          lanePos.push(po)
         }
       });
       const TrayCards = makeCards(lanePos, totals);
@@ -209,14 +209,25 @@ class MergedBoard extends Component {
     let sourceLane = this.state.sourceLaneId;
     let card = this.state.cardId;
     let targetLane = this.state.targetLaneId;
+    let sourceProcessList = this.props.list;
+    let sourceProcessStepObj = sourceProcessList.processSteps.find(item =>
+      item.id.toString() === sourceLane
+    );
+    let sourceProcessStepIds = sourceProcessStepObj.processStepIds;
+    let targetProcessStepObj = sourceProcessList.processSteps.find(item =>
+      item.id.toString() === targetLane
+    );
+    let targetProcessStepIds = targetProcessStepObj.processStepIds;
     let poPatchList = [];
     totalPoList.forEach((po) => {
-      let poSubStatusId = po.subStatusId.toString();
       let poProductionTrayId = po.productionTrayId.toString();
-      if (poSubStatusId === sourceLane && poProductionTrayId === card) {
+      let poSubStatusId = po.subStatusId;
+      if (sourceProcessStepIds.includes(poSubStatusId) && poProductionTrayId === card) {
+        let sourceIdIndex = sourceProcessStepIds.indexOf(poSubStatusId);
         let patchPo = {};
+        let targetProcessStepId = targetProcessStepIds[sourceIdIndex];
         patchPo.productionOrderId = po.productionOrderId;
-        patchPo.productionProcessStepId = targetLane;
+        patchPo.productionProcessStepId = targetProcessStepId;
         poPatchList.push(patchPo);
       }
     });
@@ -224,7 +235,7 @@ class MergedBoard extends Component {
   }
 
   /**
-   * Complete formated table render function with sub status lanes and tray
+   * Complete formatted table render function with sub status lanes and tray
    * cards included
    * @return {HTML} render of component
    */

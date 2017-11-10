@@ -35,11 +35,15 @@
       {
         "id": 0,
         "name": "Planned",
-        "processStepsIds": [43, 586, 593, 602, 614, 991]
+        "processStepIds": [43, 586, 593, 602, 614, 991]
       }, {
         "id": 1,
         "name": "Printing",
-        "processStepsIds": [44, 587, 594, 603, 615, 992]
+        "processStepIds": [44, 587, 594, 603, 615, 992]
+      }, {
+        "id": 2,
+        "name": "Cooling",
+        "processStepIds": [347, 588, 595, 604, 616, 993]
       }
     ]
   }]
