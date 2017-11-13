@@ -4,7 +4,7 @@ import CardModal from './CardModal';
 import CountdownTimer from './CountdownTimer';
 import PolishingCard from './PolishingCard';
 
-let eventBus = undefined
+let eventBus = undefined;
 
 /**
  * This class takes the POs endpoint from the InshapeAPI and organizes it into
@@ -84,7 +84,25 @@ class PolishingBoard extends Component {
     );
   }
 
-  makeCards(productionOrders) {
+  wsfpPolishingTimer() {
+    return (
+      <CountdownTimer
+        secondsRemaining="240"
+        refresh={this.triggerRefresh}
+      />
+    );
+  }
+
+  premiumPolishingTimer() {
+    return (
+      <CountdownTimer
+        secondsRemaining="300"
+        refresh={this.triggerRefresh}
+      />
+    );
+  }
+
+  makeCards(productionOrders, columnLaneId) {
     let cards = [];
     let materialList = [];
     productionOrders.forEach((po) => {
@@ -99,67 +117,69 @@ class PolishingBoard extends Component {
       let poList = [];
       let materialTags = [];
       let tag = {};
-      card.id = material;
+      card.id = material.toString();
+      card.material = material;
       let posInLane = 0;
       productionOrders.forEach((po) => {
-        if (po.materialId === card.id) {
+        if (po.materialId === card.material) {
           poList.push(po.productionOrderName);
           posInLane += 1;
         }
       });
-      if (card.id === 6) {
+      if (card.material === 6) {
         /** @TODO Mark this card as Red and warn user*/
         card.title = 'White';
         tag.title = 'WSF';
         card.bgcolor = '#FFFFFF';
-      } else if (card.id === 25) {
+      } else if (card.material === 25) {
         card.title = 'Black';
         tag.title = 'BSF';
         tag.bgcolor = '#000000';
-      } else if (card.id === 62) {
+      } else if (card.material === 62) {
         card.title = 'White Polished';
         tag.title = 'WSFP';
         tag.bgcolor = '#B8B8B8';
-      } else if (card.id === 75) {
+      } else if (card.material === 75) {
         card.title = 'Purple';
         tag.title = 'PSFP';
         tag.bgcolor = '#800080';
-      } else if (card.id === 76) {
+      } else if (card.material === 76) {
         card.title = 'Red';
         tag.title = 'RSFP';
         tag.bgcolor = '#FF0000';
-      } else if (card.id === 77) {
+      } else if (card.material === 77) {
         card.title = 'Pink';
         tag.title = 'PSFP';
         tag.bgcolor = '#FFC0CB';
-      } else if (card.id === 78) {
+      } else if (card.material === 78) {
         card.title = 'Blue';
         tag.title = 'BSFP';
         tag.bgcolor = '#0000FF';
-      } else if (card.id === 93) {
+      } else if (card.material === 93) {
         card.title = 'Yellow';
         tag.title = 'YSFP';
         tag.color = '#000000';
         tag.bgcolor = '#FFFF00';
-      } else if (card.id === 94) {
+      } else if (card.material === 94) {
         card.title = 'Green';
         tag.title = 'GSFP';
         tag.bgcolor = '#008000';
-      } else if (card.id === 95) {
+      } else if (card.material === 95) {
         card.title = 'Orange';
         tag.title = 'OSFP';
         tag.bgcolor = '#FFA500';
-      } else if (card.id === 133) {
+      } else if (card.material === 133) {
         card.title = 'White Premium';
         tag.title = 'WPSF';
         tag.bgcolor = '#808080';
-      } else if (card.id === 134) {
+      } else if (card.material === 134) {
         card.title = 'Black Premium';
         tag.title = 'BPSF';
         tag.bgcolor = '#363636';
       }
       materialTags.push(tag);
       card.description = `${posInLane} PO(s)`;
+      card.laneId = columnLaneId;
       card.tags = materialTags;
       cardMeta.poList = poList;
       cardMeta.materialName = card.title;
@@ -190,7 +210,7 @@ class PolishingBoard extends Component {
           lanePos.push(po);
         }
       });
-      const materialCards = makeCards(lanePos);
+      const materialCards = makeCards(lanePos, columnId);
       lane.title = columnName;
       lane.id = columnId.toString();
       lane.cards = materialCards;
@@ -288,7 +308,9 @@ class PolishingBoard extends Component {
         >
           <PolishingCard
             timer={this.polishingTimer()}
-            source={this.state.sourceLaneId}
+            wsfpTimer={this.wsfpPolishingTimer()}
+            premiumTimer={this.premiumPolishingTimer()}
+            target={this.state.targetLaneId}
           />
         </Board>
       </div>

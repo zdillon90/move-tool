@@ -87,7 +87,7 @@ export const CardTitle = styled(Title)`
 `;
 
 export const CardRightContent = styled(RightContent)`
-  font-size: 10px;
+  font-size: 12px;
 `;
 
 export const Detail = styled.div`

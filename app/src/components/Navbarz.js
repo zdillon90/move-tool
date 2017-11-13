@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { shell } from 'electron';
+import electron from 'electron';
 import {
   Collapse,
   Navbar,
@@ -10,6 +10,8 @@ import {
   NavLink
 } from 'reactstrap';
 import MoveAlert from './MoveAlert';
+
+const BrowserWindow = electron.remote.BrowserWindow;
 
 
 /**
@@ -40,8 +42,21 @@ class Navbarz extends Component {
   /**
    * If opens a new Inshape page on the default browser
    */
-  handleInshapeClick() {
-    shell.openExternal('https://inshape.shapeways.com/');
+  static handleInshapeClick() {
+    // shell.openExternal('https://inshape.shapeways.com/');
+    const inshapeWindow = new BrowserWindow({
+      webPreferences: {
+        nodeIntegration: false
+      },
+       width: 1100,
+       height: 900
+    });
+    const ses = inshapeWindow.webContents.session;
+    ses.allowNTLMCredentialsForDomains('*');
+
+    inshapeWindow.loadURL('https://inshape.shapeways.com/');
+    inshapeWindow.show();
+
   }
 
   /**
@@ -73,7 +88,7 @@ class Navbarz extends Component {
                 <NavLink></NavLink>
               )}
               <NavItem>
-                <NavLink onClick={this.handleInshapeClick}>Inshape</NavLink>
+                <NavLink onClick={Navbarz.handleInshapeClick}>Inshape</NavLink>
               </NavItem>
               <NavItem>
                 {authorized ? (

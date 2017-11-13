@@ -59,7 +59,7 @@ module.exports = function (config, windowParams) {
       urlParams.access_type = opts.accessType;
     }
 
-    var inshapeUrl = config.inshapeUrl
+    var inshapeUrl = config.inshapeUrl;
     var url = config.authorizationUrl + '?' + queryString.stringify(urlParams);
 
     /**
