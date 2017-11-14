@@ -40,9 +40,11 @@ class CountdownTimer extends Component {
       this.props.refresh();
       // ^^^ This pulls in the refresh fuction from the main app. It will trigger
       // the refresh of the board data when the timer hits zero.
-      clearInterval(this.interval);
-      this.setState({ secondsRemaining: this.props.secondsRemaining });
-      this.interval = setInterval(this.tick, 1000);
+      if (!this.props.polishing) {
+        clearInterval(this.interval);
+        this.setState({ secondsRemaining: this.props.secondsRemaining });
+        this.interval = setInterval(this.tick, 1000);
+      }
     }
   }
 

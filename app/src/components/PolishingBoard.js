@@ -55,7 +55,7 @@ class PolishingBoard extends Component {
 
   setEventBus = (handle) => {
     eventBus = handle;
-  }
+  };
 
   /**
    * Takes care of toggling the Card modal when the card is clicked.
@@ -66,12 +66,10 @@ class PolishingBoard extends Component {
     });
   }
 
-  /** @TODO When the card is moved into a polishing status change the color of
-   * the card and when it is out  */
-
-  triggerRefresh() {
+  cardAlert() {
+    /** @TODO change color of card here */
     this.setState({
-      refreshSignal: true
+      refreshSignal: false
     });
   }
 
@@ -79,7 +77,8 @@ class PolishingBoard extends Component {
     return (
       <CountdownTimer
         secondsRemaining="180"
-        refresh={this.triggerRefresh}
+        refresh={this.cardAlert}
+        polishing
       />
     );
   }
@@ -88,7 +87,8 @@ class PolishingBoard extends Component {
     return (
       <CountdownTimer
         secondsRemaining="240"
-        refresh={this.triggerRefresh}
+        refresh={this.cardAlert}
+        polishing
       />
     );
   }
@@ -97,7 +97,8 @@ class PolishingBoard extends Component {
     return (
       <CountdownTimer
         secondsRemaining="300"
-        refresh={this.triggerRefresh}
+        refresh={this.cardAlert}
+        polishing
       />
     );
   }
