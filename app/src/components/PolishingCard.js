@@ -7,34 +7,82 @@ import {
   Footer
 } from '../styles';
 import Tag from './Tag';
+import CountdownTimer from './CountdownTimer'
 
 
 class PolishingCard extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      done: false
+    };
+    this.cardAlert = this.cardAlert.bind(this);
+    this.polishingTimer = this.polishingTimer.bind(this);
+    this.wsfpPolishingTimer = this.wsfpPolishingTimer.bind(this);
+    this.premiumPolishingTimer = this.premiumPolishingTimer.bind(this);
+  }
+
+  cardAlert() {
+    this.setState({
+      done: true
+    });
+  }
+
+  polishingTimer() {
+    return (
+      <CountdownTimer
+        secondsRemaining={'10'}
+        refresh={this.cardAlert}
+        polishing
+      />
+    )
+  }
+
+  wsfpPolishingTimer() {
+    return (
+      <CountdownTimer
+        secondsRemaining={'20'}
+        refresh={this.cardAlert}
+        polishing
+      />
+    );
+  }
+
+  premiumPolishingTimer() {
+    return (
+      <CountdownTimer
+        seconsdsRemaining={'30'}
+        refresh={this.cardAlert}
+        polishing
+      />
+    );
+  }
+
   render() {
     const xsfMaterialList = [75, 76, 77, 78, 93, 94, 95];
     const premiumList = [133, 134];
     const wsfpMaterial = 62;
     const polishers = ['371', '373'];
     const title = this.props.title;
-    const timer = this.props.timer;
-    const wsfpTimer = this.props.wsfpTimer;
-    const premiumTimer = this.props.premiumTimer;
+    // const timer = this.polishingTimer();
+    // const wsfpTimer = this.wsfpPolishingTimer();
+    // const premiumTimer = this.premiumPolishingTimer();
     const laneId = this.props.laneId;
     const cardId = this.props.id;
     const description = this.props.description;
     const tags = this.props.tags;
     const material = this.props.material;
-    const doneCard = this.props.doneCard;
+    const doneCard = this.state.done;
 
     let timerElement = null;
     // console.log(cardId);
     // console.log(wsfpTimer.state.secondsRemaining);
     if (xsfMaterialList.includes(material) && polishers.includes(laneId)) {
-      timerElement = <CardRightContent>{timer}</CardRightContent>
+      timerElement = <CardRightContent>{this.polishingTimer()}</CardRightContent>
     } else if (material === wsfpMaterial && polishers.includes(laneId)) {
-      timerElement = <CardRightContent>{wsfpTimer}</CardRightContent>
+      timerElement = <CardRightContent>{this.wsfpPolishingTimer()}</CardRightContent>
     } else if (premiumList.includes(material) && polishers.includes(laneId)) {
-      timerElement = <CardRightContent>{premiumTimer}</CardRightContent>
+      timerElement = <CardRightContent>{this.premiumPolishingTimer()}</CardRightContent>
     }
 
     let doneElement = null;

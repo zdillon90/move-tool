@@ -236,7 +236,7 @@ class PolishingBoard extends Component {
     let poPatchList = [];
     totalPoList.forEach((po) => {
       let poSubStatusId = po.subStatusId.toString();
-      let poMaterialId = po.materialId;
+      let poMaterialId = po.materialId.toString();
       if (poSubStatusId === sourceLane && poMaterialId === card) {
         let patchPo = {};
         patchPo.productionOrderId = po.productionOrderId;
@@ -310,10 +310,10 @@ class PolishingBoard extends Component {
           onCardClick={onCardClick}
         >
           <PolishingCard
-            timer={this.polishingTimer()}
-            wsfpTimer={this.wsfpPolishingTimer()}
-            premiumTimer={this.premiumPolishingTimer()}
-            doneCard={this.state.doneCard}
+            // timer={this.polishingTimer()}
+            // wsfpTimer={this.wsfpPolishingTimer()}
+            // premiumTimer={this.premiumPolishingTimer()}
+            // doneCard={this.state.doneCard}
           />
         </Board>
       </div>
