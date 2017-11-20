@@ -32,11 +32,13 @@ class PolishingBoard extends Component {
       targetLaneId: '',
       formatedPoPatchList: [],
       refreshSignal: false,
-      doneCard: false
+      doneCards: []
     };
     this.toggle = this.toggle.bind(this);
-    this.triggerRefresh = this.triggerRefresh.bind(this);
+    this.cardAlert = this.cardAlert.bind(this);
     this.polishingTimer = this.polishingTimer.bind(this);
+    this.wsfpPolishingTimer = this.wsfpPolishingTimer.bind(this);
+    this.premiumPolishingTimer = this.premiumPolishingTimer.bind(this)
   }
 
   /**
@@ -56,7 +58,7 @@ class PolishingBoard extends Component {
 
   setEventBus = (handle) => {
     eventBus = handle;
-  }
+  };
 
   /**
    * Takes care of toggling the Card modal when the card is clicked.
@@ -69,17 +71,17 @@ class PolishingBoard extends Component {
 
   /** @TODO When the card is moved into a polishing status change the color of
    * the card and when it is out  */
-  triggerRefresh() {
+  cardAlert(cardId) {
     this.setState({
-      doneCard: true
+      doneCard: this.state.doneCards.push(cardId)
     })
   }
 
   polishingTimer() {
     return (
       <CountdownTimer
-        secondsRemaining="180"
-        refresh={this.triggerRefresh}
+        secondsRemaining="5"
+        cardAlert={this.cardAlert}
         polishing
       />
     );
@@ -88,8 +90,8 @@ class PolishingBoard extends Component {
   wsfpPolishingTimer() {
     return (
       <CountdownTimer
-        secondsRemaining="5"
-        refresh={this.triggerRefresh}
+        secondsRemaining="10"
+        cardAlert={this.cardAlert}
         polishing
       />
     );
@@ -98,8 +100,8 @@ class PolishingBoard extends Component {
   premiumPolishingTimer() {
     return (
       <CountdownTimer
-        secondsRemaining="300"
-        refresh={this.triggerRefresh}
+        secondsRemaining="15"
+        cardAlert={this.cardAlert}
         polishing
       />
     );
@@ -120,7 +122,7 @@ class PolishingBoard extends Component {
       let poList = [];
       let materialTags = [];
       let tag = {};
-      card.id = material.toString();
+      card.id = `${material}:${columnLaneId}`;
       card.material = material;
       let posInLane = 0;
       productionOrders.forEach((po) => {
@@ -231,7 +233,9 @@ class PolishingBoard extends Component {
   formatPoPatch() {
     let totalPoList = this.props.pos;
     let sourceLane = this.state.sourceLaneId;
-    let card = this.state.cardId;
+    let cardTotal = this.state.cardId;
+    let cardList= cardTotal.split(":");
+    let card = cardList[0];
     let targetLane = this.state.targetLaneId;
     let poPatchList = [];
     totalPoList.forEach((po) => {
@@ -310,10 +314,10 @@ class PolishingBoard extends Component {
           onCardClick={onCardClick}
         >
           <PolishingCard
-            // timer={this.polishingTimer()}
-            // wsfpTimer={this.wsfpPolishingTimer()}
-            // premiumTimer={this.premiumPolishingTimer()}
-            // doneCard={this.state.doneCard}
+            timer={this.polishingTimer()}
+            wsfpTimer={this.wsfpPolishingTimer()}
+            premiumTimer={this.premiumPolishingTimer()}
+            doneCards={this.state.doneCards}
           />
         </Board>
       </div>
