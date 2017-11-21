@@ -16,7 +16,7 @@ const BrowserWindow = electron.remote.BrowserWindow;
 
 /**
  * This class holds the Navigation bar components
- * @param {Bool} isOpen If the full menu bar can't fit on the screen then it
+ * @param {Boolean} isOpen If the full menu bar can't fit on the screen then it
  * formats those options into a dropdown menu
  * @type {Class}
  */

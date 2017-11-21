@@ -11,16 +11,16 @@ import config from './inshape_config.json';
 
 /**
  * Main Application Class that holds all major functions and InshapeAPI calls
- * @param {Bool}   authorized        The application authorized status with InshapeAPI
- * @param {List}   allManufacturers  All Manufacturers gathered from InshapeAPI
- * @param {String} manufacturer      Name of the manufacturer selected
- * @param {String} manufacturerId    Identify each manufacturer given by InshapeAPI
- * @param {List}   processes         All subprocesses the manufacturer has defined in Inshape
- * @param {List}   pos               All Pos within the selected subprocess
- * @param {Sting}  patchResult       The InshapeAPI patch request
- * @param {Bool}   loadingDone       The status of the loading when calling the
+ * @param {Boolean}   authorized        The application authorized status with InshapeAPI
+ * @param {Object}    allManufacturers  All Manufacturers gathered from InshapeAPI
+ * @param {String}    manufacturer      Name of the manufacturer selected
+ * @param {String}    manufacturerId    Identify each manufacturer given by InshapeAPI
+ * @param {Object}    processes         All subprocesses the manufacturer has defined in Inshape
+ * @param {Object}    pos               All Pos within the selected subprocess
+ * @param {String}    patchResult       The InshapeAPI patch request
+ * @param {Boolean}   loadingDone       The status of the loading when calling the
  *  POs from the manufacturer
- * @param {Bool}   refreshSignal     Used to trigger the refresh of the production table
+ * @param {Boolean}   refreshSignal     Used to trigger the refresh of the production table
  * @type {Class}
  */
 
@@ -102,7 +102,6 @@ class App extends Component {
   }
 
   setToolBag() {
-    console.log(this.state.manufacturerId);
     const manId = this.state.manufacturerId;
     if (manId === '13') {
       this.setState({
@@ -129,7 +128,6 @@ class App extends Component {
    * Sets the processes name
    * @param {String} target Selection of a process
    */
-  /** @TODO Need to set the process to the merged process flow in the config file  */
   setProcessName(target) {
     const mergedProcess = config.ehvToolBag.find(item => item.id === 1);
     if (target.name === 'Merged') {
@@ -169,7 +167,6 @@ class App extends Component {
    * If the manufacturer only has one process this function checks that and sets
    * it to 'default' if there is only one.
    */
-  /** @TODO If the current tool is merged set the defaultName to Merged. */
   defaultCheck() {
     const currentProcesses = this.state.processes;
     const currentTool = this.state.currentTool;
@@ -178,7 +175,6 @@ class App extends Component {
     if (currentProcesses.length === 1) {
       this.setProcessName(defaultName);
     } else if (currentTool === 'Merged') {
-      console.log('Setting ProcessName: Merged');
       this.setProcessName(mergedName);
     }
   }
@@ -263,7 +259,7 @@ class App extends Component {
   refreshTimer() {
     return (
       <CountdownTimer
-        secondsRemaining="120"
+        secondsRemaining="100"
         refresh={this.triggerRefresh}
       />
     );

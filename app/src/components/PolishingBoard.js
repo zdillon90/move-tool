@@ -10,14 +10,14 @@ let eventBus = undefined;
  * This class takes the POs endpoint from the InshapeAPI and organizes it into
  * batches and then renders out those batches into lanes that represent
  * sub statuses within Inshape
- * @param  {Bool}   modal               If true, shows the modal of the list of
+ * @param  {Boolean} modal               If true, shows the modal of the list of
  * POs if the card is clicked.
  * @param  {Object} metadata            Handles the PO information from the
  * InshapeAPI if a card is clicked.
  * @param  {String} cardId              The unique card identifier
  * @param  {String} sourceLaneId        The unique source lane identifier
  * @param  {String} targetLaneId        The unique target lane identifier
- * @param  {List}   formatedPoPatchList POs to have statuses changed after a
+ * @param  {Object} formatedPoPatchList POs to have statuses changed after a
  * card was moved to a new status
  * @type {Class}
  */
@@ -80,7 +80,7 @@ class PolishingBoard extends Component {
   polishingTimer() {
     return (
       <CountdownTimer
-        secondsRemaining="5"
+        secondsRemaining="2700"
         cardAlert={this.cardAlert}
         polishing
       />
@@ -90,7 +90,7 @@ class PolishingBoard extends Component {
   wsfpPolishingTimer() {
     return (
       <CountdownTimer
-        secondsRemaining="10"
+        secondsRemaining="5400"
         cardAlert={this.cardAlert}
         polishing
       />
@@ -132,7 +132,6 @@ class PolishingBoard extends Component {
         }
       });
       if (card.material === 6) {
-        /** @TODO Mark this card as Red and warn user*/
         card.title = 'White';
         tag.title = 'WSF';
         card.bgcolor = '#FFFFFF';
@@ -228,7 +227,7 @@ class PolishingBoard extends Component {
   /**
    * If a tray card is moved this function patches the POs to the new sub status
    * within Inshape
-   * @return {List} POs to be moved to new status
+   * @return {Object} POs to be moved to new status
    */
   formatPoPatch() {
     let totalPoList = this.props.pos;
