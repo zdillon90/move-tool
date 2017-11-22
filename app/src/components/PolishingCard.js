@@ -52,13 +52,15 @@ class PolishingCard extends Component {
         <header
           style={{
             borderBottom: '1px solid #eee',
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
             paddingBottom: 2,
             marginBottom: 10,
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'space-between',
-            color: '#000000',
-            backgroundColor: '#09ff00'
+            color: '#ffffff',
+            backgroundColor: '#ff0000'
           }}
          >Polishing Done</header>
       );

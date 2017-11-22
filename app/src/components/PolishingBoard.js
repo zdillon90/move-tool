@@ -80,7 +80,7 @@ class PolishingBoard extends Component {
   polishingTimer() {
     return (
       <CountdownTimer
-        secondsRemaining="2700"
+        secondsRemaining="10"
         cardAlert={this.cardAlert}
         polishing
       />
@@ -90,7 +90,7 @@ class PolishingBoard extends Component {
   wsfpPolishingTimer() {
     return (
       <CountdownTimer
-        secondsRemaining="5400"
+        secondsRemaining="20"
         cardAlert={this.cardAlert}
         polishing
       />
@@ -100,7 +100,7 @@ class PolishingBoard extends Component {
   premiumPolishingTimer() {
     return (
       <CountdownTimer
-        secondsRemaining="15"
+        secondsRemaining="30"
         cardAlert={this.cardAlert}
         polishing
       />
@@ -108,87 +108,158 @@ class PolishingBoard extends Component {
   }
 
   makeCards(productionOrders, columnLaneId) {
+    const wsfpId = 62;
+    const bsfId = 25;
     let cards = [];
     let materialList = [];
+    let wsfpTrayList = [];
+    let bsfTrayList = [];
     productionOrders.forEach((po) => {
       let cardId = po.materialId;
+      let trayId = po.productionTrayId.toString();
       if (materialList.indexOf(cardId) === -1) {
         materialList.push(cardId)
       }
+      if (wsfpTrayList.indexOf(trayId) === -1 && cardId === wsfpId) {
+        wsfpTrayList.push(trayId);
+      }
+      if (bsfTrayList.indexOf(trayId) === -1 && cardId === bsfId){
+        bsfTrayList.push(trayId);
+      }
     });
-    materialList.forEach((material) => {
+    wsfpTrayList.forEach((tray) => {
       let card = {};
       let cardMeta = {};
       let poList = [];
       let materialTags = [];
       let tag = {};
-      card.id = `${material}:${columnLaneId}`;
-      card.material = material;
-      let posInLane = 0;
+      card.id = `${wsfpId}:${tray}:${columnLaneId}`;
+      card.material = wsfpId;
+      let posInTray = 0;
       productionOrders.forEach((po) => {
-        if (po.materialId === card.material) {
+        if (po.productionTrayId.toString() === tray) {
           poList.push(po.productionOrderName);
-          posInLane += 1;
+          posInTray += 1;
+          if (po.productionTrayId === 0) {
+            card.title = 'No_Tray_Name';
+          } else {
+            card.title = `${po.productionTrayName}`;
+          }
         }
       });
-      if (card.material === 6) {
-        card.title = 'White';
-        tag.title = 'WSF';
-        card.bgcolor = '#FFFFFF';
-      } else if (card.material === 25) {
-        card.title = 'Black';
-        tag.title = 'BSF';
-        tag.bgcolor = '#000000';
-      } else if (card.material === 62) {
-        card.title = 'White Polished';
-        tag.title = 'WSFP';
-        tag.bgcolor = '#B8B8B8';
-      } else if (card.material === 75) {
-        card.title = 'Purple';
-        tag.title = 'PSFP';
-        tag.bgcolor = '#800080';
-      } else if (card.material === 76) {
-        card.title = 'Red';
-        tag.title = 'RSFP';
-        tag.bgcolor = '#FF0000';
-      } else if (card.material === 77) {
-        card.title = 'Pink';
-        tag.title = 'PSFP';
-        tag.bgcolor = '#FFC0CB';
-      } else if (card.material === 78) {
-        card.title = 'Blue';
-        tag.title = 'BSFP';
-        tag.bgcolor = '#0000FF';
-      } else if (card.material === 93) {
-        card.title = 'Yellow';
-        tag.title = 'YSFP';
-        tag.color = '#000000';
-        tag.bgcolor = '#FFFF00';
-      } else if (card.material === 94) {
-        card.title = 'Green';
-        tag.title = 'GSFP';
-        tag.bgcolor = '#008000';
-      } else if (card.material === 95) {
-        card.title = 'Orange';
-        tag.title = 'OSFP';
-        tag.bgcolor = '#FFA500';
-      } else if (card.material === 133) {
-        card.title = 'White Premium';
-        tag.title = 'WPSF';
-        tag.bgcolor = '#808080';
-      } else if (card.material === 134) {
-        card.title = 'Black Premium';
-        tag.title = 'BPSF';
-        tag.bgcolor = '#363636';
-      }
+      tag.title = 'WSFP';
+      tag.bgcolor = '#B8B8B8';
       materialTags.push(tag);
-      card.description = `${posInLane} PO(s)`;
+      card.description = `${posInTray} PO(s)`;
       card.laneId = columnLaneId;
       card.tags = materialTags;
       cardMeta.poList = poList;
       cardMeta.materialName = card.title;
       card.metadata = cardMeta;
       cards.push(card);
+    });
+    bsfTrayList.forEach((tray) => {
+      let card = {};
+      let cardMeta = {};
+      let poList = [];
+      let materialTags = [];
+      let tag = {};
+      card.id = `${bsfId}:${tray}:${columnLaneId}`;
+      card.material = bsfId;
+      let posInTray = 0;
+      productionOrders.forEach((po) => {
+        if (po.productionTrayId.toString() === tray) {
+          poList.push(po.productionOrderName);
+          posInTray += 1;
+          if (po.productionTrayId === 0) {
+            card.title = 'No_Tray_Name';
+          } else {
+            card.title = `${po.productionTrayName}`;
+          }
+        }
+      });
+      tag.title = 'BSF';
+      tag.bgcolor = '#000000';
+      materialTags.push(tag);
+      card.description = `${posInTray} PO(s)`;
+      card.laneId = columnLaneId;
+      card.tags = materialTags;
+      cardMeta.poList = poList;
+      cardMeta.materialName = card.title;
+      card.metadata = cardMeta;
+      cards.push(card);
+    });
+    materialList.forEach((material) => {
+      if (material !== wsfpId && material !== bsfId) {
+        let card = {};
+        let cardMeta = {};
+        let poList = [];
+        let materialTags = [];
+        let tag = {};
+        card.id = `${material}:noTray:${columnLaneId}`;
+        card.material = material;
+        let posInLane = 0;
+        productionOrders.forEach((po) => {
+          if (po.materialId === card.material) {
+            poList.push(po.productionOrderName);
+            posInLane += 1;
+          }
+        });
+        if (card.material === 6) {
+          card.title = 'White';
+          tag.title = 'WSF';
+          card.bgcolor = '#FFFFFF';
+        } else if (card.material === 25) {
+          card.title = 'Black';
+          tag.title = 'BSF';
+          tag.bgcolor = '#000000';
+        } else if (card.material === 75) {
+          card.title = 'Purple';
+          tag.title = 'PSFP';
+          tag.bgcolor = '#800080';
+        } else if (card.material === 76) {
+          card.title = 'Red';
+          tag.title = 'RSFP';
+          tag.bgcolor = '#b30000';
+        } else if (card.material === 77) {
+          card.title = 'Pink';
+          tag.title = 'PSFP';
+          tag.bgcolor = '#FFC0CB';
+        } else if (card.material === 78) {
+          card.title = 'Blue';
+          tag.title = 'BSFP';
+          tag.bgcolor = '#0000FF';
+        } else if (card.material === 93) {
+          card.title = 'Yellow';
+          tag.title = 'YSFP';
+          tag.color = '#000000';
+          tag.bgcolor = '#FFFF00';
+        } else if (card.material === 94) {
+          card.title = 'Green';
+          tag.title = 'GSFP';
+          tag.bgcolor = '#008000';
+        } else if (card.material === 95) {
+          card.title = 'Orange';
+          tag.title = 'OSFP';
+          tag.bgcolor = '#FFA500';
+        } else if (card.material === 133) {
+          card.title = 'White Premium';
+          tag.title = 'WPSF';
+          tag.bgcolor = '#808080';
+        } else if (card.material === 134) {
+          card.title = 'Black Premium';
+          tag.title = 'BPSF';
+          tag.bgcolor = '#363636';
+        }
+        materialTags.push(tag);
+        card.description = `${posInLane} PO(s)`;
+        card.laneId = columnLaneId;
+        card.tags = materialTags;
+        cardMeta.poList = poList;
+        cardMeta.materialName = card.title;
+        card.metadata = cardMeta;
+        cards.push(card);
+      }
     });
     return cards;
   }
@@ -235,18 +306,30 @@ class PolishingBoard extends Component {
     let cardTotal = this.state.cardId;
     let cardList= cardTotal.split(":");
     let card = cardList[0];
+    let trayId = cardList[1];
     let targetLane = this.state.targetLaneId;
     let poPatchList = [];
     totalPoList.forEach((po) => {
       let poSubStatusId = po.subStatusId.toString();
       let poMaterialId = po.materialId.toString();
-      if (poSubStatusId === sourceLane && poMaterialId === card) {
-        let patchPo = {};
-        patchPo.productionOrderId = po.productionOrderId;
-        patchPo.productionProcessStepId = targetLane;
-        poPatchList.push(patchPo);
+      let poProductionTrayId = po.productionTrayId.toString();
+      if (trayId === 'noTray'){
+        if (poSubStatusId === sourceLane && poMaterialId === card) {
+          let patchPo = {};
+          patchPo.productionOrderId = po.productionOrderId;
+          patchPo.productionProcessStepId = targetLane;
+          poPatchList.push(patchPo);
+        }
+      } else {
+       if (poSubStatusId === sourceLane && poMaterialId === card && trayId === poProductionTrayId) {
+         let patchPo = {};
+         patchPo.productionOrderId = po.productionOrderId;
+         patchPo.productionProcessStepId = targetLane;
+         poPatchList.push(patchPo);
+       }
       }
     });
+    console.log(poPatchList);
     return poPatchList;
   }
 
@@ -268,6 +351,7 @@ class PolishingBoard extends Component {
      * @param  {String} sourceLaneId The unique source lane identifier
      * @param  {String} targetLaneId The unique target lane identifier
      */
+    /** @TODO Check to see if black and don't allow into polishers */
     const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
       this.setState({
         cardId,

@@ -40,7 +40,6 @@ class CountdownTimer extends Component {
       const cardId = this.props.cardId;
       if (cardId !== null && this.props.polishing) {
         this.props.cardAlert(cardId);
-        console.log(cardId);
       }
       if (!this.props.polishing && this.state.secondsRemaining <= 0) {
         this.props.refresh();
