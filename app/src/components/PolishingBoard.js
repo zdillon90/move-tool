@@ -45,6 +45,7 @@ class PolishingBoard extends Component {
     this.premiumPolishingTimer = this.premiumPolishingTimer.bind(this);
     this.assignJarColor = this.assignJarColor.bind(this);
     this.renderJarColor = this.renderJarColor.bind(this);
+    this.moveJarColorsBack = this.moveJarColorsBack.bind(this);
   }
 
   /**
@@ -115,20 +116,12 @@ class PolishingBoard extends Component {
 
   assignJarColor() {
     console.log('Assigning Jar Color');
-    let cardIdTotal = this.state.cardId;
     let inUseJarColors = this.state.inUseJarColors;
     let availableJarColors = this.state.availableJarColors;
-    console.log(cardIdTotal);
-    let cardIdList = cardIdTotal.split(':');
-    let cardMaterial = cardIdList[0];
-    console.log(cardMaterial);
     let jarIndex = 0;
     let jarColor = availableJarColors[jarIndex];
     inUseJarColors.push(jarColor);
     availableJarColors.splice(jarIndex, 1);
-    console.log(jarColor);
-    console.log(inUseJarColors);
-    console.log(availableJarColors);
     if (inUseJarColors.length > 0) {
       let lastColor = inUseJarColors[inUseJarColors.length - 1];
       this.setState({
@@ -143,6 +136,16 @@ class PolishingBoard extends Component {
           jarColor={this.state.currentJarColor}
         />
       )
+  }
+
+  moveJarColorsBack() {
+    let inUseJarColors = this.state.inUseJarColors;
+    let avalableJarColors = this.state.availableJarColors;
+    let jarIndex = 0;
+    let jarColor = inUseJarColors[jarIndex];
+    avalableJarColors.push(jarColor);
+    inUseJarColors.splice(jarIndex, 1);
+    console.log(jarColor);
   }
 
   makeCards(productionOrders, columnLaneId) {
@@ -290,7 +293,7 @@ class PolishingBoard extends Component {
           tag.bgcolor = '#363636';
         }
         materialTags.push(tag);
-        card.description = `${posInLane} PO(s)`;
+        card.description = `${posInLane} PO(s) `;
         card.laneId = columnLaneId;
         card.tags = materialTags;
         cardMeta.poList = poList;
@@ -379,7 +382,15 @@ class PolishingBoard extends Component {
   render() {
     const processes = this.makeLanes();
 
-    const handleDragStart = (cardId, laneId) => {};
+    const handleDragStart = (cardId, laneId) => {
+      let cardIdList = cardId.split(":");
+      let cardMaterial = cardIdList[0];
+      /**@TODO Maybe add Jar color here to cardId??? */
+      // Send the Card Id to the assign card function to have it modified
+      if (laneId === '374' || laneId === '1005' && cardMaterial === '62' ) {
+          this.assignJarColor();
+        }
+    };
 
     /**
      * This function is triggered when the card is placed and checks to see if
@@ -396,15 +407,18 @@ class PolishingBoard extends Component {
         sourceLaneId,
         targetLaneId
       });
+      let cardIdList = cardId.split(":");
+      let cardMaterial = cardIdList[0];
       let source = this.state.sourceLaneId;
       let target = this.state.targetLaneId;
+      console.log(this.state.inUseJarColors);
       if (source !== target) {
         let formatPoPatch = this.formatPoPatch();
         this.setState({ formatedPoPatchList: formatPoPatch });
-        if (targetLaneId === '371' || targetLaneId === '373') {
-          this.assignJarColor();
+        this.props.patchPos(formatPoPatch);
+        if (targetLaneId === '200' || targetLaneId === '376' && cardMaterial === '62') {
+          this.moveJarColorsBack();
         }
-        // this.props.patchPos(formatPoPatch);
       }
     };
 

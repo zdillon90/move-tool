@@ -8,11 +8,15 @@ class JarColor extends Component {
     };
   }
 
-  // I need to set the state once it haas been moved
-
   render() {
     return(
-      <span>{this.state.color}</span>
+      <div>
+        <span>Jar Color: </span>
+        <span style={{
+          color: this.state.color,
+          fontWeight: 'bold'
+        }}>{this.state.color}</span>
+      </div>
     )
   }
 }
