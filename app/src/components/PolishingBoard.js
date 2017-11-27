@@ -35,7 +35,8 @@ class PolishingBoard extends Component {
       refreshSignal: false,
       doneCards: [],
       availableJarColors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink'],
-      inUseJarColors: []
+      inUseJarColors: [],
+      currentJarColor: ''
     };
     this.toggle = this.toggle.bind(this);
     this.cardAlert = this.cardAlert.bind(this);
@@ -115,30 +116,33 @@ class PolishingBoard extends Component {
   assignJarColor() {
     console.log('Assigning Jar Color');
     let cardIdTotal = this.state.cardId;
+    let inUseJarColors = this.state.inUseJarColors;
+    let availableJarColors = this.state.availableJarColors;
     console.log(cardIdTotal);
     let cardIdList = cardIdTotal.split(':');
     let cardMaterial = cardIdList[0];
     console.log(cardMaterial);
     let jarIndex = 0;
-    let jarColor = this.state.availableJarColors[jarIndex];
-    this.state.inUseJarColors.push(jarColor);
-    this.state.availableJarColors.splice(jarIndex, 1);
+    let jarColor = availableJarColors[jarIndex];
+    inUseJarColors.push(jarColor);
+    availableJarColors.splice(jarIndex, 1);
     console.log(jarColor);
-    console.log(this.state.inUseJarColors);
-    console.log(this.state.availableJarColors);
+    console.log(inUseJarColors);
+    console.log(availableJarColors);
+    if (inUseJarColors.length > 0) {
+      let lastColor = inUseJarColors[inUseJarColors.length - 1];
+      this.setState({
+        currentJarColor: lastColor
+      })
+    }
   }
 
   renderJarColor() {
-    let inUseJarColors = this.state.inUseJarColors;
-    let lastColor = null;
-    if (inUseJarColors.length > 0) {
-      lastColor = inUseJarColors[inUseJarColors.length - 1];
       return (
         <JarColor
-          jarColor={lastColor}
+          jarColor={this.state.currentJarColor}
         />
       )
-    }
   }
 
   makeCards(productionOrders, columnLaneId) {
@@ -400,7 +404,7 @@ class PolishingBoard extends Component {
         if (targetLaneId === '371' || targetLaneId === '373') {
           this.assignJarColor();
         }
-        this.props.patchPos(formatPoPatch);
+        // this.props.patchPos(formatPoPatch);
       }
     };
 
