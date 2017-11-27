@@ -3,6 +3,7 @@ import { Board } from 'react-trello';
 import CardModal from './CardModal';
 import CountdownTimer from './CountdownTimer';
 import PolishingCard from './PolishingCard';
+import JarColor from './JarColor';
 
 let eventBus = undefined;
 
@@ -32,13 +33,17 @@ class PolishingBoard extends Component {
       targetLaneId: '',
       formatedPoPatchList: [],
       refreshSignal: false,
-      doneCards: []
+      doneCards: [],
+      availableJarColors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink'],
+      inUseJarColors: []
     };
     this.toggle = this.toggle.bind(this);
     this.cardAlert = this.cardAlert.bind(this);
     this.polishingTimer = this.polishingTimer.bind(this);
     this.wsfpPolishingTimer = this.wsfpPolishingTimer.bind(this);
-    this.premiumPolishingTimer = this.premiumPolishingTimer.bind(this)
+    this.premiumPolishingTimer = this.premiumPolishingTimer.bind(this);
+    this.assignJarColor = this.assignJarColor.bind(this);
+    this.renderJarColor = this.renderJarColor.bind(this);
   }
 
   /**
@@ -105,6 +110,35 @@ class PolishingBoard extends Component {
         polishing
       />
     );
+  }
+
+  assignJarColor() {
+    console.log('Assigning Jar Color');
+    let cardIdTotal = this.state.cardId;
+    console.log(cardIdTotal);
+    let cardIdList = cardIdTotal.split(':');
+    let cardMaterial = cardIdList[0];
+    console.log(cardMaterial);
+    let jarIndex = 0;
+    let jarColor = this.state.availableJarColors[jarIndex];
+    this.state.inUseJarColors.push(jarColor);
+    this.state.availableJarColors.splice(jarIndex, 1);
+    console.log(jarColor);
+    console.log(this.state.inUseJarColors);
+    console.log(this.state.availableJarColors);
+  }
+
+  renderJarColor() {
+    let inUseJarColors = this.state.inUseJarColors;
+    let lastColor = null;
+    if (inUseJarColors.length > 0) {
+      lastColor = inUseJarColors[inUseJarColors.length - 1];
+      return (
+        <JarColor
+          jarColor={lastColor}
+        />
+      )
+    }
   }
 
   makeCards(productionOrders, columnLaneId) {
@@ -363,6 +397,9 @@ class PolishingBoard extends Component {
       if (source !== target) {
         let formatPoPatch = this.formatPoPatch();
         this.setState({ formatedPoPatchList: formatPoPatch });
+        if (targetLaneId === '371' || targetLaneId === '373') {
+          this.assignJarColor();
+        }
         this.props.patchPos(formatPoPatch);
       }
     };
@@ -401,6 +438,7 @@ class PolishingBoard extends Component {
             wsfpTimer={this.wsfpPolishingTimer()}
             premiumTimer={this.premiumPolishingTimer()}
             doneCards={this.state.doneCards}
+            jarColor={this.renderJarColor()}
           />
         </Board>
       </div>

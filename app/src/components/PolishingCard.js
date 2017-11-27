@@ -39,10 +39,13 @@ class PolishingCard extends Component {
     const material = this.props.material;
 
     let timerElement = null;
+    let jarColorElement = null;
+
     if (xsfMaterialList.includes(material) && polishers.includes(laneId)) {
       timerElement = <CardRightContent>{timerCardId}</CardRightContent>
     } else if (material === wsfpMaterial && polishers.includes(laneId)) {
-      timerElement = <CardRightContent>{wsfpTimerCardId}</CardRightContent>
+      timerElement = <CardRightContent>{wsfpTimerCardId}</CardRightContent>;
+      jarColorElement = this.props.jarColor;
     } else if (premiumList.includes(material) && polishers.includes(laneId)) {
       timerElement = <CardRightContent>{premiumTimeCardId}</CardRightContent>;
     }
@@ -76,7 +79,7 @@ class PolishingCard extends Component {
           {timerElement}
         </CardHeader>
         <Detail>
-          {description}
+          {description}{jarColorElement}
         </Detail>
         {tags &&
           <Footer>
