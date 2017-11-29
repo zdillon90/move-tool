@@ -44,6 +44,14 @@
         "id": 2,
         "name": "Cooling",
         "processStepIds": [347, 588, 595, 604, 616, 993]
+      }, {
+        "id": 3,
+        "name": "Cleaning",
+        "processStepIds": [345, 589, 596, 605, 617, 994]
+      }, {
+        "id": 4,
+        "name": "Batching",
+        "processStepIds": [421, 590, 597, 606, 618, 995]
       }
     ]
   }]

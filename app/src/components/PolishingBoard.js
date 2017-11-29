@@ -31,7 +31,7 @@ class PolishingBoard extends Component {
       cardId: '',
       sourceLaneId: '',
       targetLaneId: '',
-      formatedPoPatchList: [],
+      formattedPoPatchList: [],
       refreshSignal: false,
       doneCards: [],
       availableJarColors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink'],
@@ -87,7 +87,7 @@ class PolishingBoard extends Component {
   polishingTimer() {
     return (
       <CountdownTimer
-        secondsRemaining="10"
+        secondsRemaining="2700"
         cardAlert={this.cardAlert}
         polishing
       />
@@ -97,7 +97,7 @@ class PolishingBoard extends Component {
   wsfpPolishingTimer() {
     return (
       <CountdownTimer
-        secondsRemaining="20"
+        secondsRemaining="5400"
         cardAlert={this.cardAlert}
         polishing
       />
@@ -107,7 +107,7 @@ class PolishingBoard extends Component {
   premiumPolishingTimer() {
     return (
       <CountdownTimer
-        secondsRemaining="30"
+        secondsRemaining="28800"
         cardAlert={this.cardAlert}
         polishing
       />
@@ -115,7 +115,6 @@ class PolishingBoard extends Component {
   }
 
   assignJarColor() {
-    console.log('Assigning Jar Color');
     let inUseJarColors = this.state.inUseJarColors;
     let availableJarColors = this.state.availableJarColors;
     let jarIndex = 0;
@@ -145,7 +144,6 @@ class PolishingBoard extends Component {
     let jarColor = inUseJarColors[jarIndex];
     avalableJarColors.push(jarColor);
     inUseJarColors.splice(jarIndex, 1);
-    console.log(jarColor);
   }
 
   makeCards(productionOrders, columnLaneId) {
@@ -370,7 +368,6 @@ class PolishingBoard extends Component {
        }
       }
     });
-    console.log(poPatchList);
     return poPatchList;
   }
 
@@ -411,10 +408,9 @@ class PolishingBoard extends Component {
       let cardMaterial = cardIdList[0];
       let source = this.state.sourceLaneId;
       let target = this.state.targetLaneId;
-      console.log(this.state.inUseJarColors);
       if (source !== target) {
         let formatPoPatch = this.formatPoPatch();
-        this.setState({ formatedPoPatchList: formatPoPatch });
+        this.setState({ formattedPoPatchList: formatPoPatch });
         this.props.patchPos(formatPoPatch);
         if (targetLaneId === '200' || targetLaneId === '376' && cardMaterial === '62') {
           this.moveJarColorsBack();
