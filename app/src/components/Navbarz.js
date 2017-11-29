@@ -11,8 +11,6 @@ import {
 } from 'reactstrap';
 import MoveAlert from './MoveAlert';
 
-const BrowserWindow = electron.remote.BrowserWindow;
-
 
 /**
  * This class holds the Navigation bar components
@@ -43,20 +41,7 @@ class Navbarz extends Component {
    * If opens a new Inshape page on the default browser
    */
   static handleInshapeClick() {
-    // shell.openExternal('https://inshape.shapeways.com/');
-    const inshapeWindow = new BrowserWindow({
-      webPreferences: {
-        nodeIntegration: false
-      },
-       width: 1100,
-       height: 900
-    });
-    const ses = inshapeWindow.webContents.session;
-    ses.allowNTLMCredentialsForDomains('*');
-
-    inshapeWindow.loadURL('https://inshape.shapeways.com/');
-    inshapeWindow.show();
-
+    electron.shell.openExternal('https://inshape.shapeways.com/');
   }
 
   /**
@@ -77,7 +62,7 @@ class Navbarz extends Component {
       <div>
         <Navbar color="inverse" inverse toggleable>
           <NavbarToggler right onClick={this.toggle} />
-          <NavbarBrand href="">Inshape Movement Assistant</NavbarBrand>
+          <NavbarBrand href="">Inshape Move Tool</NavbarBrand>
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               {process ? (
