@@ -76,14 +76,21 @@ class PolishingBoard extends Component {
     });
   }
 
-  /** @TODO When the card is moved into a polishing status change the color of
-   * the card and when it is out  */
+  /**
+   * Adds the Card Id to the done cards array when the
+   * cards are timer for that card is complete.
+   * @param {Number} cardId Unique card identifier
+   */
   cardAlert(cardId) {
     this.setState({
       doneCard: this.state.doneCards.push(cardId)
     })
   }
 
+  /**
+   * Runs the count down timer for the XSF color family
+   * @returns {HTML}
+   */
   polishingTimer() {
     return (
       <CountdownTimer
@@ -94,6 +101,10 @@ class PolishingBoard extends Component {
     );
   }
 
+  /**
+   * Runs the count down timer for the WSFP color family
+   * @returns {HTML}
+   */
   wsfpPolishingTimer() {
     return (
       <CountdownTimer
@@ -104,6 +115,10 @@ class PolishingBoard extends Component {
     );
   }
 
+  /**
+   * Runs the count down timer for the premium color family
+   * @returns {HTML}
+   */
   premiumPolishingTimer() {
     return (
       <CountdownTimer
@@ -114,6 +129,10 @@ class PolishingBoard extends Component {
     );
   }
 
+  /**
+   * When a WSFP card is moved into the polishing status it gets assigned
+   * a Jar color from the available colors and moves it to the in use array
+   */
   assignJarColor() {
     let inUseJarColors = this.state.inUseJarColors;
     let availableJarColors = this.state.availableJarColors;
@@ -129,6 +148,10 @@ class PolishingBoard extends Component {
     }
   }
 
+  /**
+   * Renders the Jar color on the card
+   * @returns {HTML}
+   */
   renderJarColor() {
       return (
         <JarColor
@@ -137,6 +160,10 @@ class PolishingBoard extends Component {
       )
   }
 
+  /**
+   * Once the card is complete this function moves that
+   * color back to being available again.
+   */
   moveJarColorsBack() {
     let inUseJarColors = this.state.inUseJarColors;
     let avalableJarColors = this.state.availableJarColors;
@@ -146,6 +173,12 @@ class PolishingBoard extends Component {
     inUseJarColors.splice(jarIndex, 1);
   }
 
+  /**
+   * This function creates the cards for each substatus column
+   * @param {Array}  productionOrders
+   * @param {Number} columnLaneId
+   * @returns {Array}
+   */
   makeCards(productionOrders, columnLaneId) {
     const wsfpId = 62;
     const bsfId = 25;
@@ -302,9 +335,10 @@ class PolishingBoard extends Component {
     });
     return cards;
   }
+
   /**
    * This function makes the sub status columns for the production table.
-   * @return {Object} formated object containing tray cards and sub status columns
+   * @return {Array} formated object containing tray cards and sub status columns
    */
   makeLanes() {
     let makeCards = this.makeCards;
@@ -337,7 +371,7 @@ class PolishingBoard extends Component {
   /**
    * If a tray card is moved this function patches the POs to the new sub status
    * within Inshape
-   * @return {Object} POs to be moved to new status
+   * @return {Array} POs to be moved to new status
    */
   formatPoPatch() {
     let totalPoList = this.props.pos;
@@ -372,9 +406,9 @@ class PolishingBoard extends Component {
   }
 
   /**
-   * Complete formated table render function with sub status lanes and tray
+   * Complete formatted table render function with sub status lanes and tray
    * cards included
-   * @return {HTML} render of component
+   * @return {HTML}
    */
   render() {
     const processes = this.makeLanes();
@@ -382,8 +416,6 @@ class PolishingBoard extends Component {
     const handleDragStart = (cardId, laneId) => {
       let cardIdList = cardId.split(":");
       let cardMaterial = cardIdList[0];
-      /**@TODO Maybe add Jar color here to cardId??? */
-      // Send the Card Id to the assign card function to have it modified
       if (laneId === '374' || laneId === '1005' && cardMaterial === '62' ) {
           this.assignJarColor();
         }

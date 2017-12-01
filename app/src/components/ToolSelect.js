@@ -6,6 +6,10 @@ import {
   DropdownItem
 } from 'reactstrap';
 
+/**
+ * This component is the gives the ability to select tools from an
+ * array of available tools for a specific manufacturer
+ */
 class ToolSelect extends Component {
   constructor(props) {
     super(props);
@@ -16,6 +20,9 @@ class ToolSelect extends Component {
     };
   }
 
+  /**
+   *
+   */
   toggle() {
     this.setState({
       dropdownOpen: !this.state.dropdownOpen

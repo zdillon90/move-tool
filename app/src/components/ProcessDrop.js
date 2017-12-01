@@ -10,7 +10,7 @@ import {
 /**
  * If the manufacturer has more than one process then this dropdown apears with
  * a list of the manufacturers process flows
- * @param {Bool} dropdownOpen If true shows the process dropdown menu
+ * @param {Boolean} dropdownOpen If true shows the process dropdown menu
  * @type {Class}
  */
 class ProcessDrop extends Component {

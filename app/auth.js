@@ -73,6 +73,7 @@ module.exports = function (config, windowParams) {
 
       authWindow.loadURL(url);
       authWindow.show();
+      authWindow.webContents.openDevTools();
 
       authWindow.on('closed', () => {
         console.log(ses.getUserAgent());

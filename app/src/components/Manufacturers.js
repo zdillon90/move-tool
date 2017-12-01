@@ -12,7 +12,7 @@ import ToolSelect from './ToolSelect';
 
 /**
  * This class is the container that holds the manufacturer and process dropdown
- * @param {Bool} defaultProceess If there is only one process to a specific
+ * @param {Boolean} defaultProceess If there is only one process to a specific
  * manufacturer it will not render the process dropdown.
  * @type {Class}
  */
@@ -30,7 +30,7 @@ class Manufacturers extends Component {
    * @return {HTML} render of component
    */
   render() {
-    const manufacturer = this.props.manufacturer
+    const manufacturer = this.props.manufacturer;
     const manList = this.props.list;
     const processes = this.props.processes;
     const toolList = this.props.toolList;

@@ -52,7 +52,7 @@ class ManufacturersDrop extends Component {
     const items = this.props.list;
     const manufacturer = this.props.manufacturer;
     let header = null;
-    if (items.length > 1) {
+    if (items.length > 0) {
       header = <DropdownItem header>Choose One</DropdownItem>;
     } else {
       header = <DropdownItem header>Loading...</DropdownItem>;

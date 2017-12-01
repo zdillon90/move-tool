@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
 
+/**
+ * This component shows the color the card is assigned to
+ * when in the polishing statuses.
+ * @type {Class}
+ */
 class JarColor extends Component {
   constructor(props) {
     super(props);
@@ -8,6 +13,11 @@ class JarColor extends Component {
     };
   }
 
+  /**
+   * Element describing the jar color this
+   * card is connected to in the polisher.
+   * @returns {HTML}
+   */
   render() {
     return(
       <div>
