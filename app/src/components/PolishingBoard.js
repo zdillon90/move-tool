@@ -34,7 +34,7 @@ class PolishingBoard extends Component {
       formattedPoPatchList: [],
       refreshSignal: false,
       doneCards: [],
-      availableJarColors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink'],
+      availableJarColors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink', 'black', 'white'],
       inUseJarColors: [],
       currentJarColor: ''
     };
