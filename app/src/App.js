@@ -56,14 +56,6 @@ class App extends Component {
     };
   }
 
-  productionTrayId: number;
-  productionOrderName: string;
-  productionTrayName: string;
-  subStatusId: number;
-  materialId: number;
-  manufacturers: Array;
-  productionProcesses: Array;
-
   /** @TODO: Add a "draggable" prop to make sure the table is locked when updating. */
   /** @TODO Add a Refresh Date.now when the production table is rendered. */
 

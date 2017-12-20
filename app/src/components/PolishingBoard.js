@@ -456,12 +456,12 @@ class PolishingBoard extends Component {
      * @param  {String} cardId   The unique card identifier
      * @param  {Object} metadata   POs within the tray card
      */
-    const onCardClick = (cardId, metadata) => {
-      this.toggle();
-      this.setState({
-        metadata
-      });
-    };
+    // const onCardClick = (cardId, metadata) => {
+    //   this.toggle();
+    //   this.setState({
+    //     metadata
+    //   });
+    // };
 
     return (
       <div>
@@ -477,7 +477,7 @@ class PolishingBoard extends Component {
           draggable
           handleDragStart={handleDragStart}
           handleDragEnd={handleDragEnd}
-          onCardClick={onCardClick}
+          // onCardClick={onCardClick}
         >
           <PolishingCard
             timer={this.polishingTimer()}

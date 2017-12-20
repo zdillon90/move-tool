@@ -6,10 +6,56 @@ import {
   Detail,
   Footer
 } from '../styles';
+import ColorSelect from './ColorSelect';
 import Tag from './Tag';
 
 
 class PolishingCard extends Component {
+  constructor(props) {
+    super(props);
+    this.onColorChange = this.onColorChange.bind(this);
+    this.state = {
+      jarColors: [{
+        id: 0,
+        color: 'Red'
+      }, {
+        id: 1,
+        color: 'Orange'
+      }, {
+        id: 2,
+        color: 'Yellow'
+      }, {
+        id: 3,
+        color: 'Green'
+      }, {
+        id: 4,
+        color: 'Blue'
+      }, {
+        id: 5,
+        color: 'Purple'
+      }, {
+        id: 6,
+        color: 'Pink'
+      }, {
+        id: 7,
+        color: 'Black'
+      }, {
+        id: 8,
+        color: 'White'
+      }, {
+        id: 9,
+        color: 'Black'
+      }],
+      currentJarColor: 'Jar Color'
+    }
+  }
+
+  onColorChange(color) {
+    this.setState({
+      currentJarColor: color
+    });
+  }
+
   render() {
     const doneCards = this.props.doneCards;
     const xsfMaterialList = [75, 76, 77, 78, 93, 94, 95];
@@ -37,15 +83,24 @@ class PolishingCard extends Component {
     const description = this.props.description;
     const tags = this.props.tags;
     const material = this.props.material;
+    const availableColorList = this.state.jarColors;
+    const currentJarColor = this.state.currentJarColor;
 
     let timerElement = null;
     let jarColorElement = null;
+    let colorSelect = null;
+    let jarLabel = null;
 
     if (xsfMaterialList.includes(material) && polishers.includes(laneId)) {
       timerElement = <CardRightContent>{timerCardId}</CardRightContent>
     } else if (material === wsfpMaterial && polishers.includes(laneId)) {
       timerElement = <CardRightContent>{wsfpTimerCardId}</CardRightContent>;
-      jarColorElement = this.props.jarColor;
+      // jarColorElement = this.props.jarColor;
+      colorSelect = <ColorSelect
+                      colorList={availableColorList}
+                      currentJarColor={currentJarColor}
+                      onColorChange={this.onColorChange}
+      >{this.state.currentJarColor}</ColorSelect>
     } else if (premiumList.includes(material) && polishers.includes(laneId)) {
       timerElement = <CardRightContent>{premiumTimeCardId}</CardRightContent>;
     }
@@ -79,10 +134,11 @@ class PolishingCard extends Component {
           {timerElement}
         </CardHeader>
         <Detail>
-          {description}{jarColorElement}
+          {description}
         </Detail>
         {tags &&
           <Footer>
+            {colorSelect}
             {tags.map(tag => <Tag key={tag.title} {...tag} tagStyle={this.props.tagStyle} />)}
           </Footer>}
       </div>
