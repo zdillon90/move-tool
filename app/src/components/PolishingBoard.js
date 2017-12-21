@@ -33,10 +33,7 @@ class PolishingBoard extends Component {
       targetLaneId: '',
       formattedPoPatchList: [],
       refreshSignal: false,
-      doneCards: [],
-      availableJarColors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink', 'black', 'white'],
-      inUseJarColors: [],
-      currentJarColor: ''
+      doneCards: []
     };
     this.toggle = this.toggle.bind(this);
     this.cardAlert = this.cardAlert.bind(this);
@@ -477,7 +474,6 @@ class PolishingBoard extends Component {
           draggable
           handleDragStart={handleDragStart}
           handleDragEnd={handleDragEnd}
-          // onCardClick={onCardClick}
         >
           <PolishingCard
             timer={this.polishingTimer()}

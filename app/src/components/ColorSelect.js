@@ -7,8 +7,8 @@ import {
 } from 'reactstrap';
 
 /**
- * This component is the gives the ability to select tools from an
- * array of available tools for a specific manufacturer
+ * This component is the gives the ability to select color from an
+ * array of available colors jar of WSFP within the polisher.
  */
 class ColorSelect extends Component {
   constructor(props) {
@@ -21,7 +21,7 @@ class ColorSelect extends Component {
   }
 
   /**
-   *
+   * Toggles the dropdown to be open or closed
    */
   toggle() {
     this.setState({
