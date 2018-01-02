@@ -410,13 +410,7 @@ class PolishingBoard extends Component {
   render() {
     const processes = this.makeLanes();
 
-    const handleDragStart = (cardId, laneId) => {
-      let cardIdList = cardId.split(":");
-      let cardMaterial = cardIdList[0];
-      if (laneId === '374' || laneId === '1005' && cardMaterial === '62' ) {
-          this.assignJarColor();
-        }
-    };
+    const handleDragStart = (cardId, laneId) => {};
 
     /**
      * This function is triggered when the card is placed and checks to see if
@@ -433,32 +427,14 @@ class PolishingBoard extends Component {
         sourceLaneId,
         targetLaneId
       });
-      let cardIdList = cardId.split(":");
-      let cardMaterial = cardIdList[0];
       let source = this.state.sourceLaneId;
       let target = this.state.targetLaneId;
       if (source !== target) {
         let formatPoPatch = this.formatPoPatch();
         this.setState({ formattedPoPatchList: formatPoPatch });
         this.props.patchPos(formatPoPatch);
-        if (targetLaneId === '200' || targetLaneId === '376' && cardMaterial === '62') {
-          this.moveJarColorsBack();
-        }
       }
     };
-
-    /**
-     * Function that is triggered when the card is clicked. This will show the
-     * list of POs within the tray card.
-     * @param  {String} cardId   The unique card identifier
-     * @param  {Object} metadata   POs within the tray card
-     */
-    // const onCardClick = (cardId, metadata) => {
-    //   this.toggle();
-    //   this.setState({
-    //     metadata
-    //   });
-    // };
 
     return (
       <div>
@@ -480,7 +456,6 @@ class PolishingBoard extends Component {
             wsfpTimer={this.wsfpPolishingTimer()}
             premiumTimer={this.premiumPolishingTimer()}
             doneCards={this.state.doneCards}
-            jarColor={this.renderJarColor()}
           />
         </Board>
       </div>
