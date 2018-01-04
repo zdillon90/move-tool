@@ -21,6 +21,33 @@
     "id": 1,
     "name": "Polishing",
     "substatuses": [374, 1005, 371, 373, 200, 376]
+  }, {
+    "id": 2,
+    "name": "Merged",
+    "display_name": "Merged",
+    "processSteps": [
+      {
+        "id": 0,
+        "name": "Planned",
+        "processStepIds": [136, 1057]
+      }, {
+        "id": 1,
+        "name": "Printing",
+        "processStepIds": [137, 1058]
+      }, {
+        "id": 2,
+        "name": "Cooling",
+        "processStepIds": [344, 1059]
+      }, {
+        "id": 3,
+        "name": "Cleaning",
+        "processStepIds": [187, 1060]
+      }, {
+        "id": 4,
+        "name": "Sort 1",
+        "processStepIds": [348, 1061]
+      }
+    ]
   }],
   "ehvToolBag":
   [{

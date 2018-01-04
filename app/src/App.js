@@ -129,10 +129,16 @@ class App extends Component {
    * @param {String} target Selection of a process
    */
   setProcessName(target) {
-    const mergedProcess = config.ehvToolBag.find(item => item.id === 1);
-    if (target.name === 'Merged') {
+    const manId = this.state.manufacturerId;
+    const ehvMergedProcess = config.ehvToolBag.find(item => item.id === 1);
+    const licMergedProcess = config.licToolBag.find(item => item.id === 2);
+    if (target.name === 'Merged' && manId === '22') {
       this.setState({
-        process: mergedProcess
+        process: ehvMergedProcess
+      }, this.fetchProductionOrders);
+    } else if (target.name === 'Merged' && manId === '13') {
+      this.setState({
+        process: licMergedProcess
       }, this.fetchProductionOrders);
     } else {
       this.state.processes.forEach((list) => {
