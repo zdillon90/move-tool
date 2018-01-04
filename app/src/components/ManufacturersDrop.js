@@ -14,7 +14,7 @@ import {
   * @type {Class}
   */
 class ManufacturersDrop extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.toggle = this.toggle.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -36,7 +36,7 @@ class ManufacturersDrop extends Component {
  * Handles the action if a manufacturer is clicked
  * @param  {String} event Click event when a manufacturer is selected
  */
-  handleChange (event) {
+  handleChange(event) {
     this.props.onManufacturerChange(
       event.target.name,
       event.target.value
@@ -50,8 +50,9 @@ class ManufacturersDrop extends Component {
    */
   render() {
     const items = this.props.list;
+    const manufacturer = this.props.manufacturer;
     let header = null;
-    if (items.length > 1) {
+    if (items.length > 0) {
       header = <DropdownItem header>Choose One</DropdownItem>;
     } else {
       header = <DropdownItem header>Loading...</DropdownItem>;
@@ -59,7 +60,7 @@ class ManufacturersDrop extends Component {
     return (
       <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
         <DropdownToggle caret>
-          Manufacturers
+          {manufacturer}
         </DropdownToggle>
         <DropdownMenu>
           {header}

@@ -2,24 +2,24 @@ import React, { Component } from 'react';
 import { Board } from 'react-trello';
 import CardModal from './CardModal';
 
-let eventBus = undefined
+let eventBus = undefined;
 
 /**
  * This class takes the POs endpoint from the InshapeAPI and organizes it into
  * batches and then renders out those batches into lanes that represent
  * sub statuses within Inshape
- * @param  {Boolean} modal              If true, shows the modal of the list of
+ * @param  {Boolean}   modal             If true, shows the modal of the list of
  * POs if the card is clicked.
- * @param  {Object} metadata            Handles the PO information from the
+ * @param  {Object} metadata             Handles the PO information from the
  * InshapeAPI if a card is clicked.
- * @param  {String} cardId              The unique card identifier
- * @param  {String} sourceLaneId        The unique source lane identifier
- * @param  {String} targetLaneId        The unique target lane identifier
- * @param  {Array} formatedPoPatchList POs to have statuses changed after a
+ * @param  {String} cardId               The unique card identifier
+ * @param  {String} sourceLaneId         The unique source lane identifier
+ * @param  {String} targetLaneId         The unique target lane identifier
+ * @param  {Array}  formattedPoPatchList POs to have statuses changed after a
  * card was moved to a new status
  * @type {Class}
  */
-class SubTableBody extends Component {
+class MergedBoard extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -51,7 +51,7 @@ class SubTableBody extends Component {
 
   setEventBus = (handle) => {
     eventBus = handle;
-  }
+  };
 
   /**
    * Takes care of toggling the Card modal when the card is clicked.
@@ -66,8 +66,8 @@ class SubTableBody extends Component {
    * This function creates the PO count for that specific tray within a certain
    * sub status, so if a tray is in two different sub statuses the amount in that
    * sub status is compared to the tray total
-   * @param  {List} productionOrders manufacturer specific POs
-   * @return {List}                  POs within a specific tray
+   * @param  {Array} productionOrders manufacturer specific POs
+   * @return {Array}                  POs within a specific tray
    */
   totalPoCountPerTray(productionOrders) {
     let totalTrayListIds = [];
@@ -97,9 +97,9 @@ class SubTableBody extends Component {
 
 /**
  * This function creates the cards for each substatus column
- * @param  {List} productionOrders manufacturer specific POs
- * @param  {List} trayTotals       PO totals from a specific tray
- * @return {List}                  Tray Cards that belong to that substatus
+ * @param  {Array} productionOrders manufacturer specific POs
+ * @param  {Array} trayTotals       PO totals from a specific tray
+ * @return {Array}                  Tray Cards that belong to that substatus
  * column
  */
   makeCards(productionOrders, trayTotals) {
@@ -182,10 +182,11 @@ class SubTableBody extends Component {
       let lanePos = [];
       let columnName = column.name;
       let columnId = column.id;
+      let subIds = column.processStepIds;
       pos.forEach((po) => {
         let statusId = po.subStatusId;
-        if (statusId === columnId) {
-          lanePos.push(po);
+        if (subIds.includes(statusId)) {
+          lanePos.push(po)
         }
       });
       const TrayCards = makeCards(lanePos, totals);
@@ -201,21 +202,32 @@ class SubTableBody extends Component {
   /**
    * If a tray card is moved this function patches the POs to the new sub status
    * within Inshape
-   * @return {List} POs to be moved to new status
+   * @return {Array} POs to be moved to new status
    */
   formatPoPatch() {
     let totalPoList = this.props.pos;
     let sourceLane = this.state.sourceLaneId;
     let card = this.state.cardId;
     let targetLane = this.state.targetLaneId;
+    let sourceProcessList = this.props.list;
+    let sourceProcessStepObj = sourceProcessList.processSteps.find(item =>
+      item.id.toString() === sourceLane
+    );
+    let sourceProcessStepIds = sourceProcessStepObj.processStepIds;
+    let targetProcessStepObj = sourceProcessList.processSteps.find(item =>
+      item.id.toString() === targetLane
+    );
+    let targetProcessStepIds = targetProcessStepObj.processStepIds;
     let poPatchList = [];
     totalPoList.forEach((po) => {
-      let poSubStatusId = po.subStatusId.toString();
       let poProductionTrayId = po.productionTrayId.toString();
-      if (poSubStatusId === sourceLane && poProductionTrayId === card) {
+      let poSubStatusId = po.subStatusId;
+      if (sourceProcessStepIds.includes(poSubStatusId) && poProductionTrayId === card) {
+        let sourceIdIndex = sourceProcessStepIds.indexOf(poSubStatusId);
         let patchPo = {};
+        let targetProcessStepId = targetProcessStepIds[sourceIdIndex];
         patchPo.productionOrderId = po.productionOrderId;
-        patchPo.productionProcessStepId = targetLane;
+        patchPo.productionProcessStepId = targetProcessStepId;
         poPatchList.push(patchPo);
       }
     });
@@ -223,7 +235,7 @@ class SubTableBody extends Component {
   }
 
   /**
-   * Complete formated table render function with sub status lanes and tray
+   * Complete formatted table render function with sub status lanes and tray
    * cards included
    * @return {HTML} render of component
    */
@@ -259,8 +271,8 @@ class SubTableBody extends Component {
     /**
      * Function that is triggered when the card is clicked. This will show the
      * list of POs within the tray card.
-     * @param  {String} cardId   The unique card identifier
-     * @param  {Object} metadata   POs within the tray card
+     * @param  {String} cardId    The unique card identifier
+     * @param  {Object} metadata  POs within the tray card
      */
     const onCardClick = (cardId, metadata) => {
       this.toggle();
@@ -289,4 +301,4 @@ class SubTableBody extends Component {
   }
 }
 
-export default SubTableBody;
+export default MergedBoard;

@@ -59,7 +59,7 @@ module.exports = function (config, windowParams) {
       urlParams.access_type = opts.accessType;
     }
 
-    var inshapeUrl = config.inshapeUrl
+    var inshapeUrl = config.inshapeUrl;
     var url = config.authorizationUrl + '?' + queryString.stringify(urlParams);
 
     /**
@@ -73,6 +73,7 @@ module.exports = function (config, windowParams) {
 
       authWindow.loadURL(url);
       authWindow.show();
+      // authWindow.webContents.openDevTools();
 
       authWindow.on('closed', () => {
         console.log(ses.getUserAgent());

@@ -19,7 +19,6 @@ class CountdownTimer extends Component {
    * interval to tick every second
    */
   componentDidMount() {
-    console.log(this.state.secondsRemaining);
     this.interval = setInterval(this.tick, 1000);
   }
 
@@ -37,13 +36,19 @@ class CountdownTimer extends Component {
    */
   tick() {
     this.setState({ secondsRemaining: this.state.secondsRemaining - 1 });
-    if (this.state.secondsRemaining <= 0) {
-      this.props.refresh();
-      // ^^^ This pulls in the refresh fuction from the main app. It will trigger
-      // the refresh of the board data when the timer hits zero.
-      clearInterval(this.interval);
-      this.setState({ secondsRemaining: this.props.secondsRemaining });
-      this.interval = setInterval(this.tick, 1000);
+    if (this.state.secondsRemaining === 0) {
+      const cardId = this.props.cardId;
+      if (cardId !== null && this.props.polishing) {
+        this.props.cardAlert(cardId);
+      }
+      if (!this.props.polishing && this.state.secondsRemaining <= 0) {
+        this.props.refresh();
+        // ^^^ This pulls in the refresh function from the main app. It will trigger
+        // the refresh of the board data when the timer hits zero.
+        clearInterval(this.interval);
+        this.setState({secondsRemaining: this.props.secondsRemaining});
+        this.interval = setInterval(this.tick, 1000);
+      }
     }
   }
 

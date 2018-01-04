@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { shell } from 'electron';
+import electron from 'electron';
 import {
   Collapse,
   Navbar,
@@ -14,7 +14,7 @@ import MoveAlert from './MoveAlert';
 
 /**
  * This class holds the Navigation bar components
- * @param {Bool} isOpen If the full menu bar can't fit on the screen then it
+ * @param {Boolean} isOpen If the full menu bar can't fit on the screen then it
  * formats those options into a dropdown menu
  * @type {Class}
  */
@@ -40,8 +40,8 @@ class Navbarz extends Component {
   /**
    * If opens a new Inshape page on the default browser
    */
-  handleInshapeClick() {
-    shell.openExternal('https://inshape.shapeways.com/');
+  static handleInshapeClick() {
+    electron.shell.openExternal('https://inshape.shapeways.com/');
   }
 
   /**
@@ -62,7 +62,7 @@ class Navbarz extends Component {
       <div>
         <Navbar color="inverse" inverse toggleable>
           <NavbarToggler right onClick={this.toggle} />
-          <NavbarBrand href="">Inshape Movement Tool</NavbarBrand>
+          <NavbarBrand href="">Inshape Move Tool</NavbarBrand>
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               {process ? (
@@ -73,7 +73,7 @@ class Navbarz extends Component {
                 <NavLink></NavLink>
               )}
               <NavItem>
-                <NavLink onClick={this.handleInshapeClick}>Inshape</NavLink>
+                <NavLink onClick={Navbarz.handleInshapeClick}>Inshape</NavLink>
               </NavItem>
               <NavItem>
                 {authorized ? (

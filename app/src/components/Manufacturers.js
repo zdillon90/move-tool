@@ -8,10 +8,11 @@ import {
  } from 'reactstrap';
 import ManufacturersDrop from './ManufacturersDrop';
 import ProcessDrop from './ProcessDrop';
+import ToolSelect from './ToolSelect';
 
 /**
  * This class is the container that holds the manufacturer and process dropdown
- * @param {Bool} defaultProceess If there is only one process to a specific
+ * @param {Boolean} defaultProceess If there is only one process to a specific
  * manufacturer it will not render the process dropdown.
  * @type {Class}
  */
@@ -29,8 +30,11 @@ class Manufacturers extends Component {
    * @return {HTML} render of component
    */
   render() {
+    const manufacturer = this.props.manufacturer;
     const manList = this.props.list;
     const processes = this.props.processes;
+    const toolList = this.props.toolList;
+    const currentTool = this.props.currentTool;
     return (
       <div>
         <Jumbotron>
@@ -38,22 +42,28 @@ class Manufacturers extends Component {
             <Row>
               <Col>
                 <h1>Welcome to The Future!</h1>
-                <h4>Choose a Manufacturer:</h4>
+                <h4>Choose a Manufacturer and Tool:</h4>
               </Col>
             </Row>
             <Row>
               <Col>
                 <ButtonGroup>
                   <ManufacturersDrop
+                    manufacturer={manufacturer}
                     list={manList}
                     onManufacturerChange={this.props.onManufacturerChange}
                   />
+                  {manufacturer !== 'Manufacturers' &&
+                    <ToolSelect
+                      currentTool={currentTool}
+                      toolList={toolList}
+                      onToolChange={this.props.onToolChange}
+                    />}
                   {processes.length > 1 &&
                     <ProcessDrop
                       processlist={processes}
                       onProcessChange={this.props.onProcessChange}
-                    />
-                  }
+                    />}
                 </ButtonGroup>
               </Col>
             </Row>
