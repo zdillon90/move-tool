@@ -40,8 +40,7 @@ const refreshTokenPromise = new Promise((resolve, reject) => {
  */
 axios.interceptors.response.use(undefined, (err) => {
   const res = err.response;
-  /** TODO Add a condition to chek to see if the reason was bearer experation */
-  if (res.status === 400 && res.config && !res.config.__isRetryRequest) {
+  if (res.status === 401) {
     return getRefreshToken()
     .then((success) => {
       if (success !== undefined) {
