@@ -107,9 +107,13 @@ class App extends Component {
       this.setState({
         inshapeTools: config.licToolBag
       });
-    } else if (manId === '22'){
+    } else if (manId === '22') {
       this.setState({
         inshapeTools: config.ehvToolBag
+      });
+    } else if (manId === '105') {
+      this.setState({
+        inshapeTools: config.ehvHPToolBag
       });
     } else {
       this.setState({
@@ -132,6 +136,7 @@ class App extends Component {
     const manId = this.state.manufacturerId;
     const ehvMergedProcess = config.ehvToolBag.find(item => item.id === 1);
     const licMergedProcess = config.licToolBag.find(item => item.id === 2);
+    const ehvHPMergedProcess = config.ehvHPToolBag.find(item => item.id === 1);
     if (target.name === 'Merged' && manId === '22') {
       this.setState({
         process: ehvMergedProcess
@@ -140,14 +145,18 @@ class App extends Component {
       this.setState({
         process: licMergedProcess
       }, this.fetchProductionOrders);
+    } else if (target.name === 'Merged' && manId === '105') {
+      this.setState({
+        process: ehvHPMergedProcess
+      }, this.fetchProductionOrders);
     } else {
       this.state.processes.forEach((list) => {
-      if (list.name === target.name) {
-        this.setState({
-          process: list
-        }, this.fetchProductionOrders);
-      }
-    }, this);
+        if (list.name === target.name) {
+          this.setState({
+            process: list
+          }, this.fetchProductionOrders);
+        }
+      }, this);
     }
   }
 
@@ -220,11 +229,11 @@ class App extends Component {
    * @param {Number} time   Time delay in mili seconds
    */
   setStateWithTimeout(key, value, time) {
-    return setTimeout(function() {
+    return setTimeout(() => {
       const newState = {};
       newState[key] = value;
       this.setState(newState);
-    }.bind(this), time);
+    }, time);
   }
 
   /**
@@ -317,11 +326,10 @@ class App extends Component {
             patchPos={this.patchPos}
           />
         );
-      } else {
-        return (
-          <LoadingScreen />
-        );
       }
+      return (
+        <LoadingScreen />
+      );
     } else if (currentProcess !== null && currentTool === 'Polishing') {
       const toolObj = inshapeTools.filter((item) => item.name === 'Polishing');
       const laneIds = toolObj[0].substatuses;
@@ -337,11 +345,10 @@ class App extends Component {
             patchPos={this.patchPos}
           />
         );
-      } else {
-        return (
-          <LoadingScreen/>
-        );
       }
+      return (
+        <LoadingScreen />
+      );
     } else if (currentProcess !== null && currentTool === 'Merged') {
       if (loadingDone) {
         return (
@@ -353,25 +360,23 @@ class App extends Component {
             patchPos={this.patchPos}
           />
         );
-      } else {
-        return (
-          <LoadingScreen/>
-        );
       }
-    } else {
       return (
-        <Manufacturers
-          list={manList}
-          manufacturer={manufacturer}
-          toolList={inshapeTools}
-          currentTool={currentTool}
-          onToolChange={this.handleToolChange}
-          onManufacturerChange={this.handleManufacturerChange}
-          processes={processes}
-          onProcessChange={this.handleProcessChange}
-        />
+        <LoadingScreen />
       );
     }
+    return (
+      <Manufacturers
+        list={manList}
+        manufacturer={manufacturer}
+        toolList={inshapeTools}
+        currentTool={currentTool}
+        onToolChange={this.handleToolChange}
+        onManufacturerChange={this.handleManufacturerChange}
+        processes={processes}
+        onProcessChange={this.handleProcessChange}
+      />
+    );
   }
 
   /**
